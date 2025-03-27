@@ -1,4 +1,4 @@
-# ✅ Flask 登录系统：使用文字数学题验证码，保留注释，并支持读取 SECRET_KEY 环境变量
+
 
 from flask import Flask, render_template, redirect, url_for, session, request
 import random

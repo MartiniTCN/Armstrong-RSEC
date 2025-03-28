@@ -367,7 +367,14 @@
         // 使用 Twemoji 渲染页面中的所有 emoji 字符
         twemoji.parse(document.body);
     </script>
-    
+
+<script>
+  // 页面加载完成后调用
+  window.onload = function () {
+      twemoji.parse(document.body);
+  };
+</script>
+
 </body>
 </html>
 

@@ -1,15 +1,12 @@
-
-<!-- 以下代码基于登录界面，增加图形验证码、密码显隐切换按钮、响应式优化，保留全部原始注释 -->
 <!DOCTYPE html>
-
-<html lang="zh-CN" class="scroll-smooth">
+<html class="scroll-smooth" lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>解决方案学习与测评系统</title>
-<!-- Tailwind CSS CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Armstrong 解决方案学习与测评系统</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
@@ -24,128 +21,64 @@
       }
     }
   </script>
-<!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-    /* 抖动动画用于错误验证提示 */
-    .shake {
-      animation: shake 0.4s ease-in-out;
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-8px); }
-      40%, 80% { transform: translateX(8px); }
-    }
-
-    /* 页面加载淡入动画 */
-    .animate-fade-in {
-      opacity: 0;
-      animation: fadeIn 1s ease-out forwards;
-    }
-    @keyframes fadeIn {
-      to { opacity: 1; }
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    /* ✅ 标题字体控制：使用苹果默认字体 + 微调字号 + 保证跨平台兼容 */
+    #titleText {
+      font-size: 18px; /* ✅ 默认字号略小一些，防止过长英文换行 */
+      font-weight: bold; /* ✅ 加粗标题 */
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      white-space: nowrap; /* ✅ 强制不换行 */
+      overflow: hidden; /* ✅ 溢出隐藏 */
+      text-overflow: ellipsis; /* ✅ 溢出以省略号表示 */
     }
 
-    /* 水印容器样式，固定在页面底部，全屏覆盖 */
-    .watermark-tile {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    /* 单个水印样式 */
-    .watermark-instance {
-      position: absolute;
-      width: 180px;
-      height: 180px;
-      background-image: url('https://i.stardots.io/armstrong/%E6%B0%B4%E5%8D%B0%E5%9B%BE%E7%89%87%20-%20%E9%87%91%E8%89%B2_%E5%89%AF%E6%9C%AC.png?width=500&rotate=0&blur=0&quality=50');
-      background-repeat: no-repeat;
-      background-size: contain;
-      opacity: 0.3;
-      transform: rotate(-30deg);
+    /* ✅ 避免点击按钮时触发输入框验证 */
+    button:focus {
+      outline: none;
     }
   </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
-<!-- 水印容器，将动态插入多个水印 -->
-<div class="watermark-tile" id="watermarkContainer"></div>
-<main class="min-h-screen flex items-center justify-center p-4 relative z-10">
-<section class="w-full max-w-sm bg-white/30 dark:bg-white/10 backdrop-blur-xl border border-white/30 dark:border-white/10 rounded-2xl shadow-2xl p-6 sm:p-8 transition hover:shadow-[0_0_30px_rgba(0,0,0,0.2)]" id="loginCard">
-<div class="text-center mb-6 animate-fade-in">
-<img alt="Armstrong Logo" class="h-12 mx-auto mb-4" src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500"/>
-<h1 class="text-2xl font-bold text-2xl font-bold truncate text-center" id="titleText">解决方案学习与测评系统</h1>
-</div>
-<form class="space-y-5" method="post">
-<!-- 用户名输入框 -->
-<div>
-<input class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" id="username" name="username" placeholder="请输入用户名" required="" type="text"/>
-</div>
-<!-- 密码输入框带显隐按钮 -->
-<div class="relative">
-<input class="w-full pr-10 px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" name="password" placeholder="请输入密码" required="" type="password"/>
-<span class="absolute inset-y-0 right-3 flex items-center text-gray-500 cursor-pointer" onclick="togglePassword()">
-<i class="fas fa-eye" id="toggleIcon"></i>
-</span>
-</div>
-<!-- ✅ 验证码区域：左侧输入框，右侧题目（替代图像验证码） -->
-<div class="flex items-center gap-3">
-<input class="flex-1 px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500" id="captcha" name="captcha" placeholder="请输入答案" required="" type="text"/>
-<!-- 显示题目，如 "7 + 3 = ?" -->
-<span class="text-sm font-mono text-gray-700 dark:text-gray-300 whitespace-nowrap">{{ math_question }} = ?</span>
-</div>
-<div class="pt-2 flex items-center justify-between">
-<!-- 明暗模式切换按钮 -->
-<button class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition" id="themeToggle">
-<i class="fas fa-sun text-gray-500 dark:text-gray-300"></i>
-</button>
-<!-- 登录按钮 -->
-<button class="flex items-center gap-2 px-6 py-2 text-white font-semibold rounded-2xl bg-primary hover:bg-blue-700 transition-transform transform hover:scale-105 shadow-md" type="submit">
-<i class="fas fa-key"></i>
-<span id="loginText">登录</span>
-</button>
-<!-- 语言切换按钮（国旗） -->
-<button class="text-2xl transition-transform transform hover:scale-110" onclick="toggleLang()">
-<span id="langFlag">🇺🇸</span>
-</button>
-</div>
-</form>
-</section>
-</main>
-<script>
-    // 明暗模式切换逻辑
-    const toggle = document.getElementById('themeToggle');
-    toggle.addEventListener('click', () => {
-      document.documentElement.classList.toggle('dark');
-    });
+  <main class="min-h-screen flex items-center justify-center p-4">
+    <section id="loginCard" class="w-full max-w-sm bg-white/30 dark:bg-white/10 backdrop-blur-xl border border-white/30 dark:border-white/10 rounded-2xl shadow-2xl p-6 sm:p-8">
+      <div class="text-center mb-6">
+        <img alt="Armstrong Logo" class="h-12 mx-auto mb-4" src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500" />
+        <!-- ✅ 标题字体优化见 style 部分 -->
+        <h1 id="titleText">Armstrong 解决方案学习与测评系统</h1>
+      </div>
+      <form id="loginForm" class="space-y-5" method="post">
+        <div>
+          <input id="username" name="username" type="text" required placeholder="请输入用户名" class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600" />
+        </div>
+        <div class="relative">
+          <input id="password" name="password" type="password" required placeholder="请输入密码" class="w-full pr-10 px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600" />
+          <!-- 密码显隐按钮 -->
+          <span class="absolute inset-y-0 right-3 flex items-center text-gray-500 cursor-pointer" onclick="togglePassword()">
+            <i class="fas fa-eye" id="toggleIcon"></i>
+          </span>
+        </div>
+        <div class="pt-2 flex items-center justify-between">
+          <!-- ✅ 明暗切换图标按钮（自动切换太阳/月亮） -->
+          <button type="button" class="p-2" onclick="toggleTheme()">
+            <i class="fas fa-sun text-gray-500 dark:hidden" id="sunIcon"></i>
+            <i class="fas fa-moon text-gray-200 hidden dark:inline" id="moonIcon"></i>
+          </button>
+          <button type="submit" class="px-6 py-2 text-white rounded-2xl bg-primary hover:bg-blue-700">登录</button>
+          <!-- ✅ 语言切换按钮 -->
+          <button type="button" class="text-2xl" onclick="toggleLang()">
+            <span id="langFlag">🇺🇸</span>
+          </button>
+        </div>
+      </form>
+    </section>
+  </main>
 
-    // 假验证逻辑（测试用）
-    function fakeValidate(e) {
-      e.preventDefault();
-      const card = document.getElementById('loginCard');
-      card.classList.remove('shake');
-      void card.offsetWidth; // 强制回流触发动画
-      card.classList.add('shake');
-      return false;
-    }
-
-    // 中英文切换
+  <script>
     let isChinese = true;
-    function toggleLang() {
-      isChinese = !isChinese;
-      document.getElementById('titleText').textContent = isChinese ? '解决方案学习与测评系统' : 'Value-Driven Learning & Evaluation System';
-      document.getElementById('loginText').textContent = isChinese ? '登录' : 'Login';
-      document.getElementById('langFlag').textContent = isChinese ? '🇺🇸' : '🇨🇳';
-      document.getElementById('username').placeholder = isChinese ? '请输入用户名' : 'Enter username';
-      document.getElementById('password').placeholder = isChinese ? '请输入密码' : 'Enter password';
-      document.getElementById('captcha').placeholder = isChinese ? '请输入答案' : 'Enter answer';
-    }
 
-    // 密码显示 / 隐藏功能
+    // ✅ 密码显隐切换
     function togglePassword() {
       const pw = document.getElementById('password');
       const icon = document.getElementById('toggleIcon');
@@ -160,60 +93,39 @@
       }
     }
 
-    // 自动生成随机水印分布（增强密度和亮度）
-    const watermarkContainer = document.getElementById('watermarkContainer');
-    const num = 50; // 水印数量，密度调节参数
-    for (let i = 0; i < num; i++) {
-      const wm = document.createElement('div');
-      wm.className = 'watermark-instance';
-      wm.style.top = Math.random() * window.innerHeight + 'px';
-      wm.style.left = Math.random() * window.innerWidth + 'px';
-      watermarkContainer.appendChild(wm);
+    // ✅ 明暗模式切换 + 图标切换
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
     }
-  </script>
-<script>
-  // ✅ 自动调整标题文字字号，保持单行显示、不换行不溢出
-  function resizeTitleText() {
-    const container = document.getElementById('loginCard'); // 登录框容器
-    const title = document.getElementById('titleText');     // 标题元素
-    let fontSize = 24;                                      // 初始字号 px
-    title.style.fontWeight = 'bold';                        // ✅ 字体加粗
-    title.style.whiteSpace = 'nowrap';                      // ✅ 强制单行
-    title.style.overflow = 'hidden';                        // ✅ 防止溢出
-    title.style.display = 'block';                          // ✅ 确保是 block 元素
-    title.style.fontSize = fontSize + 'px';                 // 设置初始字体大小
-  
-    // ✅ 逐渐缩小字号，直到标题宽度适应容器宽度
-    while (title.scrollWidth > container.clientWidth && fontSize > 12) {
-      fontSize -= 1;
-      title.style.fontSize = fontSize + 'px';
+
+    // ✅ 中英文切换，并刷新标题内容 & 自适应文字宽度
+    function toggleLang() {
+      isChinese = !isChinese;
+      const title = document.getElementById('titleText');
+      title.textContent = isChinese
+        ? 'Armstrong 解决方案学习与测评系统'
+        : 'Armstrong Solutions Value Learning & Assessment Platform';
+      document.getElementById('langFlag').textContent = isChinese ? '🇺🇸' : '🇨🇳';
+      resizeTitleText();
     }
-  }
-  
-  // ✅ 页面加载时执行
-  window.addEventListener('load', resizeTitleText);
-  
-  // ✅ 窗口大小变化时也执行（保持响应式）
-  window.addEventListener('resize', resizeTitleText);
-  
-  // ✅ 替换原 toggleLang 函数，加入 resizeTitleText 调整字体
-  let isChinese = true;
-  function toggleLang() {
-    isChinese = !isChinese;
-    const title = document.getElementById('titleText');
-    title.textContent = isChinese
-      ? 'Armstrong 解决方案学习与测评系统'
-      : 'Armstrong Solutions Value Learning & Assessment Platform';
-    document.getElementById('loginText').textContent = isChinese ? '登录' : 'Login';
-    document.getElementById('langFlag').textContent = isChinese ? '🇺🇸' : '🇨🇳';
-    document.getElementById('username').placeholder = isChinese ? '请输入用户名' : 'Enter username';
-    document.getElementById('password').placeholder = isChinese ? '请输入密码' : 'Enter password';
-    document.getElementById('captcha').placeholder = isChinese ? '请输入答案' : 'Enter answer';
-  
-    resizeTitleText(); // ✅ 每次切换语言后重新调整字号
-  }
+
+    // ✅ 动态调整标题字号，保持一行显示且不溢出
+    function resizeTitleText() {
+      const title = document.getElementById('titleText');
+      const container = document.getElementById('loginCard');
+      let fontSize = 18; // 默认起始字体大小 px
+      title.style.fontSize = fontSize + 'px'; // 设置初始值
+
+      // 如果标题内容宽度超出容器，则减小字体直到合适
+      while (title.scrollWidth > container.clientWidth && fontSize > 12) {
+        fontSize--;
+        title.style.fontSize = fontSize + 'px';
+      }
+    }
+
+    window.addEventListener('load', resizeTitleText);
+    window.addEventListener('resize', resizeTitleText);
   </script>
-</script></body>
+</body>
 </html>
-
-

@@ -100,7 +100,8 @@
 </div>
 <div class="pt-2 flex items-center justify-between">
 <!-- 明暗模式切换按钮 -->
-<button class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition" id="themeToggle">
+<button type="button" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition" id="themeToggle">
+<i class="fas fa-sun text-gray-500 dark:text-gray-300" id="themeIcon"></i>
 <i class="fas fa-sun text-gray-500 dark:text-gray-300"></i>
 </button>
 <!-- 登录按钮 -->
@@ -109,7 +110,7 @@
 <span id="loginText">登录</span>
 </button>
 <!-- 语言切换按钮（国旗） -->
-<button class="text-2xl transition-transform transform hover:scale-110" onclick="toggleLang()">
+<button type="button" class="text-2xl transition-transform transform hover:scale-110" onclick="toggleLang()">
 <span id="langFlag">🇺🇸</span>
 </button>
 </div>
@@ -213,6 +214,48 @@
     resizeTitleText(); // ✅ 每次切换语言后重新调整字号
   }
   </script>
+
+    // ✅ 自动切换图标函数，确保主题切换时图标同步变化
+    function updateThemeIcon() {
+      const icon = document.getElementById('themeIcon'); // 获取图标元素
+      const isDark = document.documentElement.classList.contains('dark'); // 检查当前是否为暗黑模式
+      // 根据模式切换图标类名
+      icon.className = isDark ? 'fas fa-moon text-gray-300' : 'fas fa-sun text-gray-500';
+    }
+
+    // ✅ 明暗模式切换逻辑，点击后切换主题并更新图标
+    const toggle = document.getElementById('themeToggle');
+    toggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark'); // 切换 dark 类
+      updateThemeIcon(); // 同步更新图标
+    });
+
+    // ✅ 页面初始加载时设置一次图标状态
+    window.addEventListener('DOMContentLoaded', updateThemeIcon);
+
+    // ✅ 自动调整标题字号函数，保证文字在一行内完整显示
+    function resizeTitleText() {
+      const container = document.getElementById('loginCard'); // 登录卡片容器
+      const title = document.getElementById('titleText');     // 标题文本元素
+      let fontSize = 20; // 初始字体大小为 20px
+      title.style.fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"; // 设置系统字体，提升兼容性
+      title.style.fontSize = fontSize + 'px';  // 设置初始字体大小
+      title.style.fontWeight = 'bold';         // 加粗标题
+      title.style.whiteSpace = 'nowrap';       // 不换行
+      title.style.overflow = 'hidden';         // 超出隐藏
+      title.style.display = 'block';           // 显示为块级，便于测量宽度
+
+      // 若标题宽度大于容器宽度，则逐步缩小字体，直到合适或最小值为止
+      while (title.scrollWidth > container.clientWidth && fontSize > 12) {
+        fontSize -= 1;
+        title.style.fontSize = fontSize + 'px';
+      }
+    }
+
+    // ✅ 加载和窗口大小改变时执行缩放逻辑
+    window.addEventListener('load', resizeTitleText);
+    window.addEventListener('resize', resizeTitleText);
+
 </script></body>
 </html>
 

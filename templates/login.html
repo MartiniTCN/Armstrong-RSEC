@@ -137,7 +137,7 @@
     let isChinese = true;
     function toggleLang() {
       isChinese = !isChinese;
-      document.getElementById('titleText').textContent = isChinese ? 'Armstrong 解决方案学习与测评系统' : 'Armstrong Solutions Value Learning & Assessment Platform';
+      document.getElementById('titleText').textContent = isChinese ? '解决方案学习与测评系统' : 'Value-Driven Learning & Evaluation System';
       document.getElementById('loginText').textContent = isChinese ? '登录' : 'Login';
       document.getElementById('langFlag').textContent = isChinese ? '🇺🇸' : '🇨🇳';
       document.getElementById('username').placeholder = isChinese ? '请输入用户名' : 'Enter username';
@@ -172,41 +172,47 @@
     }
   </script>
 <script>
-// ✅ 自动调整标题文字字号，保持单行显示、不换行不溢出
-function resizeTitleText() {
-  const container = document.getElementById('loginCard'); // 登录框容器
-  const title = document.getElementById('titleText');     // 标题元素
-  let fontSize = 24;                                      // 初始字号 px
-  title.style.fontSize = fontSize + 'px';                 // 设置初始字体大小
-
-  // ✅ 如果标题宽度超过容器宽度，逐渐减小字号，直到合适为止
-  while (title.scrollWidth > container.clientWidth && fontSize > 12) {
-    fontSize -= 1;
-    title.style.fontSize = fontSize + 'px';
+  // ✅ 自动调整标题文字字号，保持单行显示、不换行不溢出
+  function resizeTitleText() {
+    const container = document.getElementById('loginCard'); // 登录框容器
+    const title = document.getElementById('titleText');     // 标题元素
+    let fontSize = 24;                                      // 初始字号 px
+    title.style.fontWeight = 'bold';                        // ✅ 字体加粗
+    title.style.whiteSpace = 'nowrap';                      // ✅ 强制单行
+    title.style.overflow = 'hidden';                        // ✅ 防止溢出
+    title.style.display = 'block';                          // ✅ 确保是 block 元素
+    title.style.fontSize = fontSize + 'px';                 // 设置初始字体大小
+  
+    // ✅ 逐渐缩小字号，直到标题宽度适应容器宽度
+    while (title.scrollWidth > container.clientWidth && fontSize > 12) {
+      fontSize -= 1;
+      title.style.fontSize = fontSize + 'px';
+    }
   }
-}
-
-// ✅ 页面加载时执行一次
-window.addEventListener('load', resizeTitleText);
-
-// ✅ 窗口大小变化时也执行（保持响应式）
-window.addEventListener('resize', resizeTitleText);
-
-// ✅ 切换语言函数中调用该函数，保持标题自适应
-function toggleLang() {
-  isChinese = !isChinese;
-  const title = document.getElementById('titleText');
-  title.textContent = isChinese
-    ? 'Armstrong 解决方案学习与测评系统'
-    : 'Armstrong Solutions Value Learning & Assessment Platform';
-  document.getElementById('loginText').textContent = isChinese ? '登录' : 'Login';
-  document.getElementById('langFlag').textContent = isChinese ? '🇺🇸' : '🇨🇳';
-  document.getElementById('username').placeholder = isChinese ? '请输入用户名' : 'Enter username';
-  document.getElementById('password').placeholder = isChinese ? '请输入密码' : 'Enter password';
-  document.getElementById('captcha').placeholder = isChinese ? '请输入答案' : 'Enter answer';
-
-  resizeTitleText(); // ✅ 每次切换语言后自动缩放标题
-}
+  
+  // ✅ 页面加载时执行
+  window.addEventListener('load', resizeTitleText);
+  
+  // ✅ 窗口大小变化时也执行（保持响应式）
+  window.addEventListener('resize', resizeTitleText);
+  
+  // ✅ 替换原 toggleLang 函数，加入 resizeTitleText 调整字体
+  let isChinese = true;
+  function toggleLang() {
+    isChinese = !isChinese;
+    const title = document.getElementById('titleText');
+    title.textContent = isChinese
+      ? 'Armstrong 解决方案学习与测评系统'
+      : 'Armstrong Solutions Value Learning & Assessment Platform';
+    document.getElementById('loginText').textContent = isChinese ? '登录' : 'Login';
+    document.getElementById('langFlag').textContent = isChinese ? '🇺🇸' : '🇨🇳';
+    document.getElementById('username').placeholder = isChinese ? '请输入用户名' : 'Enter username';
+    document.getElementById('password').placeholder = isChinese ? '请输入密码' : 'Enter password';
+    document.getElementById('captcha').placeholder = isChinese ? '请输入答案' : 'Enter answer';
+  
+    resizeTitleText(); // ✅ 每次切换语言后重新调整字号
+  }
+  </script>
 </script></body>
 </html>
 登录后，进入产品知识、应用及价值了解，并测试效果。

@@ -26,6 +26,16 @@
   </script>
 <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- 引入 Twemoji 库 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js"></script>
+<style>
+  #cnFlag, #ukFlag {
+      font-size: 30px;  /* 设置图标大小 */
+      vertical-align: middle;  /* 确保图标居中显示 */
+  }
+</style>
+
 <style>
     /* 抖动动画用于错误验证提示 */
     .shake {
@@ -346,6 +356,18 @@
   window.addEventListener('resize', resizeTitleText);
 </script>
 
+<h1>使用 Unicode 字符显示国旗图标：</h1>
+
+    <div>
+        <span id="cnFlag">🇨🇳</span> <!-- 中国国旗 -->
+        <span id="ukFlag">🇬🇧</span> <!-- 英国国旗 -->
+    </div>
+
+    <script>
+        // 使用 Twemoji 渲染页面中的所有 emoji 字符
+        twemoji.parse(document.body);
+    </script>
+    
 </body>
 </html>
 

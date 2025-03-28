@@ -7,6 +7,11 @@ import os  # ✅ 新增：用于从环境变量读取 SECRET_KEY
 # ✅ 初始化 Flask 应用
 app = Flask(__name__)
 
+# 添加健康检查接口
+@app.route('/health')
+def health_check():
+    return 'OK', 200
+
 # ✅ 从环境变量读取 Secret Key（部署平台使用），如果未设置则使用默认值
 app.secret_key = os.environ.get('SECRET_KEY', 'default_dev_secret_key')
 

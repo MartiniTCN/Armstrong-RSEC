@@ -79,9 +79,27 @@
       opacity: 0.3;
       transform: rotate(-30deg);
     }
+
+    <style>
+  /* 自定义慢速旋转动画 */
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 2s linear infinite;
+  }
+</style>
+
   </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+  <!-- 页面加载动画遮罩 -->
+<div id="loadingOverlay" class="fixed inset-0 bg-white dark:bg-gray-900 z-50 flex flex-col items-center justify-center">
+  <img src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=200" alt="Loading..." class="animate-spin-slow w-12 h-12 mb-4">
+  <p class="text-gray-700 dark:text-gray-200 text-sm">正在加载，请稍候...</p>
+</div>
 <!-- 水印容器，将动态插入多个水印 -->
 <div class="watermark-tile" id="watermarkContainer"></div>
 <main class="min-h-screen flex items-center justify-center p-4 relative z-10">
@@ -354,6 +372,16 @@
   window.onload = function () {
       twemoji.parse(document.body);
   };
+</script>
+
+<script>
+  // 页面加载完成后隐藏 loading 遮罩
+  window.addEventListener('load', function () {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+      overlay.style.display = 'none';
+    }
+  });
 </script>
 
 </body>

@@ -75,10 +75,27 @@
 <!-- 水印容器，将动态插入多个水印 -->
 <div class="watermark-tile" id="watermarkContainer"></div>
 <main class="min-h-screen flex items-center justify-center p-4 relative z-10">
-<section class="w-full max-w-sm bg-white/30 dark:bg-white/10 backdrop-blur-xl border border-white/30 dark:border-white/10 rounded-2xl shadow-2xl p-6 sm:p-8 transition hover:shadow-[0_0_30px_rgba(0,0,0,0.2)]" id="loginCard">
+<!-- 登录窗口尺寸边缘控制   transition hover:shadow-[0_0_30px_rgba(0,0,0,0.2)] -->
+<section class="w-full max-w-sm bg-white/30 dark:bg-white/10 backdrop-blur-xl border border-white/30 dark:border-white/10 rounded-2xl shadow-2xl pt-4 pb-1 px-1 sm:pt-1 sm:pb-1 sm:px-8" id="loginCard">
+<!-- pt-4 / pb-4 表示上下 padding 为 1rem（16px） -->
+<!-- px-6 表示左右 padding 为 1.5rem（24px） -->
+<!-- sm:pt-6 表示在小屏幕及以上时，上边距为 1.5rem（24px） -->
+
+
+
+  <!-- 原来的标题改为两个部分：主标题 + 副标题 -->
 <div class="text-center mb-6 animate-fade-in">
-<img alt="Armstrong Logo" class="h-12 mx-auto mb-4" src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500"/>
-<h1 class="text-2xl font-bold text-2xl font-bold truncate text-center" id="titleText">解决方案探索与考试系统</h1>
+  <img alt="Armstrong Logo" class="h-12 mx-auto mb-4" src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500"/>
+
+  <!-- ✅ 主标题：字体稍大、加粗 -->
+  <h1 id="titleText" class="text-xl sm:text-2xl font-bold leading-snug text-gray-900 dark:text-white font-[system-ui,-apple-system,BlinkMacSystemFont]">
+    产品学习与评测系统
+  </h1>
+
+  <!-- ✅ 副标题：字体较小、正常字重 -->
+  <p id="subtitleText" class="text-sm sm:text-xs text-gray-500 dark:text-gray-200 font-[system-ui,-apple-system,BlinkMacSystemFont]">
+    有目标地学习，有洞察地评估
+  </p>
 </div>
 <form class="space-y-5" method="post">
 <!-- 用户名输入框 -->
@@ -114,7 +131,29 @@
 </button>
 </div>
 </form>
+
+<!-- ✅ 登录框下方：系统作者信息展示，采用苹果默认字体，支持深浅色模式 -->
+<!-- ✅ 登录框底部和作者之间的间距，可调节 mt-* 数值 -->
+<div class="mt-0 text-center">
+
+  <p class="mt-4 text-center text-[8px] text-gray-300 dark:text-gray-50"
+     style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+    © 2025 Martin Peng. All rights reserved.
+    <!-- font-semibold：加粗作者名 -->
+    <!-- text-xs：与主界面字体一致的小字号 -->
+    <!-- text-gray-300 / dark:text-gray-50：根据明暗模式自动调整颜色 -->
+    <!-- style：继承系统字体，兼容苹果 / Windows / 安卓 -->
+    <span class="font-semibold text-gray-300 dark:text-gray-50 text-xs"
+          style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+     
+    </span>
+  </p>
+  </div>
+
 </section>
+
+
+
 </main>
 <script>
     // 明暗模式切换逻辑
@@ -132,14 +171,28 @@
 
     // 中英文切换
     let isChinese = true;
+    // ✅ 切换语言时同时切换主副标题内容，并保持字体适配
     function toggleLang() {
       isChinese = !isChinese;
-      document.getElementById('titleText').textContent = isChinese ? '解决方案探索与考试系统' : 'Value-Driven Learning & Evaluation System';
+
+      // ✅ 主标题内容
+      document.getElementById('titleText').textContent = isChinese
+        ? '产品学习与评测系统'
+        : 'Value-Driven Learning Platform';
+
+      // ✅ 副标题内容
+      document.getElementById('subtitleText').textContent = isChinese
+        ? '有目标地学习 有洞察地评估'
+        : 'Driven by Value. Defined by Mastery.';
+
+      // 其他切换内容（保持不变）
       document.getElementById('loginText').textContent = isChinese ? '登录' : 'Login';
-      document.getElementById('langFlag').textContent = isChinese ? '🇺🇸' : '🇨🇳';
+      document.getElementById('langFlag').textContent = isChinese ? '🇬🇧' : '🇨🇳';
       document.getElementById('username').placeholder = isChinese ? '请输入用户名' : 'Enter username';
       document.getElementById('password').placeholder = isChinese ? '请输入密码' : 'Enter password';
       document.getElementById('captcha').placeholder = isChinese ? '请输入答案' : 'Enter answer';
+      // 自动调整标题字体大小
+      resizeTitleText();
     }
 
     // 密码显示 / 隐藏功能
@@ -202,7 +255,7 @@
       ? 'A解决方案探索与评测系统'
       : 'Armstrong Solutions Value Learning & Assessment Platform';
     document.getElementById('loginText').textContent = isChinese ? '登录' : 'Login';
-    document.getElementById('langFlag').textContent = isChinese ? '🇺🇸' : '🇨🇳';
+    document.getElementById('langFlag').textContent = isChinese ? '🇬🇧' : '🇨🇳';
     document.getElementById('username').placeholder = isChinese ? '请输入用户名' : 'Enter username';
     document.getElementById('password').placeholder = isChinese ? '请输入密码' : 'Enter password';
     document.getElementById('captcha').placeholder = isChinese ? '请输入答案' : 'Enter answer';

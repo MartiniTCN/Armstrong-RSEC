@@ -137,7 +137,7 @@
 </button>
 <!-- 语言切换按钮（国旗） -->
 <button type="button" class="text-2xl transition-transform transform hover:scale-110" onclick="toggleLang()">
-<span id="langFlag">🇬🇧</span>
+<span id="langFlag">🇨🇳</span>
 </button>
 </div>
 </form>
@@ -196,7 +196,7 @@
 
       // 其他切换内容（保持不变）
       document.getElementById('loginText').textContent = isChinese ? '登录' : 'Login';
-      document.getElementById('langFlag').textContent = isChinese ? '🇬🇧' : '🇨🇳';
+      document.getElementById('langFlag').textContent = isChinese ? '🇨🇳' : '🇬🇧';
       document.getElementById('username').placeholder = isChinese ? '请输入用户名' : 'Enter username';
       document.getElementById('password').placeholder = isChinese ? '请输入密码' : 'Enter password';
       document.getElementById('captcha').placeholder = isChinese ? '请输入答案' : 'Enter answer';
@@ -255,22 +255,7 @@
   // ✅ 窗口大小变化时也执行（保持响应式）
   window.addEventListener('resize', resizeTitleText);
   
-  // ✅ 替换原 toggleLang 函数，加入 resizeTitleText 调整字体
-  let isChinese = true;
-  function toggleLang() {
-    isChinese = !isChinese;
-    const title = document.getElementById('titleText');
-    title.textContent = isChinese
-      ? 'A解决方案探索与评测系统'
-      : 'Armstrong Solutions Value Learning & Assessment Platform';
-    document.getElementById('loginText').textContent = isChinese ? '登录' : 'Login';
-    document.getElementById('langFlag').textContent = isChinese ? '🇬🇧' : '🇨🇳';
-    document.getElementById('username').placeholder = isChinese ? '请输入用户名' : 'Enter username';
-    document.getElementById('password').placeholder = isChinese ? '请输入密码' : 'Enter password';
-    document.getElementById('captcha').placeholder = isChinese ? '请输入答案' : 'Enter answer';
   
-    resizeTitleText(); // ✅ 每次切换语言后重新调整字号
-  }
   
 
     // ✅ 自动切换图标函数，确保主题切换时图标同步变化
@@ -281,12 +266,7 @@
       icon.className = isDark ? 'fas fa-moon text-gray-300' : 'fas fa-sun text-gray-500';
     }
 
-    // ✅ 明暗模式切换逻辑，点击后切换主题并更新图标
-    const toggle = document.getElementById('themeToggle');
-    toggle.addEventListener('click', () => {
-      document.documentElement.classList.toggle('dark'); // 切换 dark 类
-      updateThemeIcon(); // 同步更新图标
-    });
+    
 
     // ✅ 页面初始加载时设置一次图标状态
     window.addEventListener('DOMContentLoaded', updateThemeIcon);
@@ -329,6 +309,8 @@
     document.documentElement.classList.toggle('dark');
     updateThemeIcon();
   });
+
+  
 
   // ✅ 页面加载完成后立即设置正确图标
   window.addEventListener('DOMContentLoaded', updateThemeIcon);

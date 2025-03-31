@@ -29,7 +29,9 @@
     </style>
 </head>
 <body>
+    
     <div id="root"></div>
+    
     <script>
         const { useState, useEffect } = React;
 
@@ -121,84 +123,85 @@
         const courses = [
             {
                 id: 1,
-                title: "Web Development Fundamentals",
+                title: "EE-W (IPC9521)",
                 description: "Learn the basics of HTML, CSS, and JavaScript to build modern websites.",
                 duration: "8 weeks",
                 students: 1234,
                 rating: 4.8,
-                image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=600",
-                category: "Development"
+                image: "https://i.stardots.io/armstrong/EE-W.png",
+                category: "Optimization"
             },
             {
                 id: 2,
-                title: "Data Science Essentials",
+                title: "SE-A (IPC9511)",
                 description: "Master the fundamentals of data analysis and machine learning.",
                 duration: "12 weeks",
                 students: 856,
                 rating: 4.7,
-                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600",
-                category: "Data Science"
+                image: "https://i.stardots.io/armstrong/SE-A.png",
+                category: "Optimization"
             },
             {
                 id: 3,
-                title: "UX/UI Design Principles",
+                title: "SE-T (ITC9521)",
                 description: "Learn to create user-centered designs and intuitive interfaces.",
                 duration: "6 weeks",
                 students: 945,
                 rating: 4.9,
-                image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=600",
-                category: "Design"
+                image: "https://i.stardots.io/armstrong/SE-T%20(ITC9521).png",
+                category: "Optimization"
             },
             {
                 id: 4,
-                title: "Cloud Computing Architecture",
+                title: "SE-F (IPS4xxxx)",
                 description: "Understand cloud infrastructure and deployment strategies.",
                 duration: "10 weeks",
                 students: 678,
                 rating: 4.6,
-                image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=600",
-                category: "Cloud"
+                image: "https://i.stardots.io/armstrong/SE-F%20(IPS).png",
+                category: "Optimization"
             },
 			{
-    id: 5,
-    title: "Mobile App Development with React Native",
-    description: "Build cross-platform mobile applications using React Native framework.",
-    duration: "10 weeks",
-    students: 1567,
-    rating: 4.9,
-    image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=600",
-    category: "Development"
-  },
-  {
-    id: 6,
-    title: "Artificial Intelligence & Machine Learning",
-    description: "Deep dive into AI algorithms and practical machine learning applications.",
-    duration: "14 weeks",
-    students: 2341,
-    rating: 4.8,
-    image: "https://images.unsplash.com/photo-1555255707-c07966088b7b?auto=format&fit=crop&q=80&w=600",
-    category: "Data Science"
-  },
-  {
-    id: 7,
-    title: "Cybersecurity Fundamentals",
-    description: "Learn essential security practices and threat prevention strategies.",
-    duration: "8 weeks",
-    students: 1123,
-    rating: 4.7,
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600",
-    category: "Security"
-  },
-  {
-    id: 8,
-    title: "DevOps & CI/CD Practices",
-    description: "Master modern deployment workflows and automation techniques.",
-    duration: "9 weeks",
-    students: 892,
-    rating: 4.8,
-    image: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&q=80&w=600",
-    category: "DevOps"
-  }
+                id: 5,
+                title: "Mobile App Development with React Native",
+                description: "Build cross-platform mobile applications using React Native framework.",
+                duration: "10 weeks",
+                students: 1567,
+                rating: 4.9,
+                image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=600",
+                category: "Development"
+            },
+            {
+                id: 6,
+                title: "Artificial Intelligence & Machine Learning",
+                description: "Deep dive into AI algorithms and practical machine learning applications.",
+                duration: "14 weeks",
+                students: 2341,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1555255707-c07966088b7b?auto=format&fit=crop&q=80&w=600",
+                category: "Data Science"
+            },
+            {
+                id: 7,
+                title: "Cybersecurity Fundamentals",
+                description: "Learn essential security practices and threat prevention strategies.",
+                duration: "8 weeks",
+                students: 1123,
+                rating: 4.7,
+                image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600",
+                category: "Security"
+            },
+            {
+                id: 8,
+                title: "DevOps & CI/CD Practices",
+                description: "Master modern deployment workflows and automation techniques.",
+                duration: "9 weeks",
+                students: 892,
+                rating: 4.8,
+                image: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&q=80&w=600",
+                category: "DevOps"
+            }
+  
         ];
 
         function CourseCard({ course }) {
@@ -209,7 +212,7 @@
                     key: 'img',
                     src: course.image,
                     alt: course.title,
-                    className: "w-full h-48 object-cover"
+                    className: "w-screen object-scale-down max-h-72 rounded-t-xl"
                 }),
                 React.createElement('div', {
                     key: 'content',

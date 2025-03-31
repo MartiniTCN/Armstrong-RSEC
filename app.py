@@ -1,11 +1,14 @@
 from flask import Flask, render_template, redirect, url_for, session, request
 import random
-import os
+import os  # ✅ 新增：用于从环境变量读取 SECRET_KEY
 
-# 初始化 Flask 应用
+# ✅ 初始化 Flask 应用
 app = Flask(__name__)
 
-# 从环境变量或默认值设置 SECRET_KEY
+# 添加健康检查接口
+@app.route('/health')
+def health_check():
+    return 'OK', 200
 app.secret_key = os.environ.get('SECRET_KEY', 'default_dev_secret_key')
 
 # 登录页
@@ -20,7 +23,8 @@ def login():
         captcha_input = request.form.get('captcha')
         captcha_real = session.get('captcha')
 
-        # 校验验证码
+        # ✅ 输出调试信息
+        print(f"[DEBUG] 用户输入: 用户名={username}, 密码={password}, 验证码={captcha_input}, 正确答案={captcha_real}")
         if not captcha_input or captcha_input.strip() != str(captcha_real):
             error = '验证码错误'
         elif username != 'admin' or password != '123456':

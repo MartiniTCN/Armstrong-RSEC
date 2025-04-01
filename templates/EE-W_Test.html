@@ -1612,7 +1612,7 @@ function sendResultEmail(answers) {
         .catch(err => {
           console.error('[EmailJS] 邮件失败', err);
           alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
-          showRetryModal();  // 👈 添加这一句
+          showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
         });
     };
     document.head.appendChild(script);
@@ -1627,7 +1627,7 @@ function sendResultEmail(answers) {
       .catch(err => {
         console.error('[EmailJS] 邮件失败', err);
         alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
-        showRetryModal();  // 👈 添加这一句
+        showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
       });
   }
 }
@@ -1760,7 +1760,7 @@ function renderAnswersOnCompletePage(answers) {
                     .catch(err => {
                         console.error('[EmailJS] 邮件失败', err);
                         alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
-                        showRetryModal();  // 👈 添加这一句
+                        showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
                       });
             };
             document.head.appendChild(script);
@@ -1771,7 +1771,7 @@ function renderAnswersOnCompletePage(answers) {
                 .catch(err => {
                         console.error('[EmailJS] 邮件失败', err);
                         alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
-                        showRetryModal();  // 👈 添加这一句
+                        showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
                       });
         }
 
@@ -1859,7 +1859,7 @@ async function sendResultEmail(answers) {
   } catch (err) {
     console.error("[EmailJS] 邮件发送失败：", err);
     alert("❌ 邮件发送失败，请稍后重试！");
-    showRetryModal();  // 👈 添加这一句
+    showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
   }
 }
 
@@ -1884,7 +1884,7 @@ function sendEmailWithTemplate(templateParams, onSuccess = null, onFailure = nul
         })
         .catch(err => {
           console.error('[EmailJS] 邮件发送失败:', err);
-          showRetryModal();  // 👈 添加这一句
+          showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
           if (typeof onFailure === 'function') onFailure(err);
         });
     };
@@ -1903,7 +1903,7 @@ function sendEmailWithTemplate(templateParams, onSuccess = null, onFailure = nul
       })
       .catch(err => {
         console.error('[EmailJS] 邮件发送失败:', err);
-        showRetryModal();  // 👈 添加这一句
+        showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
         if (typeof onFailure === 'function') onFailure(err);
       });
   }
@@ -2044,7 +2044,7 @@ async function handleScreenshotAndEmail() {
       .catch(err => {
         console.error("[EmailJS] 邮件发送失败：", err);
         alert("❌ 邮件发送失败，请检查网络或稍后再试！");
-        showRetryModal();  // 👈 添加这一句
+        showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
       });
 
   } catch (err) {
@@ -2187,7 +2187,7 @@ function sendEmailResult(answers) {
     .catch(err => {
         console.error('[EmailJS] 邮件失败', err);
         alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
-        showRetryModal();  // 👈 添加这一句
+        showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
       });
 }
 
@@ -2237,6 +2237,29 @@ document.getElementById("retryEmailBtn").addEventListener("click", () => {
   handleEmailSendAgain();
 });
 
+// ✅ 重新初始化 EmailJS（避免推送失败后卡死）
+function reinitializeEmailJS() {
+  if (window.emailjs) {
+    try {
+      emailjs.init("LoQCI3C98dk3FgEvj");  // 你的 Public Key
+      console.log("✅ EmailJS 已重新初始化");
+    } catch (err) {
+      console.error("❌ EmailJS 初始化失败", err);
+    }
+  } else {
+    console.error("⚠️ EmailJS 模块未加载");
+  }
+}
+
+// ✅ 重试按钮绑定的函数
+function retryEmailSend() {
+  hideEmailResultPopup();  // 先关闭弹窗
+  reinitializeEmailJS();   // 重新初始化
+  setTimeout(() => {
+    handleExportWithPDFAndEmail(); // 再次执行导出和推送
+  }, 200);  // 稍等200ms，避免初始化未完成
+}
+
  </script>
  <!--  By Martin 此处是核心函数及功能的代码 结尾 -->
 
@@ -2284,13 +2307,18 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 </script>
 
-<!-- 📧 邮件失败提示弹窗 -->
-<div id="emailRetryModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-  <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl text-center w-[90%] max-w-md">
-    <p class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">邮件发送失败，是否重试？</p>
-    <div class="flex justify-center gap-6">
-      <button id="retryEmailBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">是，重试</button>
-      <button onclick="closeRetryModal()" class="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white px-4 py-2 rounded hover:bg-gray-400 dark:hover:bg-gray-500">否</button>
+<!-- 邮件重试弹窗 -->
+<div id="emailRetryModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center">
+  <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-80 text-center shadow-lg">
+    <p class="text-lg font-semibold text-gray-900 dark:text-white mb-4">邮件发送失败，是否重试？</p>
+    <div class="flex justify-center gap-4">
+      <!-- 邮件失败弹窗按钮 -->
+    <button id="retryEmailButton" onclick="retryEmailSend()" class="bg-green-500 hover:bg-green-600 ...">
+      是，重新发送
+    </button>
+    <button id="cancelRetryButton" onclick="hideEmailResultPopup()" class="bg-gray-400 hover:bg-gray-500 ...">
+      否，暂不发送
+    </button>
     </div>
   </div>
 </div>

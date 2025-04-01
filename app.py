@@ -89,7 +89,7 @@ def login():
             error = '用户名或密码错误'
         else:
             # --- 登录成功 ---
-            return redirect(url_for('courses'))
+            return redirect(url_for('course_selection'))  # ✅ 使用正确的 endpoint 名称
 
     # --- 无论 POST 或 GET 都需要生成新的数学题 ---
     num1 = random.randint(1, 9)

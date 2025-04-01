@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth">
+<html lang="zh-CN" class="scroll-smooth dark">
   <!-- ✅ html2pdf.js CDN：用于将页面导出为 PDF -->
 <head>
     <meta charset="UTF-8">
@@ -286,8 +286,8 @@
           <i class="fas fa-pause mr-1"></i><span>暂停</span>
   </button>
 </div>
-    <!-- 首页 -->
-    <section id="homePage" class="page active-page container mx-auto px-4 py-8">
+    <!-- 删除首页 -->
+    <section id="homePage" class="page container mx-auto px-4 py-8">
         <div class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm text-center max-w-3xl mx-auto">
             <h2 class="text-3xl font-bold mb-6 text-blue-600 dark:text-blue-400">EE-W 产品培训测试</h2>
             <div class="space-y-6 text-left text-gray-700 dark:text-gray-300">
@@ -332,14 +332,14 @@
         </div>
     </section>
 
-    <!-- 测试页 -->
-    <section id="testPage" class="page container mx-auto px-4 py-6">
+    <!-- 直接进入测试页 -->
+    <section id="testPage" class="page active-page container mx-auto px-4 py-6">
 	
 
         <div class="flex justify-between mb-6">
-            <button onclick="showPage('homePage')" class="text-blue-600 dark:text-blue-400 hover:underline">
-                <i class="fas fa-arrow-left mr-2"></i>返回首页
-            </button>
+          <a href="course_selection.html" class="text-blue-600 dark:text-blue-400 hover:underline">
+            <i class="fas fa-arrow-left mr-2"></i>返回课程选择页
+        </a>
 			<!-- ✅ 错误提示框：嵌入顶部 -->
     <div id="errorMessage"
          class="hidden mb-6 px-6 py-4 rounded-lg text-lg font-semibold text-red-700 bg-red-100 border border-red-400 shadow fade-in-bounce flex items-center gap-3">

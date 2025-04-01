@@ -2,7 +2,18 @@ from flask import Flask, render_template, redirect, url_for, session, request
 import random
 import os  # ✅ 新增：用于从环境变量读取 SECRET_KEY
 
+from datetime import timedelta
+# 设置 session 生命周期为 15 分钟
+app.permanent_session_lifetime = timedelta(minutes=15)
+
+from datetime import datetime
+import pytz
+
 app = Flask(__name__)
+
+def get_beijing_time():
+    tz = pytz.timezone('Asia/Shanghai')
+    return datetime.now(tz).strftime('%Y-%m-%d %H:%M:%S')
 
 # ✅ 用于 Render 部署健康检查的接口
 @app.route('/health')
@@ -39,6 +50,8 @@ def login():
             with open(log_file, mode='a', newline='', encoding='utf-8') as f:
                 writer = csv.writer(f)
                 writer.writerow(log_row)
+         
+            session.permanent = True  # 这样 Flask 会使用上面定义的生命周期
 
             ip_address = request.remote_addr  # ✅ 修改为下一行：
             ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)

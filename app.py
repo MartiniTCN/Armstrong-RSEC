@@ -27,7 +27,20 @@ def login():
         elif username != 'admin' or password != '123456':
             error = '用户名或密码错误'
         else:
-            # 登录成功后跳转到 /courses
+            # ✅ 登录成功 → 记录登录日志
+            import csv
+            from datetime import datetime
+
+            user_ip = request.remote_addr
+            login_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            log_row = [username, login_time, user_ip, ""]  # 登出时间为空
+
+            log_file = 'static/logins.csv'  # 确保 static 目录存在
+            with open(log_file, mode='a', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow(log_row)
+
+            # ✅ 登录成功后跳转/courses 课程选择页
             return redirect(url_for('courses'))
 
     # 每次访问登录页生成一个新题目
@@ -54,6 +67,11 @@ def EE_W_test():
 @app.route('/course_selection.html')
 def course_selection():
     return render_template('course_selection.html')
+
+@app.route('/logs')
+def view_logs():
+    return app.send_static_file('Login_Log.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

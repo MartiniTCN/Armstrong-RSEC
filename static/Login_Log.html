@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>用户登录日志</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 p-8">
+  <div class="max-w-5xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-center">用户登录日志</h1>
+
+    <div id="log-table" class="overflow-x-auto">
+      <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">用户名</th>
+            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">登录时间</th>
+            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">IP地址</th>
+            <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">登出时间</th>
+          </tr>
+        </thead>
+        <tbody id="log-body">
+          <!-- 内容将由 JavaScript 填充 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // 从 CSV 获取内容并渲染表格
+    async function loadLogData() {
+      const res = await fetch("/static/logins.csv");
+      const text = await res.text();
+      const lines = text.trim().split("\n");
+      const tableBody = document.getElementById("log-body");
+
+      for (let line of lines) {
+        const [username, login_time, ip, logout_time] = line.split(",");
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="border px-6 py-4 text-sm">${username}</td>
+          <td class="border px-6 py-4 text-sm">${login_time}</td>
+          <td class="border px-6 py-4 text-sm">${ip}</td>
+          <td class="border px-6 py-4 text-sm">${logout_time || '-'}</td>
+        `;
+        tableBody.appendChild(row);
+      }
+    }
+
+    loadLogData();
+  </script>
+</body>
+</html>

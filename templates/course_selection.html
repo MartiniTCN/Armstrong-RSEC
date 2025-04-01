@@ -120,6 +120,7 @@
                     zh: "专为高效制冷机房而生，实现水冷水主机系统的智能协同控制，释放最佳性能。",
                     en: "Designed for high-efficiency chiller plants, enabling smart collaboration among chillers to unleash peak performance."
                 },
+                link: "EE-W_Test.html",  // ✅ 新增字段：点击后跳转的目标页面
                 duration: "8 weeks",
                 students: 1234,
                 rating: 4.8,
@@ -271,47 +272,49 @@
 
         // Create course card
         function createCourseCard(course) {
-            return `
-                <div class="course-card bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-[1.5rem] shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-purple-500/20 dark:hover:shadow-[0_0_30px_-5px] dark:hover:shadow-purple-500/30 w-full max-w-[400px] mx-auto flex flex-col group">
-                    <div class="w-full h-[50%] relative overflow-hidden bg-gray-100 dark:bg-gray-900">
-                        <img 
-                            src="${course.image}" 
-                            alt="${course.title[currentLanguage]}"
-                            class="course-image absolute inset-0 w-full h-full object-contain p-4"
-                        />
-                    </div>
-                    <div class="p-4 flex flex-col justify-between flex-1">
-                        <div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full text-xs font-medium">
-                                    ${course.category}
-                                </span>
-                            </div>
-                            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1.5 line-clamp-2 leading-snug">
-                                ${course.title[currentLanguage]}
-                            </h3>
-                            <p class="text-gray-600 dark:text-gray-300 text-xs leading-relaxed line-clamp-3 mb-3">
-                                ${course.description[currentLanguage]}
-                            </p>
+    return `
+        <a href="${course.link || '#'}" class="block group">
+            <div class="course-card bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-[1.5rem] shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-purple-500/20 dark:hover:shadow-[0_0_30px_-5px] dark:hover:shadow-purple-500/30 w-full max-w-[400px] mx-auto flex flex-col group">
+                <div class="w-full h-[50%] relative overflow-hidden bg-gray-100 dark:bg-gray-900">
+                    <img 
+                        src="${course.image}" 
+                        alt="${course.title[currentLanguage]}"
+                        class="course-image absolute inset-0 w-full h-full object-contain p-4"
+                    />
+                </div>
+                <div class="p-4 flex flex-col justify-between flex-1">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full text-xs font-medium">
+                                ${course.category}
+                            </span>
                         </div>
-                        <div class="flex items-center gap-3 text-gray-500 dark:text-gray-400 text-xs">
-                            <div class="flex items-center gap-1">
-                                <i class="fas fa-clock w-3.5 h-3.5"></i>
-                                <span>${course.duration}</span>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <i class="fas fa-users w-3.5 h-3.5"></i>
-                                <span>${course.students.toLocaleString()} ${translations[currentLanguage].students}</span>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <i class="fas fa-star w-3.5 h-3.5 text-yellow-400"></i>
-                                <span>${course.rating}</span>
-                            </div>
+                        <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1.5 line-clamp-2 leading-snug">
+                            ${course.title[currentLanguage]}
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300 text-xs leading-relaxed line-clamp-3 mb-3">
+                            ${course.description[currentLanguage]}
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 text-gray-500 dark:text-gray-400 text-xs">
+                        <div class="flex items-center gap-1">
+                            <i class="fas fa-clock w-3.5 h-3.5"></i>
+                            <span>${course.duration}</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <i class="fas fa-users w-3.5 h-3.5"></i>
+                            <span>${course.students.toLocaleString()} ${translations[currentLanguage].students}</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <i class="fas fa-star w-3.5 h-3.5 text-yellow-400"></i>
+                            <span>${course.rating}</span>
                         </div>
                     </div>
                 </div>
-            `;
-        }
+            </div>
+        </a>
+    `;
+}
 
         // Update course grid
         function updateCourseGrid() {

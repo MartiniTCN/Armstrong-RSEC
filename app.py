@@ -15,21 +15,21 @@ app.secret_key = os.environ.get('SECRET_KEY', 'default_dev_secret_key')
 def get_bj_time():
     return datetime.now(pytz.timezone('Asia/Shanghai'))
 
-# 初始化 SQLite 数据库，创建登录日志表
+# 初始化 SQLite 数据库，创建 login_log 表（如果尚未存在）
 def init_db():
-    conn = sqlite3.connect('login_log.db')
+    conn = sqlite3.connect('logindata.db')  # 使用 SQLite 数据库
     cursor = conn.cursor()
-    cursor.execute("""
+    cursor.execute('''
         CREATE TABLE IF NOT EXISTS login_log (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT,
-            ip_address TEXT,
+            ip TEXT,
             login_time TEXT,
-            last_active TEXT,
             logout_time TEXT,
-            status TEXT
+            status TEXT,
+            last_active TEXT
         )
-    """)
+    ''')
     conn.commit()
     conn.close()
 
@@ -157,9 +157,10 @@ def init_db():
         conn.commit()
 
 
-# === 启动服务（本地用） ===
-if __name__ == '__main__':
-    @app.before_first_request
-    def startup_tasks():
+@app.before_first_request
+def startup_tasks():
     init_db()  # 初始化数据库表结构
+
+# Gunicorn 会自动运行这个 app 实例
+if __name__ == '__main__':
     app.run(debug=True)

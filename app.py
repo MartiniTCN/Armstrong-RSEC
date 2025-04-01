@@ -1,54 +1,58 @@
-# ✅ Flask 登录系统与课程跳转逻辑
-
-from flask import Flask, render_template, redirect, url_for, session, request
+from flask import Flask, render_template, request, redirect, url_for, session
+from datetime import datetime
 import random
-import os
 
-# ✅ 初始化 Flask 应用
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'default_dev_secret_key')
+app.secret_key = 'Martin-Armstrong-Passw0rd-2025!'
 
-# ✅ 登录首页
+# ✅ 用于 Render 部署健康检查的接口
+@app.route('/health')
+def health_check():
+    """
+    Render 会在部署期间访问 /health 路由，
+    如果返回状态码 200 则认为服务部署成功。
+    此接口不会暴露任何敏感信息。
+    """
+    return "OK", 200
+
+
+# 登录页
 @app.route('/', methods=['GET', 'POST'])
 def login():
     error = None
-
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        captcha_input = request.form.get('captcha')
-        captcha_real = session.get('captcha')
+        username = request.form['username']
+        password = request.form['password']
+        answer = request.form.get('answer')
+        correct_answer = session.get('math_answer')
 
-        print(f"[DEBUG] 用户输入: 用户名={username}, 密码={password}, 验证码={captcha_input}, 正确答案={captcha_real}")
-
-        if not captcha_input or captcha_input.strip() != str(captcha_real):
-            error = '验证码错误'
-        elif username != 'admin' or password != '123456':
-            error = '用户名或密码错误'
+        # 简单的用户名密码验证
+        if username == 'admin' and password == 'password':
+            if correct_answer and answer and int(answer) == correct_answer:
+                return redirect(url_for('course_selection'))  # 登录成功跳转课程选择页
+            else:
+                error = '验证码错误，请重新输入'
         else:
-            # ✅ 登录成功后跳转到课程选择页面
-            return redirect(url_for('course_selection'))
+            error = '用户名或密码错误'
 
-    # ✅ GET 或失败时生成新验证码
+    # 每次访问登录页生成一个新题目
     num1 = random.randint(1, 9)
     num2 = random.randint(1, 9)
-    operator = random.choice(['+', '-'])
-    question = f"{num1} {operator} {num2}"
-    answer = eval(question)
-    session['captcha'] = answer
+    session['math_answer'] = num1 + num2
+    question = f"{num1} + {num2} = ?"
 
     return render_template('login.html', error=error, math_question=question)
 
-# ✅ 课程选择页路由
-@app.route('/courses')
+# ✅ 登录后跳转的课程选择页面
+@app.route('/course_selection')
 def course_selection():
     return render_template('course_selection.html')
 
-# ✅ EE-W 测试课程跳转页面
-@app.route('/ee-w')
-def ee_w():
-    return render_template('EE-W_Test.html')
+# ✅ EE-W 课程入口页面
+@app.route('/EE-W_Test')
+def EE_W_test():
+    return render_template('protected.html')
 
-# ✅ 启动开发服务器
+
 if __name__ == '__main__':
     app.run(debug=True)

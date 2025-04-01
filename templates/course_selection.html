@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth dark">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -282,7 +282,7 @@
         function App() {
             const [searchTerm, setSearchTerm] = useState("");
             const [selectedCategory, setSelectedCategory] = useState("");
-            const [isDarkMode, setIsDarkMode] = useState(false);
+            const [isDarkMode, setIsDarkMode] = useState(true);
             const [language, setLanguage] = useState('en');
 
             const categories = Array.from(new Set(courses.map(course => course.category)));
@@ -309,6 +309,16 @@
                 React.createElement('div', {
                     className: "max-w-7xl mx-auto px-4 py-12"
                 }, [
+                    React.createElement('div', {
+                        key: 'logo',
+                        className: "flex justify-center mb-8"
+                    }, 
+                        React.createElement('img', {
+                            src: "https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=200",
+                            alt: "Armstrong Logo",
+                            className: "h-16 object-contain"
+                        })
+                    ),
                     React.createElement('div', {
                         key: 'header',
                         className: "flex items-center justify-between mb-8"
@@ -381,7 +391,7 @@
                                 key: 'category-select',
                                 value: selectedCategory,
                                 onChange: (e) => setSelectedCategory(e.target.value),
-                                className: "px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                className: "px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus: ring-2 focus:ring-purple-500 focus:border-transparent"
                             }, [
                                 React.createElement('option', {
                                     key: 'all',

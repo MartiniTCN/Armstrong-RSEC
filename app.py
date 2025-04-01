@@ -50,6 +50,10 @@ def courses():
 def EE_W_test():
     return render_template('EE-W_Test.html')
 
+# ✅ 显式添加路由：返回课程选择页面
+@app.route('/course_selection.html')
+def course_selection():
+    return render_template('course_selection.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

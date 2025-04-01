@@ -12,6 +12,12 @@ DATABASE = 'login_log.db'
 
 # ========== 工具函数部分 ==========
 
+def generate_math_question():
+    """生成一个简单的数学加法题（两个 1 位数）并返回问题与答案"""
+    a = random.randint(1, 9)
+    b = random.randint(1, 9)
+    return f"{a} + {b} = ?", str(a + b)
+
 def get_db_connection():
     """获取数据库连接"""
     conn = sqlite3.connect(DATABASE)

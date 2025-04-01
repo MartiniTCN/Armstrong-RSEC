@@ -7,13 +7,8 @@ app = Flask(__name__)
 # ✅ 用于 Render 部署健康检查的接口
 @app.route('/health')
 def health_check():
-    """
-    Render 会在部署期间访问 /health 路由，
-    如果返回状态码 200 则认为服务部署成功。
-    此接口不会暴露任何敏感信息。
-    """
-    return "OK", 200
-
+    return 'OK', 200
+app.secret_key = os.environ.get('SECRET_KEY', 'default_dev_secret_key')
 
 # 登录页
 @app.route('/', methods=['GET', 'POST'])
@@ -46,14 +41,14 @@ def login():
     return render_template('login.html', error=error, math_question=question)
 
 # ✅ 登录后跳转的课程选择页面
-@app.route('/course_selection')
-def course_selection():
+@app.route('/courses')
+def courses():
     return render_template('course_selection.html')
 
 # ✅ EE-W 课程入口页面
 @app.route('/EE-W_Test')
 def EE_W_test():
-    return render_template('protected.html')
+    return render_template('EE-W_Test.html')
 
 
 if __name__ == '__main__':

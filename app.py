@@ -6,7 +6,7 @@ import os
 import random  # ✅ 保留用于数学题验证
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = os.environ.get('SECRET_KEY', 'default_dev_secret_key')
 
 DATABASE = 'login_log.db'
 
@@ -91,7 +91,7 @@ def login():
             print("[DEBUG] 用户名或密码错误")
         else:
             # --- 登录成功 ---
-             print("[DEBUG] 登录成功，即将跳转到课程选择页")
+            print("[DEBUG] 登录成功，即将跳转到课程选择页")
             return redirect(url_for('course_selection'))  # ✅ 使用正确的 endpoint 名称
 
     # --- 无论 POST 或 GET 都需要生成新的数学题 ---

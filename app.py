@@ -69,21 +69,38 @@ def check_timeout():
 
 # ========== 路由部分 ==========
 
-@app.route("/", methods=["GET", "POST"])
+@app.route('/', methods=['GET', 'POST'])
 def login():
-    error = None  # 这一行是你现在唯一需要添加的
+    error = None
 
-    question, answer = generate_math_question()
-    session["captcha_answer"] = answer
+    # --- 处理 POST 登录提交 ---
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        captcha_input = request.form.get('captcha')
+        captcha_real = session.get('captcha')
 
-    if request.method == "POST":
-        # ... 表单处理和验证逻辑
-        if login_failed:
-            error = "用户名或密码错误"
+        print(f"[DEBUG] 用户输入: 用户名={username}, 密码={password}, 验证码={captcha_input}, 正确答案={captcha_real}")
+
+        # --- 验证失败情况 ---
+        if not captcha_input or captcha_input.strip() != str(captcha_real):
+            error = '验证码错误'
+        elif username != 'admin' or password != '123456':
+            error = '用户名或密码错误'
         else:
-            return redirect("/course_selection")
+            # --- 登录成功 ---
+            return redirect(url_for('courses'))
 
-    return render_template("login.html", error=error, math_question=question)
+    # --- 无论 POST 或 GET 都需要生成新的数学题 ---
+    num1 = random.randint(1, 9)
+    num2 = random.randint(1, 9)
+    operator = random.choice(['+', '-'])
+    question = f"{num1} {operator} {num2}"
+    answer = eval(question)
+    session['captcha'] = answer
+
+    # --- 渲染页面 ---
+    return render_template('login.html', error=error, math_question=question)
 
 @app.route('/login', methods=['POST'])
 def do_login():

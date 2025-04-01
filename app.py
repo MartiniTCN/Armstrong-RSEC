@@ -40,6 +40,9 @@ def login():
                 writer = csv.writer(f)
                 writer.writerow(log_row)
 
+            ip_address = request.remote_addr  # ✅ 修改为下一行：
+            ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
+
             # ✅ 登录成功后跳转/courses 课程选择页
             return redirect(url_for('courses'))
 

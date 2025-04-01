@@ -54,24 +54,35 @@ def now_beijing():
     tz = pytz.timezone('Asia/Shanghai')
     return datetime.now(tz)
 
+
 def check_timeout():
     """检查登录记录中是否有 15 分钟无操作的，自动登出"""
     conn = get_db_connection()
     cursor = conn.cursor()
     now = now_beijing()
-    cursor.execute("SELECT id, last_active FROM login_log WHERE status = '登录中'")
+
+    cursor.execute("SELECT id, username, last_active FROM login_log WHERE status = '登录中'")
     rows = cursor.fetchall()
+
     for row in rows:
         last_active = datetime.fromisoformat(row['last_active'])
         if now - last_active > timedelta(minutes=15):
-            cursor.execute("UPDATE login_log SET status='已登出', logout_time=? WHERE id=?", (now.isoformat(), row['id']))
+            cursor.execute(
+                "UPDATE login_log SET status='已登出', logout_time=? WHERE id=?",
+                (now.isoformat(), row['id'])
+            )
+            print(f"[超时登出] 用户名: {row['username']}，登录ID: {row['id']}，上次活动时间: {row['last_active']}，当前时间: {now.isoformat()}")
+
     conn.commit()
     conn.close()
+
+   
 
 # ========== 路由部分 ==========
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
+    check_timeout()  # ✅ 只在登录页执行
     error = None
 
     # --- 处理 POST 登录提交 ---
@@ -180,10 +191,13 @@ def health():
     """Render部署健康检查"""
     return "OK"
 
-@app.before_request
-def update_last_active():
-    """在每次请求前，更新登录用户的最后活动时间"""
+
+     @app.before_request
+def update_last_active_and_check_timeout():
+    """在每次请求前更新活跃时间；首页执行超时自动登出"""
     username = session.get('username')
+
+    # ✅ 1. 已登录用户，更新 last_active 字段
     if username:
         try:
             conn = get_db_connection()
@@ -197,7 +211,14 @@ def update_last_active():
             conn.commit()
             conn.close()
         except Exception as e:
-            print("[警告] 无法更新用户活动时间：", e)
+            print("[警告] 更新用户活动时间失败：", e)
+
+    # ✅ 2. 仅在访问首页时执行超时自动登出逻辑（避免频繁扫描数据库）
+   # if request.path == '/':
+    #    try:
+     #       check_timeout()
+      #  except Exception as e:
+       #     print("[警告] 超时登出检查失败：", e)
 
 # ========== 应用入口 ==========
 

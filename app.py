@@ -85,13 +85,14 @@ def login():
         # --- 验证失败情况 ---
         if not captcha_input or captcha_input.strip() != str(captcha_real):
             error = '验证码错误'
+            print("[DEBUG] 验证码不正确")
         elif username != 'admin' or password != '123456':
             error = '用户名或密码错误'
+            print("[DEBUG] 用户名或密码错误")
         else:
             # --- 登录成功 ---
+             print("[DEBUG] 登录成功，即将跳转到课程选择页")
             return redirect(url_for('course_selection'))  # ✅ 使用正确的 endpoint 名称
-        print(f"[DEBUG] 登录成功？captcha={captcha_input} 是否等于 {session.get('captcha')}")
-        print(f"[DEBUG] 跳转是否执行？")
 
     # --- 无论 POST 或 GET 都需要生成新的数学题 ---
     num1 = random.randint(1, 9)

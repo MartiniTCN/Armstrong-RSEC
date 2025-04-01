@@ -75,7 +75,7 @@ def login():
     session['captcha_answer'] = answer
 
     # 一并传入模板
-    return render_template('login.html', error=None, question=question)
+    return render_template("login.html", error=error, math_question=question)
 
 @app.route('/login', methods=['POST'])
 def do_login():

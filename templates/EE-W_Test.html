@@ -1612,6 +1612,7 @@ function sendResultEmail(answers) {
         .catch(err => {
           console.error('[EmailJS] 邮件失败', err);
           alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
+          showRetryModal();  // 👈 添加这一句
         });
     };
     document.head.appendChild(script);
@@ -1626,6 +1627,7 @@ function sendResultEmail(answers) {
       .catch(err => {
         console.error('[EmailJS] 邮件失败', err);
         alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
+        showRetryModal();  // 👈 添加这一句
       });
   }
 }
@@ -1758,6 +1760,7 @@ function renderAnswersOnCompletePage(answers) {
                     .catch(err => {
                         console.error('[EmailJS] 邮件失败', err);
                         alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
+                        showRetryModal();  // 👈 添加这一句
                       });
             };
             document.head.appendChild(script);
@@ -1768,6 +1771,7 @@ function renderAnswersOnCompletePage(answers) {
                 .catch(err => {
                         console.error('[EmailJS] 邮件失败', err);
                         alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
+                        showRetryModal();  // 👈 添加这一句
                       });
         }
 
@@ -1855,6 +1859,7 @@ async function sendResultEmail(answers) {
   } catch (err) {
     console.error("[EmailJS] 邮件发送失败：", err);
     alert("❌ 邮件发送失败，请稍后重试！");
+    showRetryModal();  // 👈 添加这一句
   }
 }
 
@@ -1879,6 +1884,7 @@ function sendEmailWithTemplate(templateParams, onSuccess = null, onFailure = nul
         })
         .catch(err => {
           console.error('[EmailJS] 邮件发送失败:', err);
+          showRetryModal();  // 👈 添加这一句
           if (typeof onFailure === 'function') onFailure(err);
         });
     };
@@ -1897,6 +1903,7 @@ function sendEmailWithTemplate(templateParams, onSuccess = null, onFailure = nul
       })
       .catch(err => {
         console.error('[EmailJS] 邮件发送失败:', err);
+        showRetryModal();  // 👈 添加这一句
         if (typeof onFailure === 'function') onFailure(err);
       });
   }
@@ -2037,6 +2044,7 @@ async function handleScreenshotAndEmail() {
       .catch(err => {
         console.error("[EmailJS] 邮件发送失败：", err);
         alert("❌ 邮件发送失败，请检查网络或稍后再试！");
+        showRetryModal();  // 👈 添加这一句
       });
 
   } catch (err) {
@@ -2179,6 +2187,7 @@ function sendEmailResult(answers) {
     .catch(err => {
         console.error('[EmailJS] 邮件失败', err);
         alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
+        showRetryModal();  // 👈 添加这一句
       });
 }
 
@@ -2200,6 +2209,33 @@ function onReturnToTestPage() {
   document.getElementById('email').value = answers.userInfo.email;
   document.getElementById('phone').value = answers.userInfo.phone;
 }
+
+// 🧩 显示邮件重试弹窗
+function showRetryModal() {
+  document.getElementById("emailRetryModal").classList.remove("hidden");
+}
+
+// 🧩 关闭弹窗
+function closeRetryModal() {
+  document.getElementById("emailRetryModal").classList.add("hidden");
+}
+
+// 🧩 点击重试按钮时，重新初始化并推送邮件
+document.getElementById("retryEmailBtn").addEventListener("click", () => {
+  closeRetryModal();
+
+  // ✅ 重新初始化 EmailJS（防止加载失败或异常）
+  if (window.emailjs) {
+    try {
+      emailjs.init("LoQCI3C98dk3FgEvj");
+    } catch (e) {
+      console.error("EmailJS 初始化失败", e);
+    }
+  }
+
+  // ✅ 重新发送邮件（调用你现有的函数）
+  handleEmailSendAgain();
+});
 
  </script>
  <!--  By Martin 此处是核心函数及功能的代码 结尾 -->
@@ -2247,6 +2283,17 @@ document.addEventListener("DOMContentLoaded", () => {
     startTimer(); // 自动启动倒计时
   });
 </script>
+
+<!-- 📧 邮件失败提示弹窗 -->
+<div id="emailRetryModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl text-center w-[90%] max-w-md">
+    <p class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">邮件发送失败，是否重试？</p>
+    <div class="flex justify-center gap-6">
+      <button id="retryEmailBtn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">是，重试</button>
+      <button onclick="closeRetryModal()" class="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white px-4 py-2 rounded hover:bg-gray-400 dark:hover:bg-gray-500">否</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

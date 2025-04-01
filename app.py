@@ -192,7 +192,7 @@ def health():
     return "OK"
 
 
-     @app.before_request
+@app.before_request
 def update_last_active_and_check_timeout():
     """在每次请求前更新活跃时间；首页执行超时自动登出"""
     username = session.get('username')

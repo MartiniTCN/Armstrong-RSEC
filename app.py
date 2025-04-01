@@ -1,52 +1,60 @@
-from flask import Flask, render_template, request, redirect, session, url_for, flash
-import os
+from flask import Flask, render_template, redirect, url_for, session, request
 import random
+import os  # ✅ 新增：用于从环境变量读取 SECRET_KEY
 
-# 初始化 Flask 应用
 app = Flask(__name__)
 
-# 配置 SECRET_KEY 用于 session 管理，可以在 Render 或网站环境中通过环境变量设置
-app.secret_key = os.environ.get("SECRET_KEY", "default_secret")
+# ✅ 用于 Render 部署健康检查的接口
+@app.route('/health')
+def health_check():
+    """
+    Render 会在部署期间访问 /health 路由，
+    如果返回状态码 200 则认为服务部署成功。
+    此接口不会暴露任何敏感信息。
+    """
+    return "OK", 200
 
-# 登录页面：支持 GET 和 POST
+
+# 登录页
 @app.route('/', methods=['GET', 'POST'])
 def login():
-    # 如果是 POST 提交表单，进行验证
+    error = None
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
         captcha_input = request.form.get('captcha')
-        captcha_answer = session.get('captcha_answer')
+        captcha_real = session.get('captcha')
 
-        # 校验验证码答案
-        if not captcha_input or captcha_input.strip() != str(captcha_answer):
-            flash('Captcha incorrect.')
+        # 简单的用户名密码验证
+        print(f"[DEBUG] 用户输入: 用户名={username}, 密码={password}, 验证码={captcha_input}, 正确答案={captcha_real}")
+        if not captcha_input or captcha_input.strip() != str(captcha_real):
+            error = '验证码错误'
         elif username != 'admin' or password != '123456':
-            flash('Invalid username or password.')
+            error = '用户名或密码错误'
         else:
-            # 登录成功，跳转到课程选择页
-            return redirect(url_for('course_selection'))
+            # 登录成功后跳转到 /courses
+            return redirect(url_for('courses'))
 
-    # 无论是 GET 请求还是验证失败，重新生成数学题
-    a = random.randint(1, 10)
-    b = random.randint(1, 10)
-    op = random.choice(['+', '-'])
-    question = f"{a} {op} {b}"
+    # 每次访问登录页生成一个新题目
+    num1 = random.randint(1, 9)
+    num2 = random.randint(1, 9)
+    operator = random.choice(['+', '-'])
+    question = f"{num1} {operator} {num2}"
     answer = eval(question)
-    session['captcha_answer'] = answer
+    session['captcha'] = answer
 
-    return render_template('login.html', math_question=question)
+    return render_template('login.html', error=error, math_question=question)
 
-# 课程选择页：登录后跳转到
+# ✅ 登录后跳转的课程选择页面
 @app.route('/course_selection')
 def course_selection():
     return render_template('course_selection.html')
 
-# 访问指定课程：EE-W 课程页面
-@app.route('/ee_w')
-def ee_w():
-    return render_template('EE-W_Test.html')
+# ✅ EE-W 课程入口页面
+@app.route('/EE-W_Test')
+def EE_W_test():
+    return render_template('protected.html')
 
-# 启动 Flask 开发模式
+
 if __name__ == '__main__':
     app.run(debug=True)

@@ -90,6 +90,8 @@ def login():
         else:
             # --- 登录成功 ---
             return redirect(url_for('course_selection'))  # ✅ 使用正确的 endpoint 名称
+        print(f"[DEBUG] 登录成功？captcha={captcha_input} 是否等于 {session.get('captcha')}")
+        print(f"[DEBUG] 跳转是否执行？")
 
     # --- 无论 POST 或 GET 都需要生成新的数学题 ---
     num1 = random.randint(1, 9)

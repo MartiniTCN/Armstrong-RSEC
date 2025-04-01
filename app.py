@@ -65,12 +65,17 @@ def check_timeout():
 
 @app.route('/')
 def login():
-    """登录页入口，显示数学题验证，执行超时检测"""
-    check_timeout()  # 检查是否有超时记录
-    num1 = random.randint(1, 9)
-    num2 = random.randint(1, 9)
-    session['captcha_answer'] = num1 + num2
-    return render_template('login.html', question=f"{num1} + {num2} = ?")
+    # 生成简单的数学题
+    a = random.randint(1, 9)
+    b = random.randint(1, 9)
+    question = f"{a} + {b} = ?"
+    answer = a + b
+
+    # 将答案存入 session，供后续校验用
+    session['captcha_answer'] = answer
+
+    # 一并传入模板
+    return render_template('login.html', error=None, question=question)
 
 @app.route('/login', methods=['POST'])
 def do_login():

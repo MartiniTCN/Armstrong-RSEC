@@ -63,18 +63,20 @@ def check_timeout():
 
 # ========== 路由部分 ==========
 
-@app.route('/')
+@app.route("/", methods=["GET", "POST"])
 def login():
-    # 生成简单的数学题
-    a = random.randint(1, 9)
-    b = random.randint(1, 9)
-    question = f"{a} + {b} = ?"
-    answer = a + b
+    error = None  # 这一行是你现在唯一需要添加的
 
-    # 将答案存入 session，供后续校验用
-    session['captcha_answer'] = answer
+    question, answer = generate_math_question()
+    session["captcha_answer"] = answer
 
-    # 一并传入模板
+    if request.method == "POST":
+        # ... 表单处理和验证逻辑
+        if login_failed:
+            error = "用户名或密码错误"
+        else:
+            return redirect("/course_selection")
+
     return render_template("login.html", error=error, math_question=question)
 
 @app.route('/login', methods=['POST'])

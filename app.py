@@ -112,12 +112,18 @@ def do_login():
     username = request.form['username']
     password = request.form['password']
     answer = request.form['captcha']
-    expected = session.get('captcha_answer')
+    expected = session.get('captcha')  # ✅ 与统一用法一致
 
+    # 验证码判断
     if not expected or not answer or int(answer) != expected:
-        return render_template('login.html', error="验证码错误", question=f"{random.randint(1,9)} + {random.randint(1,9)} = ?")
+        # 重新生成数学题并写入 session
+        num1, num2 = random.randint(1, 9), random.randint(1, 9)
+        question = f"{num1} + {num2} = ?"
+        session['captcha'] = num1 + num2
+        return render_template('login.html', error="验证码错误", math_question=question)
 
-    if username.startswith("user") and password == "password":
+    # 用户名/密码判断
+    if username == "admin" and password == "123456":
         session['username'] = username
         ip = get_client_ip()
         now = now_beijing().isoformat()
@@ -131,7 +137,11 @@ def do_login():
 
         return redirect(url_for('course_selection'))
     else:
-        return render_template('login.html', error="账号或密码错误", question=f"{random.randint(1,9)} + {random.randint(1,9)} = ?")
+        # 再生成一次题目
+        num1, num2 = random.randint(1, 9), random.randint(1, 9)
+        question = f"{num1} + {num2} = ?"
+        session['captcha'] = num1 + num2
+        return render_template('login.html', error="账号或密码错误", math_question=question)
 
 @app.route('/course_selection')
 def course_selection():

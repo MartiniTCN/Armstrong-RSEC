@@ -1611,7 +1611,7 @@ function sendResultEmail(answers) {
         })
         .catch(err => {
           console.error('[EmailJS] 邮件失败', err);
-          alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
+          //alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
           showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
         });
     };
@@ -1626,7 +1626,7 @@ function sendResultEmail(answers) {
       })
       .catch(err => {
         console.error('[EmailJS] 邮件失败', err);
-        alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
+        //alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
         showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
       });
   }
@@ -1770,7 +1770,7 @@ function renderAnswersOnCompletePage(answers) {
                 .then(() => console.log("[EmailJS] 邮件发送成功"))
                 .catch(err => {
                         console.error('[EmailJS] 邮件失败', err);
-                        alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
+                        //alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
                         showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
                       });
         }
@@ -1858,7 +1858,7 @@ async function sendResultEmail(answers) {
     alert("✅ 邮件已成功发送！");
   } catch (err) {
     console.error("[EmailJS] 邮件发送失败：", err);
-    alert("❌ 邮件发送失败，请稍后重试！");
+    //alert("❌ 邮件发送失败，请稍后重试！");
     showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
   }
 }
@@ -2043,7 +2043,7 @@ async function handleScreenshotAndEmail() {
       .then(() => alert("✅ 邮件已成功发送！"))
       .catch(err => {
         console.error("[EmailJS] 邮件发送失败：", err);
-        alert("❌ 邮件发送失败，请检查网络或稍后再试！");
+        //alert("❌ 邮件发送失败，请检查网络或稍后再试！");
         showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
       });
 
@@ -2186,7 +2186,7 @@ function sendEmailResult(answers) {
       })
     .catch(err => {
         console.error('[EmailJS] 邮件失败', err);
-        alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
+        //alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
         showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
       });
 }
@@ -2258,6 +2258,45 @@ function retryEmailSend() {
   setTimeout(() => {
     handleExportWithPDFAndEmail(); // 再次执行导出和推送
   }, 200);  // 稍等200ms，避免初始化未完成
+}
+
+
+// ✅ 用于显示邮件发送结果弹窗，并支持重试逻辑
+function showEmailResultPopup(message) {
+  // 构建弹窗 HTML
+  const modalHTML = `
+    <div id="emailResultPopup" class="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-[300px] text-center fade-in-bounce">
+        <p class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">${message}</p>
+        <div class="flex justify-center gap-4">
+          <button id="retrySendBtn" class="bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700">是</button>
+          <button id="cancelSendBtn" class="bg-gray-300 text-gray-800 px-4 py-1.5 rounded hover:bg-gray-400">否</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // 插入弹窗
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+  // ✅ 绑定按钮事件
+  document.getElementById('retrySendBtn').onclick = () => {
+    document.getElementById('emailResultPopup').remove();
+
+    // ✅ 重初始化 EmailJS（确保状态清空）
+    emailjs.init("LoQCI3C98dk3FgEvj");
+
+    // ✅ 重新发送（调用你已有的主发送函数）
+    try {
+      handleExportWithPDFAndEmail(true); // 加一个参数标识重试
+    } catch (err) {
+      alert("邮件再次发送失败，请稍后再试。");
+    }
+  };
+
+  document.getElementById('cancelSendBtn').onclick = () => {
+    document.getElementById('emailResultPopup').remove();
+  };
 }
 
  </script>

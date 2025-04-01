@@ -8,6 +8,7 @@ import random
 # 初始化 Flask 应用
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'default_dev_secret_key')
+init_db()  # 初始化数据库表结构
 
 # 数据库路径
 # 超时时间设置（分钟）
@@ -159,7 +160,7 @@ def init_db():
 
 @app.before_first_request
 def startup_tasks():
-    init_db()  # 初始化数据库表结构
+    
 
 # Gunicorn 会自动运行这个 app 实例
 if __name__ == '__main__':

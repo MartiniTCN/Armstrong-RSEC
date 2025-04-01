@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="zh-CN" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Training Courses</title>
-    <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+    <title>Armstrong Training Courses</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -13,94 +13,234 @@
             theme: {
                 extend: {}
             }
-        }
+        };
     </script>
-    <!-- SVG icons inline for better compatibility -->
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        .icon {
-            width: 1em;
-            height: 1em;
-            stroke: currentColor;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            fill: none;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+
+        .course-card {
+            aspect-ratio: 1;
+            transition: all 0.3s;
+        }
+        .course-card:hover {
+            transform: scale(1.03) translateY(-4px);
+        }
+        .course-image {
+            transition: transform 0.3s;
+        }
+        .course-card:hover .course-image {
+            transform: scale(1.02);
         }
     </style>
 </head>
-<body>
-    
-    <div id="root"></div>
-    
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <!-- Navigation Bar -->
+    <div class="sticky top-0 z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-6 w-full sm:w-auto">
+                    <img 
+                        src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=200" 
+                        alt="Armstrong Logo"
+                        class="h-8 object-contain"
+                    />
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-book-open w-6 h-6 text-purple-600 dark:text-purple-400"></i>
+                        <h1 class="text-xl font-semibold text-gray-900 dark:text-white" id="pageTitle">培训课程</h1>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <div class="relative flex-1 sm:flex-none sm:min-w-[300px]">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="搜索课程..."
+                            class="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                    </div>
+                    <select
+                        id="categorySelect"
+                        class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    >
+                        <option value="">所有类别</option>
+                    </select>
+                    <button
+                        id="themeToggle"
+                        class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                        aria-label="Toggle dark mode"
+                    >
+                        <i class="fas fa-sun dark:hidden"></i>
+                        <i class="fas fa-moon hidden dark:block"></i>
+                    </button>
+                    <button
+                        id="languageToggle"
+                        class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                        <img
+                            id="languageFlag"
+                            src="https://flagcdn.com/cn.svg"
+                            alt="Language"
+                            class="w-5 h-4"
+                        />
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div id="courseGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Courses will be dynamically inserted here -->
+        </div>
+        <div id="noResults" class="hidden text-center py-12">
+            <p class="text-lg text-gray-500 dark:text-gray-400">没有找到符合条件的课程。</p>
+        </div>
+    </main>
+
     <script>
-        const { useState, useEffect } = React;
+        // Course data
+        const courses = [
+            {
+                id: 1,
+                title: {
+                    zh: "EE-W 水冷机房优化控制",
+                    en: "EE-W (IPC9521)"
+                },
+                description: {
+                    zh: "专为高效制冷机房而生，实现水冷水主机系统的智能协同控制，释放最佳性能。",
+                    en: "Designed for high-efficiency chiller plants, enabling smart collaboration among chillers to unleash peak performance."
+                },
+                duration: "8 weeks",
+                students: 1234,
+                rating: 4.8,
+                image: "https://i.stardots.io/armstrong/EE-W.png",
+                category: "Optimization"
+            },
+            {
+                id: 2,
+                title: {
+                    zh: "SE-A 空气源冷水机组优化控制",
+                    en: "SE-A (IPC9511)"
+                },
+                description: {
+                    zh: "一体化智控核心，定义空气源冷水机组的新标准。",
+                    en: "The integrated brain for air-cooled chillers—simplifying control, maximizing efficiency."
+                },
+                duration: "12 weeks",
+                students: 856,
+                rating: 4.7,
+                image: "https://i.stardots.io/armstrong/SE-A.png",
+                category: "Optimization"
+            },
+            {
+                id: 3,
+                title: {
+                    zh: "SE-T 高效冷却系统优化控制",
+                    en: "SE-T (ITC9521)"
+                },
+                description: {
+                    zh: "聚焦冷却塔与冷却泵的优化控制，打造智能散热新体验。",
+                    en: "Focused on optimizing cooling towers and pumps for intelligent heat rejection."
+                },
+                duration: "6 weeks",
+                students: 945,
+                rating: 4.9,
+                image: "https://i.stardots.io/armstrong/SE-T%20(ITC9521).png",
+                category: "Optimization"
+            },
+            {
+                id: 4,
+                title: {
+                    zh: "SE-F 智能泵组优化控制",
+                    en: "SE-F (IPS4xxxx)"
+                },
+                description: {
+                    zh: "多泵智控核心，系统更稳更省。",
+                    en: "The smart core for multi-pump control—stable, efficient, effortless."
+                },
+                duration: "10 weeks",
+                students: 678,
+                rating: 4.6,
+                image: "https://i.stardots.io/armstrong/SE-F%20(IPS).png",
+                category: "Optimization"
+            },
+            {
+                id: 5,
+                title: {
+                    zh: "DE 智能变频泵",
+                    en: "Design Envelope Pump"
+                },
+                description: {
+                    zh: "不只是水泵，更是自我调节的智慧引擎。安装即运行，节能高效。",
+                    en: "More than a pump – a self-optimizing intelligent engine. quick to install, smart to run, built for energy savings in intelligent buildings."
+                },
+                duration: "10 weeks",
+                students: 1567,
+                rating: 4.9,
+                image: "https://i.stardots.io/armstrong/DE%20PUMPS.png",
+                category: "Development"
+            },
+            {
+                id: 6,
+                title: {
+                    zh: "iFMS 智能流体管理系统",
+                    en: "iFMS - Smart"
+                },
+                description: {
+                    zh: "一体化流线，将复杂工程课程化，一站式交付高效可靠的智能机房系统。",
+                    en: "From pump to system, simplifies complex projects into packaged solutions for fast, efficient, and reliable delivery."
+                },
+                duration: "14 weeks",
+                students: 2341,
+                rating: 4.8,
+                image: "https://i.stardots.io/armstrong/iFMS.png",
+                category: "System Integration"
+            },
+            {
+                id: 7,
+                title: {
+                    zh: "Plumbing Booster系统",
+                    en: "Plumbing 6800Q Booster"
+                },
+                description: {
+                    zh: "智能增压，节能静音，占地更小，适配多种供水场景。",
+                    en: "Smart boosting with energy savings, quiet operation, and compact footprint for versatile water supply needs."
+                },
+                duration: "8 weeks",
+                students: 1123,
+                rating: 4.7,
+                image: "https://i.stardots.io/armstrong/Booster.png",
+                category: "Plumbing"
+            },
+            {
+                id: 8,
+                title: {
+                    zh: "板式换热器系统（PFX）",
+                    en: "Plate Heat Exchanger (PFX)"
+                },
+                description: {
+                    zh: "以超致密满和高效换热，释放每一寸机房空间，适用于对节能和体积要求极高的楼宇项目",
+                    en: "Ultra-compact and energy-efficient heat transfer that frees up valuable mechanical room space—perfect for energy-conscious buildings."
+                },
+                duration: "9 weeks",
+                students: 892,
+                rating: 4.8,
+                image: "https://i.stardots.io/armstrong/PFX.png",
+                category: "Heat Exchange"
+            }
+        ];
 
-        // Define SVG icons as components
-        const Icons = {
-            BookOpen: ({ className }) => React.createElement('svg', {
-                className: `icon ${className}`,
-                viewBox: '0 0 24 24'
-            }, React.createElement('path', {
-                d: 'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'
-            })),
-            
-            Clock: ({ className }) => React.createElement('svg', {
-                className: `icon ${className}`,
-                viewBox: '0 0 24 24'
-            }, [
-                React.createElement('circle', { key: 'circle', cx: '12', cy: '12', r: '10' }),
-                React.createElement('path', { key: 'hands', d: 'M12 6v6l4 2' })
-            ]),
-
-            Users: ({ className }) => React.createElement('svg', {
-                className: `icon ${className}`,
-                viewBox: '0 0 24 24'
-            }, [
-                React.createElement('path', { key: 'path1', d: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2' }),
-                React.createElement('circle', { key: 'circle1', cx: '9', cy: '7', r: '4' }),
-                React.createElement('path', { key: 'path2', d: 'M23 21v-2a4 4 0 0 0-3-3.87' }),
-                React.createElement('path', { key: 'path3', d: 'M16 3.13a4 4 0 0 1 0 7.75' })
-            ]),
-
-            Star: ({ className }) => React.createElement('svg', {
-                className: `icon ${className}`,
-                viewBox: '0 0 24 24'
-            }, React.createElement('path', {
-                d: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'
-            })),
-
-            Search: ({ className }) => React.createElement('svg', {
-                className: `icon ${className}`,
-                viewBox: '0 0 24 24'
-            }, [
-                React.createElement('circle', { key: 'circle', cx: '11', cy: '11', r: '8' }),
-                React.createElement('path', { key: 'line', d: 'M21 21l-4.35-4.35' })
-            ]),
-
-            Moon: ({ className }) => React.createElement('svg', {
-                className: `icon ${className}`,
-                viewBox: '0 0 24 24'
-            }, React.createElement('path', {
-                d: 'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'
-            })),
-
-            Sun: ({ className }) => React.createElement('svg', {
-                className: `icon ${className}`,
-                viewBox: '0 0 24 24'
-            }, [
-                React.createElement('circle', { key: 'circle', cx: '12', cy: '12', r: '5' }),
-                React.createElement('line', { key: 'line1', x1: '12', y1: '1', x2: '12', y2: '3' }),
-                React.createElement('line', { key: 'line2', x1: '12', y1: '21', x2: '12', y2: '23' }),
-                React.createElement('line', { key: 'line3', x1: '4.22', y1: '4.22', x2: '5.64', y2: '5.64' }),
-                React.createElement('line', { key: 'line4', x1: '18.36', y1: '18.36', x2: '19.78', y2: '19.78' }),
-                React.createElement('line', { key: 'line5', x1: '1', y1: '12', x2: '3', y2: '12' }),
-                React.createElement('line', { key: 'line6', x1: '21', y1: '12', x2: '23', y2: '12' }),
-                React.createElement('line', { key: 'line7', x1: '4.22', y1: '19.78', x2: '5.64', y2: '18.36' }),
-                React.createElement('line', { key: 'line8', x1: '18.36', y1: '5.64', x2: '19.78', y2: '4.22' })
-            ])
-        };
-
-        // Add translations
+        // Translations
         const translations = {
             en: {
                 title: "Training Courses",
@@ -120,326 +260,123 @@
             }
         };
 
-        const courses = [
-            {
-                id: 1,
-                title: "EE-W (IPC9521)",
-                description: "Learn the basics of HTML, CSS, and JavaScript to build modern websites.",
-                duration: "8 weeks",
-                students: 1234,
-                rating: 4.8,
-                image: "https://i.stardots.io/armstrong/EE-W.png",
-                category: "Optimization"
-            },
-            {
-                id: 2,
-                title: "SE-A (IPC9511)",
-                description: "Master the fundamentals of data analysis and machine learning.",
-                duration: "12 weeks",
-                students: 856,
-                rating: 4.7,
-                image: "https://i.stardots.io/armstrong/SE-A.png",
-                category: "Optimization"
-            },
-            {
-                id: 3,
-                title: "SE-T (ITC9521)",
-                description: "Learn to create user-centered designs and intuitive interfaces.",
-                duration: "6 weeks",
-                students: 945,
-                rating: 4.9,
-                image: "https://i.stardots.io/armstrong/SE-T%20(ITC9521).png",
-                category: "Optimization"
-            },
-            {
-                id: 4,
-                title: "SE-F (IPS4xxxx)",
-                description: "Understand cloud infrastructure and deployment strategies.",
-                duration: "10 weeks",
-                students: 678,
-                rating: 4.6,
-                image: "https://i.stardots.io/armstrong/SE-F%20(IPS).png",
-                category: "Optimization"
-            },
-			{
-                id: 5,
-                title: "DE Pump - Smart Pump",
-                description: "Build cross-platform mobile applications using React Native framework.",
-                duration: "10 weeks",
-                students: 1567,
-                rating: 4.9,
-                image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=600",
-                category: "Development"
-            },
-            {
-                id: 6,
-                title: "iFMS - Smart Building",
-                description: "Deep dive into AI algorithms and practical machine learning applications.",
-                duration: "14 weeks",
-                students: 2341,
-                rating: 4.8,
-                image: "https://images.unsplash.com/photo-1555255707-c07966088b7b?auto=format&fit=crop&q=80&w=600",
-                category: "Data Science"
-            },
-            {
-                id: 7,
-                title: "Booster - Smart Building",
-                description: "Learn essential security practices and threat prevention strategies.",
-                duration: "8 weeks",
-                students: 1123,
-                rating: 4.7,
-                image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600",
-                category: "Security"
-            },
-            {
-                id: 8,
-                title: "Heat Exchanger - PFX",
-                description: "Master modern deployment workflows and automation techniques.",
-                duration: "9 weeks",
-                students: 892,
-                rating: 4.8,
-                image: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&q=80&w=600",
-                category: "DevOps"
-            }
-  
-        ];
+        // Current state
+        let currentLanguage = 'zh';
+        let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-        function CourseCard({ course }) {
-            return React.createElement('div', {
-                className: "bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-transform hover:scale-[1.02]"
-            }, [
-                React.createElement('img', {
-                    key: 'img',
-                    src: course.image,
-                    alt: course.title,
-                    className: "w-full h-48 object-contain p-2 rounded-t-xl"
-                }),
-                React.createElement('div', {
-                    key: 'content',
-                    className: "p-6"
-                }, [
-                    React.createElement('div', {
-                        key: 'category',
-                        className: "flex items-center gap-2 mb-2"
-                    }, 
-                        React.createElement('span', {
-                            className: "px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-100 rounded-full text-sm font-medium"
-                        }, course.category)
-                    ),
-                    React.createElement('h3', {
-                        key: 'title',
-                        className: "text-xl font-bold text-gray-900 dark:text-white mb-2"
-                    }, course.title),
-                    React.createElement('p', {
-                        key: 'description',
-                        className: "text-gray-600 dark:text-gray-300 mb-4"
-                    }, course.description),
-                    React.createElement('div', {
-                        key: 'meta',
-                        className: "flex items-center gap-4 text-gray-500 dark:text-gray-400 text-sm"
-                    }, [
-                        React.createElement('div', {
-                            key: 'duration',
-                            className: "flex items-center gap-1"
-                        }, [
-                            React.createElement(Icons.Clock, {
-                                key: 'clock',
-                                className: "w-4 h-4"
-                            }),
-                            React.createElement('span', {
-                                key: 'duration-text'
-                            }, course.duration)
-                        ]),
-                        React.createElement('div', {
-                            key: 'students',
-                            className: "flex items-center gap-1"
-                        }, [
-                            React.createElement(Icons.Users, {
-                                key: 'users',
-                                className: "w-4 h-4"
-                            }),
-                            React.createElement('span', {
-                                key: 'students-text'
-                            }, `${course.students.toLocaleString()} students`)
-                        ]),
-                        React.createElement('div', {
-                            key: 'rating',
-                            className: "flex items-center gap-1"
-                        }, [
-                            React.createElement(Icons.Star, {
-                                key: 'star',
-                                className: "w-4 h-4 text-yellow-400"
-                            }),
-                            React.createElement('span', {
-                                key: 'rating-text'
-                            }, course.rating)
-                        ])
-                    ])
-                ])
-            ]);
+        // Initialize dark mode
+        function initTheme() {
+            document.documentElement.classList.toggle('dark', isDarkMode);
         }
 
-        function App() {
-            const [searchTerm, setSearchTerm] = useState("");
-            const [selectedCategory, setSelectedCategory] = useState("");
-            const [isDarkMode, setIsDarkMode] = useState(true);
-            const [language, setLanguage] = useState('en');
+        // Create course card
+        function createCourseCard(course) {
+            return `
+                <div class="course-card bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-[1.5rem] shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-purple-500/20 dark:hover:shadow-[0_0_30px_-5px] dark:hover:shadow-purple-500/30 w-full max-w-[400px] mx-auto flex flex-col group">
+                    <div class="w-full h-[50%] relative overflow-hidden bg-gray-100 dark:bg-gray-900">
+                        <img 
+                            src="${course.image}" 
+                            alt="${course.title[currentLanguage]}"
+                            class="course-image absolute inset-0 w-full h-full object-contain p-4"
+                        />
+                    </div>
+                    <div class="p-4 flex flex-col justify-between flex-1">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full text-xs font-medium">
+                                    ${course.category}
+                                </span>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1.5 line-clamp-2 leading-snug">
+                                ${course.title[currentLanguage]}
+                            </h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-xs leading-relaxed line-clamp-3 mb-3">
+                                ${course.description[currentLanguage]}
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-3 text-gray-500 dark:text-gray-400 text-xs">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-clock w-3.5 h-3.5"></i>
+                                <span>${course.duration}</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-users w-3.5 h-3.5"></i>
+                                <span>${course.students.toLocaleString()} ${translations[currentLanguage].students}</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-star w-3.5 h-3.5 text-yellow-400"></i>
+                                <span>${course.rating}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
 
-            const categories = Array.from(new Set(courses.map(course => course.category)));
-            const t = translations[language];
-
-            useEffect(() => {
-                if (isDarkMode) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            }, [isDarkMode]);
-
+        // Update course grid
+        function updateCourseGrid() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const selectedCategory = document.getElementById('categorySelect').value;
+            
             const filteredCourses = courses.filter(course => {
-                const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                    course.description.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchesSearch = 
+                    course.title[currentLanguage].toLowerCase().includes(searchTerm) ||
+                    course.description[currentLanguage].toLowerCase().includes(searchTerm);
                 const matchesCategory = !selectedCategory || course.category === selectedCategory;
                 return matchesSearch && matchesCategory;
             });
 
-            return React.createElement('div', {
-                className: `min-h-screen ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`
-            }, 
-                React.createElement('div', {
-                    className: "max-w-7xl mx-auto px-4 py-12"
-                }, [
-                    React.createElement('div', {
-                        key: 'logo',
-                        className: "flex justify-center mb-8"
-                    }, 
-                        React.createElement('img', {
-                            src: "https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=200",
-                            alt: "Armstrong Logo",
-                            className: "h-16 object-contain"
-                        })
-                    ),
-                    React.createElement('div', {
-                        key: 'header',
-                        className: "flex items-center justify-between mb-8"
-                    }, [
-                        React.createElement('div', {
-                            key: 'title-section',
-                            className: "flex items-center gap-3"
-                        }, [
-                            React.createElement(Icons.BookOpen, {
-                                key: 'book',
-                                className: "w-8 h-8 text-purple-600 dark:text-purple-400"
-                            }),
-                            React.createElement('h1', {
-                                key: 'title',
-                                className: "text-3xl font-bold text-gray-900 dark:text-white"
-                            }, t.title)
-                        ]),
-                        React.createElement('div', {
-                            key: 'controls',
-                            className: "flex items-center gap-4"
-                        }, [
-                            React.createElement('button', {
-                                key: 'dark-mode-toggle',
-                                onClick: () => setIsDarkMode(!isDarkMode),
-                                className: "p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                            }, 
-                                React.createElement(isDarkMode ? Icons.Sun : Icons.Moon, {
-                                    className: "w-5 h-5"
-                                })
-                            ),
-                            React.createElement('button', {
-                                key: 'language-toggle',
-                                onClick: () => setLanguage(language === 'en' ? 'zh' : 'en'),
-                                className: "flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                            }, [
-                                React.createElement('img', {
-                                    key: 'flag',
-                                    src: `https://flagcdn.com/${language === 'en' ? 'cn' : 'us'}.svg`,
-                                    alt: language === 'en' ? 'Chinese' : 'English',
-                                    className: "w-5 h-4"
-                                })
-                            ])
-                        ])
-                    ]),
-                    React.createElement('div', {
-                        key: 'filters',
-                        className: "mb-8"
-                    },
-                        React.createElement('div', {
-                            className: "flex flex-col sm:flex-row gap-4 items-start sm:items-center"
-                        }, [
-                            React.createElement('div', {
-                                key: 'search',
-                                className: "relative flex-1"
-                            }, [
-                                React.createElement(Icons.Search, {
-                                    key: 'search-icon',
-                                    className: "absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
-                                }),
-                                React.createElement('input', {
-                                    key: 'search-input',
-                                    type: "text",
-                                    placeholder: t.searchPlaceholder,
-                                    value: searchTerm,
-                                    onChange: (e) => setSearchTerm(e.target.value),
-                                    className: "w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                })
-                            ]),
-                            React.createElement('select', {
-                                key: 'category-select',
-                                value: selectedCategory,
-                                onChange: (e) => setSelectedCategory(e.target.value),
-                                className: "px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus: ring-2 focus:ring-purple-500 focus:border-transparent"
-                            }, [
-                                React.createElement('option', {
-                                    key: 'all',
-                                    value: ""
-                                }, t.allCategories),
-                                ...categories.map(category =>
-                                    React.createElement('option', {
-                                        key: category,
-                                        value: category
-                                    }, category)
-                                )
-                            ])
-                        ])
-                    ),
-                    React.createElement('div', {
-                        key: 'grid',
-                        className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                    }, 
-                        filteredCourses.map(course =>
-                            React.createElement(CourseCard, {
-                                key: course.id,
-                                course: course
-                            })
-                        )
-                    ),
-                    filteredCourses.length === 0 && React.createElement('div', {
-                        key: 'no-results',
-                        className: "text-center py-12"
-                    },
-                        React.createElement('p', {
-                            className: "text-gray-500 dark:text-gray-400 text-lg"
-                        }, t.noResults)
-                    )
-                ])
-            );
+            const courseGrid = document.getElementById('courseGrid');
+            const noResults = document.getElementById('noResults');
+
+            if (filteredCourses.length === 0) {
+                courseGrid.innerHTML = '';
+                noResults.classList.remove('hidden');
+            } else {
+                courseGrid.innerHTML = filteredCourses.map(course => createCourseCard(course)).join('');
+                noResults.classList.add('hidden');
+            }
         }
 
-        try {
-            const root = ReactDOM.createRoot(document.getElementById('root'));
-            root.render(React.createElement(App));
-        } catch (error) {
-            console.error('Error rendering the app:', error);
-            document.body.innerHTML = `
-                <div style="padding: 20px; color: red;">
-                    Error loading the application. Please check the console for details.
-                </div>
+        // Initialize category select
+        function initCategories() {
+            const categories = Array.from(new Set(courses.map(course => course.category)));
+            const select = document.getElementById('categorySelect');
+            select.innerHTML = `
+                <option value="">${translations[currentLanguage].allCategories}</option>
+                ${categories.map(category => `<option value="${category}">${category}</option>`).join('')}
             `;
         }
+
+        // Update language
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
+            document.getElementById('languageFlag').src = `https://flagcdn.com/${currentLanguage === 'en' ? 'cn' : 'us'}.svg`;
+            document.getElementById('pageTitle').textContent = translations[currentLanguage].title;
+            document.getElementById('searchInput').placeholder = translations[currentLanguage].searchPlaceholder;
+            initCategories();
+            updateCourseGrid();
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', updateCourseGrid);
+        document.getElementById('categorySelect').addEventListener('change', updateCourseGrid);
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            document.documentElement.classList.toggle('dark', isDarkMode);
+        });
+        document.getElementById('languageToggle').addEventListener('click', toggleLanguage);
+
+        // Initialize
+        initTheme();
+        initCategories();
+        updateCourseGrid();
+
+        // Listen for system dark mode changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            isDarkMode = e.matches;
+            document.documentElement.classList.toggle('dark', isDarkMode);
+        });
     </script>
 </body>
 </html>

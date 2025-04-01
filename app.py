@@ -4,6 +4,8 @@ import os
 from datetime import datetime, timedelta
 import pytz
 
+# 页面地址为 https://你的域名/login_log
+
 # 初始化 Flask 应用
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "default_secret_key")
@@ -61,21 +63,36 @@ def update_activity(username, ip):
     conn.commit()
     conn.close()
 
-# === 登录页面 ===
-@app.route("/", methods=["GET", "POST"])
+# 登录页
+@app.route('/', methods=['GET', 'POST'])
 def login():
     error = None
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-        if username == "admin" and password == "123456":
-            session["username"] = username
-            session["ip"] = request.remote_addr
-            log_login(username, session["ip"])
-            return redirect("/course_selection")
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        captcha_input = request.form.get('captcha')
+        captcha_real = session.get('captcha')
+
+        # 简单的用户名密码验证
+        print(f"[DEBUG] 用户输入: 用户名={username}, 密码={password}, 验证码={captcha_input}, 正确答案={captcha_real}")
+        if not captcha_input or captcha_input.strip() != str(captcha_real):
+            error = '验证码错误'
+        elif username != 'admin' or password != '123456':
+            error = '用户名或密码错误'
         else:
-            error = "用户名或密码错误"
-    return render_template("login.html", error=error)
+            # 登录成功后跳转到 /courses
+            return redirect(url_for('courses'))
+
+    # 每次访问登录页生成一个新题目
+    num1 = random.randint(1, 9)
+    num2 = random.randint(1, 9)
+    operator = random.choice(['+', '-'])
+    question = f"{num1} {operator} {num2}"
+    answer = eval(question)
+    session['captcha'] = answer
+
+    return render_template('login.html', error=error, math_question=question)
+
 
 # === 课程选择页 ===
 @app.route("/course_selection")

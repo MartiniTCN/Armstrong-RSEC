@@ -180,6 +180,25 @@ def health():
     """Render部署健康检查"""
     return "OK"
 
+@app.before_request
+def update_last_active():
+    """在每次请求前，更新登录用户的最后活动时间"""
+    username = session.get('username')
+    if username:
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            now = now_beijing().isoformat()
+            cursor.execute("""
+                UPDATE login_log
+                SET last_active = ?
+                WHERE username = ? AND status = '登录中'
+            """, (now, username))
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print("[警告] 无法更新用户活动时间：", e)
+
 # ========== 应用入口 ==========
 
 # ✅ Render平台：立即初始化数据库（不依赖于 __main__ 块）

@@ -94,8 +94,8 @@
 
   </style>
 
-  <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
-  
+
+
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
   <!-- 页面加载动画遮罩 -->
@@ -360,10 +360,13 @@
 </script>
 
 
-    <script>
-        // 使用 Twemoji 渲染页面中的所有 emoji 字符
-        twemoji.parse(document.body);
-    </script>
+<!-- 🚫 暂时移除，避免报错 -->
+<!-- <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"></script>
+<script>
+  window.onload = () => {
+    twemoji.parse(document.body);
+  };
+</script> -->
 
 <script>
   // 页面加载完成后调用

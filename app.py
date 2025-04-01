@@ -7,6 +7,7 @@ import random  # ✅ 保留用于数学题验证
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'Martin-Armstrong-Passw0rd-2025!')
+print(f"[DEBUG] 当前 SECRET_KEY: {os.environ.get('SECRET_KEY')}")
 
 DATABASE = 'login_log.db'
 

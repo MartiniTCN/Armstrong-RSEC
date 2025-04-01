@@ -138,9 +138,28 @@ def login_log():
     conn.close()
     return render_template('login_log.html', logs=rows)
 
-# === Render 健康检查 ===
+# === 服务器启动时自动创建数据库表 如果还不存在）： ===
+
+def init_db():
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS login_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT,
+                ip_address TEXT,
+                login_time TEXT,
+                logout_time TEXT,
+                status TEXT,
+                last_active TEXT
+            )
+        ''')
+        conn.commit()
+
 
 # === 启动服务（本地用） ===
 if __name__ == '__main__':
-    init_db()
+    @app.before_first_request
+    def startup_tasks():
+    init_db()  # 初始化数据库表结构
     app.run(debug=True)

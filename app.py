@@ -118,7 +118,7 @@ def course_select():
 
 @app.route('/')
 def home():
-    return 'Server is running.'
+    return redirect(url_for('login'))
 
 
 # ========== 启动入口 ==========

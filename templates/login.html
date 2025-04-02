@@ -383,6 +383,24 @@
       overlay.style.display = 'none';
     }
   });
+
+  
+</script>
+
+<script>
+  // 如果后端传来 shake 参数，触发登录卡片抖动 + 清空验证码
+  window.addEventListener('DOMContentLoaded', () => {
+    {% if shake %}
+      const card = document.getElementById('loginCard');
+      const captchaInput = document.getElementById('captcha');
+      if (card && captchaInput) {
+        captchaInput.value = '';             // ✅ 清空验证码输入框
+        card.classList.remove('shake');
+        void card.offsetWidth;               // ✅ 强制回流
+        card.classList.add('shake');         // ✅ 添加抖动动画
+      }
+    {% endif %}
+  });
 </script>
 
 </body>

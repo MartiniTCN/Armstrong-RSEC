@@ -92,11 +92,26 @@ def debug_request():
 # ========== 页面路由 ==========
 @app.route('/login')
 def login():
-    return render_template('login.html')
+    question, answer = generate_math_question()           # ✅ 生成问题与答案
+    session['captcha_answer'] = answer                    # ✅ 存入 session 做后续验证
+    return render_template('login.html', math_question=question)  # ✅ 把问题传给前端
 
 @app.route('/do_login', methods=['POST'])
 def do_login():
     username = request.form.get('username')
+    captcha = request.form.get('captcha')
+    correct_answer = session.get('captcha_answer')
+
+    if captcha != correct_answer:
+        question, answer = generate_math_question()  # 重新生成题目
+        session['captcha_answer'] = answer
+        return render_template(
+            'login.html',
+            math_question=question,
+            shake=True  # 👈 用于前端判断是否抖动
+        )
+
+    # ✅ 正确后继续登录
     ip = get_client_ip()
     now = get_current_time()
     session['username'] = username
@@ -115,6 +130,10 @@ def course_select():
     if 'username' not in session:
         return redirect(url_for('login'))
     return render_template('course_select.html', username=session['username'])
+
+@app.route('/ee-w')
+def ee_w_test():
+    return render_template('EE-W_Test.html')
 
 @app.route('/')
 def home():

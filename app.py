@@ -120,6 +120,10 @@ def course_select():
 def home():
     return redirect(url_for('login'))
 
+@app.route('/health')
+def health_check():
+    return 'OK', 200
+
 
 # ========== 启动入口 ==========
 if __name__ == '__main__':

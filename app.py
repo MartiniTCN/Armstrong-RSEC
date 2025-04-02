@@ -266,8 +266,15 @@ def register():
     SUPABASE_URL = os.environ.get("SUPABASE_URL")
     SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
     if not SUPABASE_URL or not SUPABASE_API_KEY:
-        return jsonify({"success": False, "message": "Supabase 配置缺失"}), 500
+        return jsonify({"success": False, "message": "配置缺失"}), 500
 
+    # ✅ 补上定义 headers
+    check_headers = {
+        "apikey": SUPABASE_API_KEY,
+        "Authorization": f"Bearer {SUPABASE_API_KEY}"
+    }
+
+    # ✅ 接收表单字段
     data = request.form
     username = data.get('username')
     password = data.get('password')
@@ -275,25 +282,22 @@ def register():
     city = data.get('city')
     email = data.get('email')
     phone = data.get('phone')
-    sales_name = data.get('sales')  # ✅ 表单中是 name="sales"
+    sales_name = data.get('sales_name')
     invite_code = data.get('invite_code')
 
+    # ✅ 校验字段完整性
     if not all([username, password, company, city, email, phone, sales_name, invite_code]):
         return jsonify({"success": False, "message": "请填写所有字段"})
 
-    headers = {
-        "apikey": SUPABASE_API_KEY,
-        "Authorization": f"Bearer {SUPABASE_API_KEY}"
-    }
-
     # ✅ 检查邀请码有效性
     check_resp = requests.get(
-        f"{SUPABASE_URL}/rest/v1/invitation_codes?code=eq.{invite_code}&is_used=eq.false",
-        headers=headers
+        f"{SUPABASE_URL}/rest/v1/invitation_codes?code=eq.{invite_code}&used=eq.false",
+        headers=check_headers
     )
     if check_resp.status_code != 200 or not check_resp.json():
         return jsonify({"success": False, "message": "邀请码无效或已被使用"})
-    # ✅ 检查用户名是否重复（新增）
+
+    # ✅ 检查用户名是否重复
     check_user_resp = requests.get(
         f"{SUPABASE_URL}/rest/v1/user_accounts?username=eq.{username}",
         headers=check_headers
@@ -301,9 +305,10 @@ def register():
     if check_user_resp.status_code == 200 and check_user_resp.json():
         return jsonify({"success": False, "message": "该用户名已注册"})
 
-    # ✅ 插入用户数据
-    insert_headers = headers.copy()
+    # ✅ 插入用户
+    insert_headers = check_headers.copy()
     insert_headers["Content-Type"] = "application/json"
+
     user_payload = {
         "username": username,
         "password": password,
@@ -314,6 +319,7 @@ def register():
         "sales_name": sales_name,
         "invite_code": invite_code
     }
+
     user_resp = requests.post(
         f"{SUPABASE_URL}/rest/v1/user_accounts",
         headers=insert_headers,
@@ -322,18 +328,13 @@ def register():
     if user_resp.status_code not in [200, 201]:
         return jsonify({"success": False, "message": "注册失败"}), 500
 
-    # ✅ 更新邀请码使用状态
-    from datetime import datetime
-    update_payload = {
-        "is_used": True,
-        "used_by": username,
-        "used_at": datetime.now().isoformat()
-    }
+    # ✅ 标记邀请码已用
     update_resp = requests.patch(
         f"{SUPABASE_URL}/rest/v1/invitation_codes?code=eq.{invite_code}",
         headers=insert_headers,
-        json=update_payload
+        json={"used": True}
     )
+
     if update_resp.status_code not in [200, 204]:
         return jsonify({"success": False, "message": "注册成功但更新邀请码失败"})
 

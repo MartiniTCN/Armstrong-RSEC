@@ -5,6 +5,7 @@ import os
 import random  # ✅ 保留用于数学题验证
 import requests
 
+
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'Martin-Armstrong-Passw0rd-2025!')
 print(f"[DEBUG] 当前 SECRET_KEY: {os.environ.get('SECRET_KEY')}")
@@ -114,4 +115,6 @@ def course_select():
 
 # ========== 启动入口 ==========
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get("PORT", 10000))  # Render 会设置 PORT 环境变量
+    app.run(host='0.0.0.0', port=port)

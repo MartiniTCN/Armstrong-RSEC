@@ -130,30 +130,41 @@
 
 <script>
     async function refreshLogs() {
-      try {
-        const res = await fetch('/api/logs');
-        const data = await res.json();
-  
-        const tbody = document.querySelector('tbody');
-        tbody.innerHTML = ''; // 清空现有内容
-  
-        data.forEach(log => {
-          const tr = document.createElement('tr');
-          tr.className = 'hover:bg-gray-800 transition-all';
-          tr.innerHTML = `
-            <td class="py-2 px-4">${log[1]}</td>
-            <td class="py-2 px-4">${log[2]}</td>
-            <td class="py-2 px-4">${(log[3] || '').slice(0, 16).replace('T', ' T')}</td>
-            <td class="py-2 px-4">${log[5] ? log[5].slice(0, 16).replace('T', ' T') : '—'}</td>
-            <td class="py-2 px-4">${(log[4] || '').slice(0, 16).replace('T', ' T')}</td>
-            <td class="py-2 px-4">${log[6]}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      } catch (err) {
-        alert('刷新失败，请稍后再试');
-        console.error(err);
-      }
+        try {
+            const res = await fetch('/api/logs');
+            const data = await res.json();
+
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = ''; // 清空旧数据
+
+            data.forEach(log => {
+            // 将对象按固定字段顺序转为数组结构以适配模板结构
+            const row = [
+                log.id,
+                log.username,
+                log.ip,
+                log.login_time,
+                log.last_active,
+                log.logout_time,
+                log.status
+            ];
+
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-gray-800 transition-all';
+            tr.innerHTML = `
+                <td class="py-2 px-4">${row[1]}</td>
+                <td class="py-2 px-4">${row[2]}</td>
+                <td class="py-2 px-4">${(row[3] || '').slice(0, 16).replace('T', ' T')}</td>
+                <td class="py-2 px-4">${row[5] ? row[5].slice(0, 16).replace('T', ' T') : '—'}</td>
+                <td class="py-2 px-4">${(row[4] || '').slice(0, 16).replace('T', ' T')}</td>
+                <td class="py-2 px-4">${row[6]}</td>
+            `;
+            tbody.appendChild(tr);
+            });
+        } catch (err) {
+            alert('刷新失败，请稍后再试');
+            console.error(err);
+        }
     }
   </script>
   

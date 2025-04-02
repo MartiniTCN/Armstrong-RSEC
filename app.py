@@ -286,8 +286,21 @@ def register():
     invite_code = data.get('invite_code')
 
     # ✅ 校验字段完整性
-    if not all([username, password, company, city, email, phone, sales_name, invite_code]):
-        return jsonify({"success": False, "message": "请填写所有字段"})
+    missing_fields = []
+    if not username: missing_fields.append("用户名")
+    if not password: missing_fields.append("密码")
+    if not company: missing_fields.append("单位")
+    if not city: missing_fields.append("城市")
+    if not email: missing_fields.append("邮箱")
+    if not phone: missing_fields.append("电话")
+    if not sales_name: missing_fields.append("销售姓名")
+    if not invite_code: missing_fields.append("邀请码")
+
+    if missing_fields:
+        return jsonify({
+            "success": False,
+            "message": f"缺少字段：{', '.join(missing_fields)}"
+        })
 
     # ✅ 检查邀请码有效性
     check_resp = requests.get(

@@ -63,10 +63,17 @@
     }
   </style>
 
+
 <style>
   #registerMessage {
-    transition: opacity 0.3s ease;
+    transition: opacity 0.6s ease, transform 0.3s ease;
+    transform: translateY(0);
   }
+  #registerMessage.hidden {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);  /* 添加阴影让提示更有立体感 */
 </style>
 
 </head>
@@ -213,42 +220,47 @@
 <!-- ✅ 拦截注册表单提交并使用 AJAX 异步提交 -->
 <script>
   document.getElementById('registerForm').addEventListener('submit', async function (e) {
-    e.preventDefault(); // 阻止默认提交行为
-  
-    const formData = new FormData(this);
-    const data = {};
-    formData.forEach((value, key) => data[key] = value);
-  
-    const res = await fetch('/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-  
-    const result = await res.json();
-    const messageDiv = document.getElementById('registerMessage');
+  e.preventDefault(); // 阻止默认提交行为
 
-    if (result.success) {
-      messageDiv.textContent = "✅ 注册成功，请返回登录";
-      messageDiv.className = "text-green-500 text-sm text-center font-semibold mt-2";
-      messageDiv.classList.remove("hidden");
+  const formData = new FormData(this);
+  const data = {};
+  formData.forEach((value, key) => data[key] = value);
 
-      setTimeout(() => {
-        messageDiv.classList.add("hidden");
-        toggleForm('login'); // 回到登录界面
-      }, 2500);
-    } else {
-      messageDiv.textContent = "❌ " + result.message;
-      messageDiv.className = "text-red-500 text-sm text-center font-semibold mt-2";
-      messageDiv.classList.remove("hidden");
-
-      setTimeout(() => {
-        messageDiv.classList.add("hidden");
-      }, 2500);
-    }
+  const res = await fetch('/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
   });
+
+  const result = await res.json();
+  const messageDiv = document.getElementById('registerMessage');
+
+  if (result.success) {
+    messageDiv.textContent = "✅ 注册成功，请返回登录";
+    messageDiv.className = "text-green-500 text-sm text-center font-semibold mt-2 bg-white/30 dark:bg-gray-700 border border-green-500 rounded-xl px-4 py-2 backdrop-blur";
+    
+    messageDiv.classList.remove("hidden");
+    messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    setTimeout(() => {
+      messageDiv.classList.add("hidden");
+      toggleForm('login'); // 跳回登录
+    }, 2500);
+
+  } else {
+    messageDiv.textContent = "❌ " + result.message;
+    messageDiv.className = "text-red-500 text-sm text-center font-semibold mt-2 bg-white/30 dark:bg-gray-700 border border-red-500 rounded-xl px-4 py-2 backdrop-blur";
+    
+    messageDiv.classList.remove("hidden");
+    messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    setTimeout(() => {
+      messageDiv.classList.add("hidden");
+    }, 3000);
+  }
+});
   </script>
 
 </body>

@@ -132,36 +132,36 @@
 
 <script>
     async function refreshLogs() {
-      try {
-        const res = await fetch('/api/logs');
-        const data = await res.json();
-  
-        const tbody = document.querySelector('tbody');
-        tbody.innerHTML = '';
-  
-        data.forEach(log => {
-          if (!log || log.length < 7) return; // 防止 log 数据结构异常
-          const tr = document.createElement('tr');
-          tr.className = 'hover:bg-gray-800 transition-all';
-          tr.innerHTML = `
-            <td class="py-2 px-4">${log[1] || '—'}</td>
-            <td class="py-2 px-4">${log[2] || '—'}</td>
-            <td class="py-2 px-4">${(log[3] || '').slice(0, 16).replace('T', ' T')}</td>
-            <td class="py-2 px-4">${log[5] ? log[5].slice(0, 16).replace('T', ' T') : '—'}</td>
-            <td class="py-2 px-4">${(log[4] || '').slice(0, 16).replace('T', ' T')}</td>
-            <td class="py-2 px-4">${log[6] || '—'}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-  
-        showToast('✅ 已成功刷新', true);
-        console.log("获取到的数据", data);
-  
-      } catch (err) {
-        console.error(err);
-        showToast('❌ 刷新失败，请稍后再试', false);
-      }
-    }
+  try {
+    const res = await fetch('/api/logs');
+    const data = await res.json();
+
+    const tbody = document.querySelector('tbody');
+    tbody.innerHTML = '';
+
+    data.forEach(log => {
+      if (!log || typeof log !== 'object') return; // 防止数据为空或格式错误
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-gray-800 transition-all';
+      tr.innerHTML = `
+        <td class="py-2 px-4">${log.username || '—'}</td>
+        <td class="py-2 px-4">${log.ip || '—'}</td>
+        <td class="py-2 px-4">${(log.login_time || '').slice(0, 16).replace('T', ' T')}</td>
+        <td class="py-2 px-4">${log.logout_time ? log.logout_time.slice(0, 16).replace('T', ' T') : '—'}</td>
+        <td class="py-2 px-4">${(log.last_active || '').slice(0, 16).replace('T', ' T')}</td>
+        <td class="py-2 px-4">${log.status || '—'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    showToast('✅ 已成功刷新', true);
+    console.log("获取到的数据", data);
+
+  } catch (err) {
+    console.error(err);
+    showToast('❌ 刷新失败，请稍后再试', false);
+  }
+}
   
     // ✅ 通用弹窗提示函数
     function showToast(message, success = true) {
@@ -176,9 +176,13 @@
   </script>
 
   <!-- 页面底部版权信息 -->
-  <footer class="mt-10 text-sm text-gray-400">
+  <footer class="mt-10 text-sm text-gray-400 text-center w-full">
     <p>© 2025 Martin Peng. All rights reserved.</p>
-    <p>Powered by <a href="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=200" class="text-primary hover:underline">Martin</a></p>
+    <p>
+      Powered by 
+      <a href="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=200" 
+         class="text-primary hover:underline">Martin</a>
+    </p>
   </footer>
   
 </body>

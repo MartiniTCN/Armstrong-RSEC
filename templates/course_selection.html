@@ -413,6 +413,25 @@
         }
         }, 60000);
     </script>
+
+</script>
+
+<!-- ✅ 会话心跳轮询，每分钟一次 -->
+<script>
+  setInterval(() => {
+    fetch("/heartbeat").then(res => {
+      if (res.status === 440) {
+        alert("会话已过期，请重新登录");
+        window.location.href = "/login";
+      }
+    }).catch(err => {
+      console.warn("⛔ 心跳请求失败", err);
+    });
+  }, 60000); // 每分钟轮询一次
+</script>
+
+</body>
+</html>
   
 
 </body>

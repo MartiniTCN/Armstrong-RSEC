@@ -275,7 +275,13 @@ def register():
     }
 
     # ✅ 接收表单字段
-    data = request.form
+    # ✅ 支持 JSON 或表单数据格式
+    if request.is_json:
+        data = request.get_json()
+    else:
+        data = request.form
+
+    # ✅ 不管前端格式是 JSON 还是表单，都统一从 data 提取字段
     username = data.get('username')
     password = data.get('password')
     company = data.get('company')

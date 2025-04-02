@@ -91,18 +91,18 @@ def logout_user(username):
 # ========== 登录前置钩子 ==========
 @app.before_request
 def check_session_timeout():
-    """每次请求前检查 session 是否超时，若超时则自动登出并清除 session"""
+    session.permanent = True  # ✅ 设置 session 为永久类型
     if 'username' in session:
         now = datetime.now()
         last_active = session.get('last_active')
         if last_active:
             last_dt = datetime.fromisoformat(last_active)
             if now - last_dt > timedelta(minutes=SESSION_TIMEOUT_MINUTES):
-                logout_user(session['username'])  # ✅ 自动登出数据库更新
+                logout_user(session['username'])  # ✅ 更新 Supabase
                 session.clear()
                 return redirect(url_for('login'))
-        session['last_active'] = now.isoformat()
-        update_last_active(session['username'])
+        session['last_active'] = now.isoformat()  # ✅ 每次请求更新活跃时间
+        update_last_active(session['username'])  # ✅ 每次请求更新数据库活跃时间
 
 def debug_request():
     print(f"📥 请求到达: {request.path}")
@@ -110,6 +110,13 @@ def debug_request():
 # ========== 页面路由 ==========
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'GET':
+        session.clear()  # ✅ 每次打开登录页时清除旧会话
+        return render_template('login.html')
+    
+    # POST 表示提交登录
+    username = request.form.get('username')
+    
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')  # 这里只是接收，无验证逻辑
@@ -136,7 +143,7 @@ def course_select():
         return redirect(url_for('login'))
     return render_template('course_selection.html', username=session['username'])
 
-@app.route('/ee-w')
+@app.route('/EE-W_Test')
 def ee_w_test():
     return render_template('EE-W_Test.html')
 
@@ -201,6 +208,77 @@ def heartbeat():
         session['last_active'] = datetime.now().isoformat()
         return 'OK', 200
     return 'Unauthorized', 401
+
+# ✅ 注册功能的 Flask 接口路由
+from flask import request, jsonify
+
+@app.route('/register', methods=['POST'])
+def register():
+    # ✅ 获取环境变量中的 Supabase 信息
+    SUPABASE_URL = os.environ.get("SUPABASE_URL")
+    SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
+    if not SUPABASE_URL or not SUPABASE_API_KEY:
+        return jsonify({"success": False, "message": "Supabase 配置缺失"}), 500
+
+    # ✅ 获取请求体中的表单字段
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+    company = data.get('company')
+    city = data.get('city')
+    email = data.get('email')
+    phone = data.get('phone')
+    sales_name = data.get('sales_name')
+    invite_code = data.get('invite_code')
+
+    # ✅ 校验字段完整性
+    if not all([username, password, company, city, email, phone, sales_name, invite_code]):
+        return jsonify({"success": False, "message": "请填写所有字段"})
+
+    # ✅ 检查邀请码是否存在且未被使用
+    check_headers = {
+        "apikey": SUPABASE_API_KEY,
+        "Authorization": f"Bearer {SUPABASE_API_KEY}"
+    }
+    check_resp = requests.get(
+        f"{SUPABASE_URL}/rest/v1/invite_codes?code=eq.{invite_code}&used=eq.false",
+        headers=check_headers
+    )
+    if check_resp.status_code != 200 or not check_resp.json():
+        return jsonify({"success": False, "message": "邀请码无效或已被使用"})
+
+    # ✅ 插入用户信息
+    user_payload = {
+        "username": username,
+        "password": password,
+        "company": company,
+        "city": city,
+        "email": email,
+        "phone": phone,
+        "sales_name": sales_name,
+        "invite_code": invite_code
+    }
+    insert_headers = check_headers.copy()
+    insert_headers["Content-Type"] = "application/json"
+    user_resp = requests.post(
+        f"{SUPABASE_URL}/rest/v1/users",
+        headers=insert_headers,
+        json=user_payload
+    )
+    if user_resp.status_code not in [200, 201]:
+        return jsonify({"success": False, "message": "注册失败"}), 500
+
+    # ✅ 更新邀请码表为已使用
+    update_resp = requests.patch(
+        f"{SUPABASE_URL}/rest/v1/invite_codes?code=eq.{invite_code}",
+        headers=insert_headers,
+        json={"used": True}
+    )
+    if update_resp.status_code not in [200, 204]:
+        return jsonify({"success": False, "message": "注册成功但更新邀请码状态失败"})
+
+    return jsonify({"success": True, "message": "注册成功"})
+
 
 @app.route('/health')
 def health_check():

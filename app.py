@@ -90,40 +90,39 @@ def debug_request():
     print(f"📥 请求到达: {request.path}")
 
 # ========== 页面路由 ==========
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    question, answer = generate_math_question()           # ✅ 生成问题与答案
-    session['captcha_answer'] = answer                    # ✅ 存入 session 做后续验证
-    return render_template('login.html', math_question=question)  # ✅ 把问题传给前端
+    if request.method == 'POST':
+        # 获取并校验验证码
+        username = request.form.get('username')
+        captcha = request.form.get('captcha')
+        expected_answer = session.get('math_answer')
 
-@app.route('/do_login', methods=['POST'])
-def do_login():
-    username = request.form.get('username')
-    captcha = request.form.get('captcha')
-    correct_answer = session.get('captcha_answer')
+        if captcha != expected_answer:
+            # 验证失败，返回 login.html 并带 shake 标记
+            math_q, math_a = generate_math_question()
+            session['math_answer'] = math_a
+            return render_template('login.html', math_question=math_q, shake=True)
 
-    if captcha != correct_answer:
-        question, answer = generate_math_question()  # 重新生成题目
-        session['captcha_answer'] = answer
-        return render_template(
-            'login.html',
-            math_question=question,
-            shake=True  # 👈 用于前端判断是否抖动
-        )
+        # 登录成功逻辑
+        ip = get_client_ip()
+        now = get_current_time()
+        session['username'] = username
+        session['last_active'] = datetime.now().isoformat()
+        insert_login_log({
+            "username": username,
+            "ip": ip,
+            "login_time": now,
+            "last_active": now,
+            "status": "登录中"
+        })
+        return redirect(url_for('course_select'))
 
-    # ✅ 正确后继续登录
-    ip = get_client_ip()
-    now = get_current_time()
-    session['username'] = username
-    session['last_active'] = datetime.now().isoformat()
-    insert_login_log({
-        "username": username,
-        "ip": ip,
-        "login_time": now,
-        "last_active": now,
-        "status": "登录中"
-    })
-    return redirect(url_for('course_select'))
+    # GET 请求时展示页面
+    math_q, math_a = generate_math_question()
+    session['math_answer'] = math_a
+    return render_template('login.html', math_question=math_q)
+
 
 @app.route('/course')
 def course_select():
@@ -138,6 +137,47 @@ def ee_w_test():
 @app.route('/')
 def home():
     return redirect(url_for('login'))
+
+# 添加一个新路由来读取登录日志并渲染：
+@app.route('/login_log')
+def login_log():
+    SUPABASE_URL = os.environ.get("SUPABASE_URL")
+    SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
+    if not SUPABASE_URL or not SUPABASE_API_KEY:
+        return "未配置 Supabase", 500
+
+    headers = {
+        "apikey": SUPABASE_API_KEY,
+        "Authorization": f"Bearer {SUPABASE_API_KEY}",
+    }
+
+    response = requests.get(
+        f"{SUPABASE_URL}/rest/v1/login_log?select=*",
+        headers=headers
+    )
+
+    if response.status_code != 200:
+        return f"请求 Supabase 失败: {response.status_code}", 500
+
+    logs = response.json()
+
+    # 按时间倒序（可选）
+    logs.sort(key=lambda x: x.get("login_time", ""), reverse=True)
+
+    # 将字段按顺序映射为 tuple 列表（匹配你 HTML 中的 log[1]~log[6]）
+    logs_mapped = []
+    for row in logs:
+        logs_mapped.append([
+            row.get("id", ""),             # [0] 可省略
+            row.get("username", ""),      # [1]
+            row.get("ip", ""),            # [2]
+            row.get("login_time", ""),    # [3]
+            row.get("last_active", ""),   # [4]
+            row.get("logout_time", ""),   # [5]
+            row.get("status", "")         # [6]
+        ])
+
+    return render_template("login_log.html", logs=logs_mapped)
 
 @app.route('/health')
 def health_check():

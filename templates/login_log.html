@@ -35,11 +35,18 @@
   <div class="w-full max-w-6xl bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-xl overflow-hidden">
 
     <!-- 导出按钮 -->
-    <div class="flex justify-end px-6 pt-6">
-      <button onclick="downloadCSV()" class="text-xs px-4 py-2 bg-primary text-white rounded-full hover:bg-blue-700 transition-all">
-        导出 CSV
-      </button>
-    </div>
+    <!-- 刷新与导出按钮（对称布局） -->
+<div class="flex justify-between px-6 pt-6">
+    <!-- 刷新按钮：刷新页面 -->
+    <button onclick="location.reload()" class="text-xs px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition-all">
+      刷新
+    </button>
+  
+    <!-- 导出 CSV 按钮 -->
+    <button onclick="downloadCSV()" class="text-xs px-4 py-2 bg-primary text-white rounded-full hover:bg-blue-700 transition-all">
+      导出 CSV
+    </button>
+  </div>
 
     <!-- 表格内容 -->
     <div class="overflow-x-auto p-6">

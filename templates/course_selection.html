@@ -385,28 +385,35 @@
     </script>
 
     <!-- ✅ 页面心跳机制脚本（新增） -->
+    <!-- ✅ 页面底部，在 </body> 标签前 -->
     <script>
         let lastActivityTime = Date.now();
-      
-        // 记录人工活动
+    
+        // 记录人工操作事件时间
         const recordActivity = () => {
-          lastActivityTime = Date.now();
+        lastActivityTime = Date.now();
         };
-      
-        // 绑定事件
+    
+        // ✅ 绑定所有人工操作事件（点击、滚动、输入等）
         ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
-          document.addEventListener(evt, recordActivity);
+        document.addEventListener(evt, recordActivity);
         });
-      
-        // 每分钟判断是否需要发心跳
+    
+        // ✅ 每分钟发送心跳请求，仅在用户1分钟内有操作时才发送
         setInterval(() => {
-          const now = Date.now();
-          const diff = now - lastActivityTime;
-          if (diff < 60000) {
-            fetch('/heartbeat').catch(() => {});
-          }
+        if (Date.now() - lastActivityTime < 60000) {
+            fetch('/heartbeat')
+            .then(res => {
+                if (res.status === 440) {
+                alert("登录已超时，请重新登录！");
+                window.location.href = "/login";
+                }
+            })
+            .catch(() => {});
+        }
         }, 60000);
-      </script>
+    </script>
+  
 
 </body>
 </html>

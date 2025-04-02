@@ -1,6 +1,6 @@
 services:
-  - type: web
-    name: armstrong-rsec
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: .venv/bin/gunicorn app:app --bind 0.0.0.0:$PORT
+  - type: web                        ✅ 类型是 Web 服务
+    name: armstrong-rsec            ✅ 服务名称 OK
+    env: python                     ✅ 使用 Python 环境 ✅
+    buildCommand: pip install -r requirements.txt  ✅ 构建时正确安装依赖
+    startCommand: .venv/bin/gunicorn app:app --bind 0.0.0.0:$PORT  ✅ 正确调用 gunicorn 并绑定 Render 所需端口

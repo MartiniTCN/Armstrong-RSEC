@@ -113,8 +113,13 @@ def course_select():
         return redirect(url_for('login'))
     return render_template('course_select.html', username=session['username'])
 
+@app.route('/')
+def home():
+    return 'Server is running.'
+
 # ========== 启动入口 ==========
 if __name__ == '__main__':
     import os
     port = int(os.environ.get("PORT", 10000))  # Render 会设置 PORT 环境变量
+    print(f"✅ Running Flask on http://0.0.0.0:{port}")
     app.run(host='0.0.0.0', port=port)

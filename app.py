@@ -2,9 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import pytz
 from datetime import datetime, timedelta
 import os
-import random  # ✅ 保留用于数学题验证
 import requests
-
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'Martin-Armstrong-Passw0rd-2025!')
@@ -15,12 +13,6 @@ TIMEZONE = pytz.timezone('Asia/Shanghai')
 SESSION_TIMEOUT_MINUTES = 15
 
 # ========== 工具函数部分 ==========
-
-def generate_math_question():
-    """生成一个简单的数学加法题（两个 1 位数）并返回问题与答案"""
-    a = random.randint(1, 9)
-    b = random.randint(1, 9)
-    return f"{a} + {b} = ?", str(a + b)
 
 def get_client_ip():
     """获取客户端真实 IP 地址"""
@@ -93,16 +85,8 @@ def debug_request():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # 获取并校验验证码
         username = request.form.get('username')
-        captcha = request.form.get('captcha')
-        expected_answer = session.get('math_answer')
-
-        if captcha != expected_answer:
-            # 验证失败，返回 login.html 并带 shake 标记
-            math_q, math_a = generate_math_question()
-            session['math_answer'] = math_a
-            return render_template('login.html', math_question=math_q, shake=True)
+        password = request.form.get('password')  # 这里只是接收，无验证逻辑
 
         # 登录成功逻辑
         ip = get_client_ip()
@@ -118,12 +102,7 @@ def login():
         })
         return redirect(url_for('course_select'))
 
-
-    # GET 请求时展示页面
-    math_q, math_a = generate_math_question()
-    session['math_answer'] = math_a
-    return render_template('login.html', math_question=math_q)
-
+    return render_template('login.html')
 
 @app.route('/course')
 def course_select():
@@ -139,7 +118,6 @@ def ee_w_test():
 def home():
     return redirect(url_for('login'))
 
-# 添加一个新路由来读取登录日志并渲染：
 @app.route('/login_log')
 def login_log():
     SUPABASE_URL = os.environ.get("SUPABASE_URL")
@@ -161,21 +139,18 @@ def login_log():
         return f"请求 Supabase 失败: {response.status_code}", 500
 
     logs = response.json()
-
-    # 按时间倒序（可选）
     logs.sort(key=lambda x: x.get("login_time", ""), reverse=True)
 
-    # 将字段按顺序映射为 tuple 列表（匹配你 HTML 中的 log[1]~log[6]）
     logs_mapped = []
     for row in logs:
         logs_mapped.append([
-            row.get("id", ""),             # [0] 可省略
-            row.get("username", ""),      # [1]
-            row.get("ip", ""),            # [2]
-            row.get("login_time", ""),    # [3]
-            row.get("last_active", ""),   # [4]
-            row.get("logout_time", ""),   # [5]
-            row.get("status", "")         # [6]
+            row.get("id", ""),
+            row.get("username", ""),
+            row.get("ip", ""),
+            row.get("login_time", ""),
+            row.get("last_active", ""),
+            row.get("logout_time", ""),
+            row.get("status", "")
         ])
 
     return render_template("login_log.html", logs=logs_mapped)
@@ -184,10 +159,8 @@ from flask import jsonify
 
 @app.route('/api/logs')
 def get_login_logs():
-    import os
     import psycopg2
 
-    # 连接 Supabase（PostgreSQL）数据库（假设你已配置 DATABASE_URL 环境变量）
     conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
     cur = conn.cursor()
     cur.execute("SELECT * FROM login_log ORDER BY login_time DESC")
@@ -201,10 +174,7 @@ def get_login_logs():
 def health_check():
     return 'OK', 200
 
-
-# ========== 启动入口 ==========
 if __name__ == '__main__':
-    import os
-    port = int(os.environ.get("PORT", 10000))  # Render 会设置 PORT 环境变量
+    port = int(os.environ.get("PORT", 10000))
     print(f"✅ Running Flask on http://0.0.0.0:{port}")
     app.run(host='0.0.0.0', port=port)

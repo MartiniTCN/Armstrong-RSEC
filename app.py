@@ -180,6 +180,23 @@ def login_log():
 
     return render_template("login_log.html", logs=logs_mapped)
 
+from flask import jsonify
+
+@app.route('/api/logs')
+def get_login_logs():
+    import os
+    import psycopg2
+
+    # 连接 Supabase（PostgreSQL）数据库（假设你已配置 DATABASE_URL 环境变量）
+    conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM login_log ORDER BY login_time DESC")
+    logs = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return jsonify(logs)
+
 @app.route('/health')
 def health_check():
     return 'OK', 200

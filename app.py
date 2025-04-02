@@ -161,6 +161,10 @@ def course_selection():
         return redirect(url_for('login'))
     return render_template('course_selection.html')
 
+@app.route('/EE-W_Test.html')
+def ee_w_test():
+    return render_template('EE-W_Test.html')
+
 @app.route('/logout')
 def logout():
     """登出并更新 logout_time"""

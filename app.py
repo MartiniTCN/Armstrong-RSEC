@@ -219,16 +219,25 @@ def login_log():
 
 @app.route('/api/logs')
 def get_login_logs():
-    import psycopg2
+    SUPABASE_URL = os.environ.get("SUPABASE_URL")
+    SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
+    if not SUPABASE_URL or not SUPABASE_API_KEY:
+        return jsonify([]), 500
 
-    conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM login_log ORDER BY login_time DESC")
-    logs = cur.fetchall()
-    cur.close()
-    conn.close()
+    headers = {
+        "apikey": SUPABASE_API_KEY,
+        "Authorization": f"Bearer {SUPABASE_API_KEY}"
+    }
 
-    return jsonify(logs)
+    response = requests.get(
+        f"{SUPABASE_URL}/rest/v1/login_log?select=*&order=login_time.desc",
+        headers=headers
+    )
+
+    if response.status_code != 200:
+        return jsonify([]), 500
+
+    return jsonify(response.json())
 
 # ✅ 新增：前端心跳机制支持路由，保持 session 活跃
 @app.route('/heartbeat')

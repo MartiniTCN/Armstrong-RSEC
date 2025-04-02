@@ -291,7 +291,7 @@ def register():
 
     # ✅ 检查邀请码有效性
     check_resp = requests.get(
-        f"{SUPABASE_URL}/rest/v1/invitation_codes?code=eq.{invite_code}&used=eq.false",
+        f"{SUPABASE_URL}/rest/v1/invitation_codes?code=eq.{invite_code}&is_used=eq.false",
         headers=check_headers
     )
     if check_resp.status_code != 200 or not check_resp.json():
@@ -330,10 +330,14 @@ def register():
 
     # ✅ 标记邀请码已用
     update_resp = requests.patch(
-        f"{SUPABASE_URL}/rest/v1/invitation_codes?code=eq.{invite_code}",
-        headers=insert_headers,
-        json={"used": True}
-    )
+    f"{SUPABASE_URL}/rest/v1/invitation_codes?code=eq.{invite_code}",
+    headers=insert_headers,
+    json={
+        "is_used": True,
+        "used_by": username,
+        "used_at": get_current_time()
+    }
+)
 
     if update_resp.status_code not in [200, 204]:
         return jsonify({"success": False, "message": "注册成功但更新邀请码失败"})

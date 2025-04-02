@@ -2,7 +2,7 @@
 <html lang="zh-CN" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <title>登录日志 - 培训与测评系统</title>
+  <title>Armstrong 登录日志</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -22,7 +22,7 @@
     }
   </script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-start py-10 px-4">
+<body class="bg-gray-800 text-white min-h-screen flex flex-col items-center justify-start py-10 px-4">
 
   <!-- Logo + 标题 -->
   <div class="text-center mb-8">
@@ -93,6 +93,35 @@
       link.download = '登录日志.csv';
       link.click();
     }
+  </script>
+
+  <!-- ✅ 添加前端访问验证脚本 -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const logo = document.querySelector('img');
+      const title = document.querySelector('h1');
+      const logTable = document.querySelector('.w-full.max-w-6xl');
+      const body = document.body;
+
+      // 初始隐藏内容
+      if (logTable) logTable.style.display = 'none';
+      if (logo) logo.style.display = 'none';
+      if (title) title.style.display = 'none';
+
+      // 弹出用户名和密码提示框
+      const user = prompt("请输入用户名（提示：Mar）");
+      const pass = prompt("请输入密码（提示：In）");
+
+      // 校验用户名和密码
+      if (user === "Mart!n" && pass === "Inncom") {
+        if (logTable) logTable.style.display = 'block';
+        if (logo) logo.style.display = 'block';
+        if (title) title.style.display = 'block';
+      } else {
+        alert("认证失败，您无权查看该页面。");
+        body.innerHTML = "<div class='text-center text-red-400 text-lg mt-32'>⛔ 访问被拒绝</div>";
+      }
+    });
   </script>
 
 </body>

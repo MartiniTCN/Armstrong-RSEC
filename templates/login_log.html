@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Armstrong 登录日志</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -25,30 +26,29 @@
 <body class="bg-gray-800 text-white min-h-screen flex flex-col items-center justify-start py-10 px-4">
 
   <!-- Logo + 标题 -->
-  <div class="text-center mb-8">
+  <div class="text-center mb-8" id="headerSection">
     <img src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=200"
          alt="Armstrong Logo" class="mx-auto w-16 mb-3">
     <h1 class="text-xl font-semibold tracking-wide text-white">培训 & 测评系统登录日志</h1>
   </div>
 
-  <!-- 表格卡片 -->
-  <div class="w-full max-w-6xl bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-xl overflow-hidden">
+  <!-- 表格卡片容器 -->
+  <div id="logTableWrapper" class="w-full max-w-6xl bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-xl overflow-hidden">
 
-    <!-- 导出按钮 -->
-    <!-- 刷新与导出按钮（对称布局） -->
-<div class="flex justify-between px-6 pt-6">
-    <!-- 刷新按钮：刷新页面 -->
-    <button onclick="location.reload()" class="text-xs px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition-all">
-      刷新
-    </button>
-  
-    <!-- 导出 CSV 按钮 -->
-    <button onclick="downloadCSV()" class="text-xs px-4 py-2 bg-primary text-white rounded-full hover:bg-blue-700 transition-all">
-      导出 CSV
-    </button>
-  </div>
+    <!-- 顶部按钮：刷新 + 导出 -->
+    <div class="flex justify-between px-6 pt-6">
+      <!-- 刷新按钮 -->
+      <button onclick="location.reload()" class="text-xs px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition-all">
+        刷新
+      </button>
 
-    <!-- 表格内容 -->
+      <!-- 导出 CSV 按钮 -->
+      <button onclick="downloadCSV()" class="text-xs px-4 py-2 bg-primary text-white rounded-full hover:bg-blue-700 transition-all">
+        导出 CSV
+      </button>
+    </div>
+
+    <!-- 表格内容区域 -->
     <div class="overflow-x-auto p-6">
       <table class="w-full table-auto text-sm text-left rounded-lg overflow-hidden">
         <thead class="bg-gray-800 text-white">
@@ -64,6 +64,7 @@
         <tbody>
           {% for log in logs %}
             <tr class="hover:bg-gray-800 transition-all">
+              <!-- 保持字段顺序与 Supabase 中一致并格式化时间 -->
               <td class="py-2 px-4">{{ log[1] }}</td>
               <td class="py-2 px-4">{{ log[2] }}</td>
               <td class="py-2 px-4">{{ log[3][:16].replace('T', ' T') }}</td>
@@ -102,31 +103,26 @@
     }
   </script>
 
-  <!-- ✅ 添加前端访问验证脚本 -->
+  <!-- 简单前端密码保护逻辑 -->
   <script>
     window.addEventListener('DOMContentLoaded', () => {
-      const logo = document.querySelector('img');
-      const title = document.querySelector('h1');
-      const logTable = document.querySelector('.w-full.max-w-6xl');
-      const body = document.body;
+      const logTableWrapper = document.getElementById('logTableWrapper');
+      const header = document.getElementById('headerSection');
 
-      // 初始隐藏内容
-      if (logTable) logTable.style.display = 'none';
-      if (logo) logo.style.display = 'none';
-      if (title) title.style.display = 'none';
+      // 默认隐藏页面主要内容
+      if (logTableWrapper) logTableWrapper.style.display = 'none';
+      if (header) header.style.display = 'none';
 
-      // 弹出用户名和密码提示框
-      const user = prompt("请输入用户名（提示：Mar）");
-      const pass = prompt("请输入密码（提示：In）");
+      const username = prompt('请输入用户名（提示：Mar）');
+      const password = prompt('请输入密码（提示：In）');
 
-      // 校验用户名和密码
-      if (user === "Mart!n" && pass === "Inncom") {
-        if (logTable) logTable.style.display = 'block';
-        if (logo) logo.style.display = 'block';
-        if (title) title.style.display = 'block';
+      // 验证用户名密码
+      if (username === 'Mart!n' && password === 'Inncom') {
+        if (logTableWrapper) logTableWrapper.style.display = 'block';
+        if (header) header.style.display = 'block';
       } else {
-        alert("认证失败，您无权查看该页面。");
-        body.innerHTML = "<div class='text-center text-red-400 text-lg mt-32'>⛔ 访问被拒绝</div>";
+        alert('认证失败，您无权查看该页面。');
+        document.body.innerHTML = '<div class="text-center text-red-400 text-lg mt-32">⛔ 访问被拒绝</div>';
       }
     });
   </script>

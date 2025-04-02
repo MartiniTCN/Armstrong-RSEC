@@ -284,6 +284,13 @@ def register():
     )
     if check_resp.status_code != 200 or not check_resp.json():
         return jsonify({"success": False, "message": "邀请码无效或已被使用"})
+    # ✅ 检查用户名是否重复（新增）
+    check_user_resp = requests.get(
+        f"{SUPABASE_URL}/rest/v1/user_accounts?username=eq.{username}",
+        headers=check_headers
+    )
+    if check_user_resp.status_code == 200 and check_user_resp.json():
+        return jsonify({"success": False, "message": "该用户名已注册"})
 
     # ✅ 插入用户数据
     insert_headers = headers.copy()

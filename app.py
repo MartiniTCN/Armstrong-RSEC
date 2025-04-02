@@ -116,7 +116,7 @@ def login():
             "last_active": now,
             "status": "登录中"
         })
-        return redirect(url_for('course_select'))
+        return redirect(url_for('course_selection'))
 
     # GET 请求时展示页面
     math_q, math_a = generate_math_question()
@@ -128,7 +128,7 @@ def login():
 def course_select():
     if 'username' not in session:
         return redirect(url_for('login'))
-    return render_template('course_select.html', username=session['username'])
+    return render_template('course_selection.html', username=session['username'])
 
 @app.route('/ee-w')
 def ee_w_test():

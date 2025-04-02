@@ -85,9 +85,12 @@ def check_session_timeout():
                 return redirect(url_for('login'))
         session['last_active'] = now.isoformat()
         update_last_active(session['username'])
+        
+def debug_request():
+    print(f"📥 请求到达: {request.path}")
 
 # ========== 页面路由 ==========
-@app.route('/')
+@app.route('/login')
 def login():
     return render_template('login.html')
 
@@ -116,6 +119,7 @@ def course_select():
 @app.route('/')
 def home():
     return 'Server is running.'
+
 
 # ========== 启动入口 ==========
 if __name__ == '__main__':

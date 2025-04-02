@@ -37,28 +37,21 @@
   <div id="logTableWrapper" class="w-full max-w-6xl bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-xl overflow-hidden">
 
     <!-- 顶部按钮：刷新 + 导出 -->
-    <!-- 顶部按钮：刷新 + 导出 -->
-<div class="flex flex-col sm:flex-row sm:justify-between px-6 pt-6 gap-2 sm:gap-0">
-    <!-- ✅ 刷新成功提示区域 -->
-    <div id="refreshMessage" class="text-sm text-green-400 font-medium pb-2 hidden">
-      ✅ 已成功刷新
-    </div>
-    
-    <div class="flex justify-between items-center w-full sm:w-auto gap-3">
-      <!-- 刷新按钮 -->
-      <button onclick="refreshLogs()" class="text-xs px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition-all">
-        刷新
-      </button>
-      <!-- 导出 CSV 按钮 -->
-      <button onclick="downloadCSV()" class="text-xs px-3 py-1.5 bg-primary text-white rounded-full hover:bg-blue-700 transition-all">
-        导出 CSV
-      </button>
-    </div>
-  </div>
+    <div class="flex flex-wrap justify-between items-center gap-2 px-6 pt-4">
+        <!-- 刷新按钮 -->
+        <button onclick="refreshLogs()" class="text-xs px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition-all">
+          刷新
+        </button>
+      
+        <!-- 导出 CSV 按钮 -->
+        <button onclick="downloadCSV()" class="text-xs px-3 py-1.5 bg-primary text-white rounded-full hover:bg-blue-700 transition-all">
+          导出 CSV
+        </button>
+      </div>
 
-    <!-- 表格内容区域 -->
-    <div class="overflow-x-auto p-6">
-      <table class="w-full table-auto text-sm text-left rounded-lg overflow-hidden">
+      <!-- 表格内容区域 -->
+      <div class="w-full overflow-x-auto p-6">
+        <table class="w-full table-auto text-xs sm:text-sm text-left rounded-lg overflow-hidden">
         <thead class="bg-gray-800 text-white">
           <tr>
             <th class="py-3 px-4">账号</th>
@@ -84,7 +77,9 @@
         </tbody>
       </table>
     </div>
+
   </div>
+
 
   <!-- CSV 导出逻辑 -->
   <script>
@@ -125,7 +120,7 @@
       const password = prompt('请输入密码（提示：In）');
 
       // 验证用户名密码
-      if (username === 'Mart!n' && password === 'Inncom') {
+      if (username === 'Martin' && password === 'Inncom') {
         if (logTableWrapper) logTableWrapper.style.display = 'block';
         if (header) header.style.display = 'block';
       } else {
@@ -136,44 +131,48 @@
   </script>
 
 <script>
-
-  async function refreshLogs() {
-    try {
-      const res = await fetch('/api/logs');
-      const data = await res.json();
-
-      const tbody = document.querySelector('tbody');
-      tbody.innerHTML = '';
-
-      data.forEach(log => {
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-gray-800 transition-all';
-        tr.innerHTML = `
-          <td class="py-2 px-4">${log[1]}</td>
-          <td class="py-2 px-4">${log[2]}</td>
-          <td class="py-2 px-4">${(log[3] || '').slice(0, 16).replace('T', ' T')}</td>
-          <td class="py-2 px-4">${log[5] ? log[5].slice(0, 16).replace('T', ' T') : '—'}</td>
-          <td class="py-2 px-4">${(log[4] || '').slice(0, 16).replace('T', ' T')}</td>
-          <td class="py-2 px-4">${log[6]}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      // ✅ 显示“刷新成功”提示并自动隐藏
-      const msg = document.getElementById('refreshMessage');
-      if (msg) {
-        msg.classList.remove('hidden');
-        setTimeout(() => {
-          msg.classList.add('hidden');
-        }, 2500); // 显示 2.5 秒后隐藏
+    async function refreshLogs() {
+      try {
+        const res = await fetch('/api/logs');
+        const data = await res.json();
+  
+        const tbody = document.querySelector('tbody');
+        tbody.innerHTML = '';
+  
+        data.forEach(log => {
+          if (!log || log.length < 7) return; // 防止 log 数据结构异常
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-gray-800 transition-all';
+          tr.innerHTML = `
+            <td class="py-2 px-4">${log[1] || '—'}</td>
+            <td class="py-2 px-4">${log[2] || '—'}</td>
+            <td class="py-2 px-4">${(log[3] || '').slice(0, 16).replace('T', ' T')}</td>
+            <td class="py-2 px-4">${log[5] ? log[5].slice(0, 16).replace('T', ' T') : '—'}</td>
+            <td class="py-2 px-4">${(log[4] || '').slice(0, 16).replace('T', ' T')}</td>
+            <td class="py-2 px-4">${log[6] || '—'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+  
+        showToast('✅ 已成功刷新', true);
+  
+      } catch (err) {
+        console.error(err);
+        showToast('❌ 刷新失败，请稍后再试', false);
       }
-
-    } catch (err) {
-      alert('刷新失败，请稍后再试');
-      console.error(err);
     }
-  }
-</script>
+  
+    // ✅ 通用弹窗提示函数
+    function showToast(message, success = true) {
+      const toast = document.createElement('div');
+      toast.textContent = message;
+      toast.className = `fixed top-6 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-md shadow-lg text-sm z-50 ${
+        success ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+      }`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    }
+  </script>
 
   <!-- 页面底部版权信息 -->
   <footer class="mt-10 text-sm text-gray-400">

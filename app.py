@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-import sqlite3
+# import sqlite3
 import pytz
 from datetime import datetime, timedelta
 import os
@@ -20,10 +20,18 @@ def generate_math_question():
     return f"{a} + {b} = ?", str(a + b)
 
 def get_db_connection():
-    """获取数据库连接"""
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-    return conn
+    """连接 PostgreSQL 数据库（使用 Supabase 提供的 DATABASE_URL）"""
+    import psycopg2
+    import os
+    db_url = os.environ.get('DATABASE_URL')
+    if not db_url:
+        raise RuntimeError("未设置环境变量 DATABASE_URL")
+    try:
+        conn = psycopg2.connect(db_url)
+        return conn
+    except Exception as e:
+        print("[ERROR] 无法连接到 Supabase 数据库：", e)
+        raise
 
 def init_db():
     """初始化数据库，创建 login_log 表（仅当不存在时）"""
@@ -56,23 +64,21 @@ def now_beijing():
 
 
 def check_timeout():
-    """检查登录记录中是否有 15 分钟无操作的，自动登出"""
+    """检查是否有超时未操作的用户"""
     conn = get_db_connection()
     cursor = conn.cursor()
     now = now_beijing()
-
-    cursor.execute("SELECT id, username, last_active FROM login_log WHERE status = '登录中'")
+    cursor.execute("SELECT id, last_active FROM login_log WHERE status = '登录中'")
     rows = cursor.fetchall()
-
     for row in rows:
-        last_active = datetime.fromisoformat(row['last_active'])
+        last_active = row[1]
         if now - last_active > timedelta(minutes=15):
-            cursor.execute(
-                "UPDATE login_log SET status='已登出', logout_time=? WHERE id=?",
-                (now.isoformat(), row['id'])
-            )
-            print(f"[超时登出] 用户名: {row['username']}，登录ID: {row['id']}，上次活动时间: {row['last_active']}，当前时间: {now.isoformat()}")
-
+            print(f"[超时退出] 记录 ID {row[0]} 超过 15 分钟未操作，已登出")
+            cursor.execute("""
+                UPDATE login_log
+                SET status = %s, logout_time = %s
+                WHERE id = %s
+            """, ('已登出', now.isoformat(), row[0]))
     conn.commit()
     conn.close()
 
@@ -104,6 +110,14 @@ def login():
         else:
             # --- 登录成功 ---
             print("[DEBUG] 登录成功，即将跳转到课程选择页")
+            # ---  测试连接是否成功 ---
+            try:
+                conn = get_db_connection()
+                print("[DEBUG] 成功连接到 Supabase 数据库")
+                conn.close()
+            except Exception as e:
+                print("[ERROR] 无法连接数据库：", e)
+
             return redirect(url_for('course_selection'))  # ✅ 使用正确的 endpoint 名称
 
     # --- 无论 POST 或 GET 都需要生成新的数学题 ---
@@ -120,35 +134,49 @@ def login():
 @app.route('/login', methods=['POST'])
 def do_login():
     """处理登录请求"""
+
+    # 从表单中获取用户输入的用户名、密码、验证码
     username = request.form['username']
     password = request.form['password']
     answer = request.form['captcha']
-    expected = session.get('captcha')  # ✅ 与统一用法一致
+    expected = session.get('captcha')  # 获取 session 中的验证码正确答案
 
-    # 验证码判断
+    # 验证码判断逻辑
     if not expected or not answer or int(answer) != expected:
-        # 重新生成数学题并写入 session
+        # 生成新的验证码题目，重新渲染登录页
         num1, num2 = random.randint(1, 9), random.randint(1, 9)
         question = f"{num1} + {num2} = ?"
         session['captcha'] = num1 + num2
         return render_template('login.html', error="验证码错误", math_question=question)
 
-    # 用户名/密码判断
+    # 账户密码校验（你可以扩展成数据库验证）
     if username == "admin" and password == "123456":
+        # 登录成功，记录 session
         session['username'] = username
+
+        # 获取 IP 与当前北京时间
         ip = get_client_ip()
         now = now_beijing().isoformat()
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO login_log (username, ip, login_time, last_active, status) VALUES (?, ?, ?, ?, ?)",
-                       (username, ip, now, now, '登录中'))
-        conn.commit()
-        conn.close()
+        # 写入 Supabase 中 login_log 表
+        try:
+            conn = get_db_connection()  # 使用你统一定义的连接方法
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO login_log (username, ip, login_time, last_active, status)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (username, ip, now, now, '登录中'))
+            conn.commit()
+            conn.close()
+            print(f"[DEBUG] 用户 {username} 登录成功，记录已写入 Supabase")
+        except Exception as e:
+            print("[ERROR] 登录记录写入失败：", e)
 
+        # 登录后跳转课程页
         return redirect(url_for('course_selection'))
+
     else:
-        # 再生成一次题目
+        # 用户名或密码错误，生成新验证码
         num1, num2 = random.randint(1, 9), random.randint(1, 9)
         question = f"{num1} + {num2} = ?"
         session['captcha'] = num1 + num2
@@ -180,15 +208,29 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-@app.route('/login_log')
+@app.route('/log')
 def login_log():
-    """展示登录日志页面"""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM login_log ORDER BY id DESC")
-    logs = cursor.fetchall()
-    conn.close()
-    return render_template('login_log.html', logs=logs)
+    """展示登录日志页面，读取 Supabase 中 login_log 表"""
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # 查询所有登录日志记录，按登录时间倒序
+        cursor.execute("""
+            SELECT id, username, ip, login_time, last_active, logout_time, status
+            FROM login_log
+            ORDER BY login_time DESC
+        """)
+        rows = cursor.fetchall()
+        conn.close()
+
+        # 渲染到模板 log.html
+        return render_template('log.html', logs=rows)
+
+    except Exception as e:
+        print("[ERROR] 日志查询失败：", e)
+        return "日志加载失败"
 
 @app.route('/health')
 def health():
@@ -197,25 +239,30 @@ def health():
 
 
 @app.before_request
-def update_last_active_and_check_timeout():
-    """在每次请求前更新活跃时间；首页执行超时自动登出"""
+def update_last_active():
+    """每次请求前更新活动时间，并执行超时检测"""
     username = session.get('username')
-
-    # ✅ 1. 已登录用户，更新 last_active 字段
     if username:
         try:
+            # ✅ 更新用户活动时间
             conn = get_db_connection()
             cursor = conn.cursor()
             now = now_beijing().isoformat()
             cursor.execute("""
                 UPDATE login_log
-                SET last_active = ?
-                WHERE username = ? AND status = '登录中'
+                SET last_active = %s
+                WHERE username = %s AND status = '登录中'
             """, (now, username))
             conn.commit()
             conn.close()
         except Exception as e:
-            print("[警告] 更新用户活动时间失败：", e)
+            print("[警告] 无法更新用户活动时间：", e)
+
+    # ✅ 检查所有“登录中”用户是否超时（无论是否登录用户）
+    try:
+        check_timeout()
+    except Exception as e:
+        print("[警告] 检查超时失败：", e)
 
     # ✅ 2. 仅在访问首页时执行超时自动登出逻辑（避免频繁扫描数据库）
    # if request.path == '/':

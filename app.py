@@ -88,6 +88,30 @@ def logout_user(username):
     if response.status_code not in [200, 204]:
         print("[WARN] 自动登出时更新状态失败：", response.status_code, response.text)
 
+def handle_login():
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    # ✅ 若已有用户登录，先登出前一个用户
+    old_user = session.get('username')
+    if old_user:
+        logout_user(old_user)
+        session.clear()
+
+    # ✅ 正常登录流程
+    ip = get_client_ip()
+    now = get_current_time()
+    session['username'] = username
+    session['last_active'] = datetime.now().isoformat()
+    insert_login_log({
+        "username": username,
+        "ip": ip,
+        "login_time": now,
+        "last_active": now,
+        "status": "登录中"
+    })
+    return redirect(url_for('course_select'))
+
 # ========== 登录前置钩子 ==========
 @app.before_request
 def check_session_timeout():
@@ -114,28 +138,33 @@ def login():
         session.clear()  # ✅ 每次打开登录页时清除旧会话
         return render_template('login.html')
     
-    # POST 表示提交登录
-    username = request.form.get('username')
-    
+    # ✅ POST 请求，表示提交登录
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')  # 这里只是接收，无验证逻辑
+        debug_request()
+        return handle_login()
+    username = request.form.get('username')
+    password = request.form.get('password')  # 这里只是接收，无验证逻辑
 
-        # 登录成功逻辑
-        ip = get_client_ip()
-        now = get_current_time()
-        session['username'] = username
-        session['last_active'] = datetime.now().isoformat()
-        insert_login_log({
-            "username": username,
-            "ip": ip,
-            "login_time": now,
-            "last_active": now,
-            "status": "登录中"
-        })
-        return redirect(url_for('course_select'))
+    # ✅ 检查是否已有其他账号在登录，如果有，先将旧账号状态更新为“已登出”
+    old_user = session.get('username')
+    if old_user:
+        logout_user(old_user)  # 🔁 更新 Supabase 中旧账号的状态
+        session.clear()
 
-    return render_template('login.html')
+    # ✅ 登录成功逻辑
+    ip = get_client_ip()
+    now = get_current_time()
+    session['username'] = username
+    session['last_active'] = datetime.now().isoformat()
+    insert_login_log({
+        "username": username,
+        "ip": ip,
+        "login_time": now,
+        "last_active": now,
+        "status": "登录中"
+    })
+
+    return redirect(url_for('course_select'))
 
 @app.route('/course')
 def course_select():
@@ -220,8 +249,8 @@ def register():
     if not SUPABASE_URL or not SUPABASE_API_KEY:
         return jsonify({"success": False, "message": "Supabase 配置缺失"}), 500
 
-    # ✅ 获取请求体中的表单字段
-    data = request.json
+    # ✅ 获取请求体中的表单字段 注册账户
+    data = request.form
     username = data.get('username')
     password = data.get('password')
     company = data.get('company')

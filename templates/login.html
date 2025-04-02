@@ -113,7 +113,7 @@
     <input name="city" placeholder="城市" required class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700">
     <input name="email" placeholder="邮箱" required class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700">
     <input name="phone" placeholder="电话" required class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700">
-    <input name="sales" placeholder="Armstrong 销售姓名" required class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700">
+    <input name="sales_name" placeholder="Armstrong 销售姓名" required class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700">
     <input name="invite_code" placeholder="邀请码（请联系 RSEC 部门 Martin Peng）" required class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700">
     <div class="flex justify-between">
       <button type="submit" class="px-6 py-2 text-white rounded-2xl bg-primary hover:bg-blue-700">注册</button>
@@ -200,6 +200,32 @@
   });
 </script>
 
+<!-- ✅ 拦截注册表单提交并使用 AJAX 异步提交 -->
+<script>
+  document.getElementById('registerForm').addEventListener('submit', async function (e) {
+    e.preventDefault(); // 阻止默认提交行为
+  
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach((value, key) => data[key] = value);
+  
+    const res = await fetch('/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+  
+    const result = await res.json();
+    if (result.success) {
+      alert("✅ 注册成功！请返回登录。");
+      toggleForm('login'); // 回到登录界面
+    } else {
+      alert("❌ " + result.message);
+    }
+  });
+  </script>
 
 </body>
 </html>

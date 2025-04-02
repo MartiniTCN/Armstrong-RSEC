@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN" class="dark">
-<body class="min-h-screen flex flex-col items-center justify-start py-10 px-4 text-white dark:bg-gray-700"></body>
+
 <head>
   <meta charset="UTF-8" />
   <title>Armstrong 登录日志</title>
@@ -50,7 +50,7 @@
         刷新
       </button>
       <!-- 导出 CSV 按钮 -->
-      <button onclick="downloadCSV()" class="text-xs px-4 py-2 bg-primary text-white rounded-full hover:bg-blue-700 transition-all">
+      <button onclick="downloadCSV()" class="text-xs px-3 py-1.5 bg-primary text-white rounded-full hover:bg-blue-700 transition-all">
         导出 CSV
       </button>
     </div>
@@ -136,7 +136,7 @@
   </script>
 
 <script>
-    <script>
+
   async function refreshLogs() {
     try {
       const res = await fetch('/api/logs');
@@ -174,7 +174,12 @@
     }
   }
 </script>
-  </script>
+
+  <!-- 页面底部版权信息 -->
+  <footer class="mt-10 text-sm text-gray-400">
+    <p>© 2025 Martin Peng. All rights reserved.</p>
+    <p>Powered by <a href="https://stardots.io" class="text-primary hover:underline">Stardots</a></p>
+  </footer>
   
 </body>
 </html>

@@ -1,20 +1,76 @@
-<table>
-    <thead>
-      <tr>
-        <th>账号</th><th>登录时间</th><th>IP 地址</th>
-        <th>最后活跃</th><th>登出时间</th><th>状态</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for log in logs %}
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录日志 - Armstrong</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-white min-h-screen flex flex-col items-center justify-start p-6">
+  <!-- 顶部 Logo 和标题 -->
+  <div class="text-center mb-6">
+    <img src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=160" alt="Armstrong Logo" class="mx-auto mb-2">
+    <h1 class="text-xl font-semibold">培训 & 测评系统登录日志</h1>
+  </div>
+
+  <!-- 卡片容器 -->
+  <div class="backdrop-blur-lg bg-white/30 dark:bg-white/10 border border-white/20 dark:border-white/10 rounded-xl shadow-xl p-6 w-full max-w-5xl overflow-x-auto">
+    <table id="logTable" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+      <thead class="bg-gray-200 dark:bg-gray-700">
         <tr>
-          <td>{{ log[1] }}</td>
-          <td>{{ log[3] }}</td>
-          <td>{{ log[2] }}</td>
-          <td>{{ log[4] }}</td>
-          <td>{{ log[5] or '—' }}</td>
-          <td>{{ log[6] }}</td>
+          <th class="py-3 px-4 text-left">账号</th>
+          <th class="py-3 px-4 text-left">IP 地址</th>
+          <th class="py-3 px-4 text-left">登录时间</th>
+          <th class="py-3 px-4 text-left">登出时间</th>
+          <th class="py-3 px-4 text-left">最后活跃</th>
+          <th class="py-3 px-4 text-left">当前状态</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </thead>
+      <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+        {% for log in logs %}
+        <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+          <td class="py-2 px-4">{{ log[1] }}</td>
+          <td class="py-2 px-4">{{ log[2] }}</td>
+          <td class="py-2 px-4">{{ log[3] }}</td>
+          <td class="py-2 px-4">{{ log[5] or '—' }}</td>
+          <td class="py-2 px-4">{{ log[4] }}</td>
+          <td class="py-2 px-4">{{ log[6] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="text-center mt-6">
+      <button onclick="exportCSV()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all">导出为 CSV</button>
+    </div>
+  </div>
+
+  <!-- 导出脚本 -->
+  <script>
+    function exportCSV() {
+      let csv = '账号,IP 地址,登录时间,登出时间,最后活跃,当前状态\n';
+      const rows = document.querySelectorAll('#logTable tbody tr');
+      rows.forEach(row => {
+        const cols = row.querySelectorAll('td');
+        let line = Array.from(cols).map(td => '"' + td.innerText.trim() + '"').join(',');
+        csv += line + '\n';
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'login_log.csv';
+      link.click();
+    }
+  </script>
+
+  <!-- 简单访问保护 -->
+  <script>
+    const username = prompt("请输入用户名（提示：Mar）");
+    const password = prompt("请输入密码（提示：In）");
+    if (username !== "Mart!n" || password !== "Inncom") {
+      alert("访问被拒绝，用户名或密码错误。");
+      document.body.innerHTML = '<div class="text-center mt-20 text-xl text-red-600 font-semibold">权限不足，无法查看该页面。</div>';
+    }
+  </script>
+</body>
+</html>

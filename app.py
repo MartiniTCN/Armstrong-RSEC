@@ -118,6 +118,7 @@ def login():
         })
         return redirect(url_for('course_select'))
 
+
     # GET 请求时展示页面
     math_q, math_a = generate_math_question()
     session['math_answer'] = math_a

@@ -381,5 +381,14 @@
             document.documentElement.classList.toggle('dark', isDarkMode);
         });
     </script>
+
+    <!-- ✅ 页面心跳机制脚本（新增） -->
+<script>
+    // 每 1 分钟向服务器发一次心跳请求，保持活跃状态
+    setInterval(() => {
+      fetch('/heartbeat').catch(() => {}); // 静默处理异常
+    }, 60000); // 60 秒一次
+  </script>
+  
 </body>
 </html>

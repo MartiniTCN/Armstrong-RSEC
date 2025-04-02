@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import pytz
 from datetime import datetime, timedelta
 import os
@@ -63,21 +63,47 @@ def update_last_active(username):
     if response.status_code not in [200, 204]:
         print("[WARN] 更新 last_active 失败：", response.status_code, response.text)
 
+# ✅ 新增：用户登出时记录 logout_time 并更新状态
+
+def logout_user(username):
+    """将指定用户的状态更新为已登出，并记录登出时间"""
+    SUPABASE_URL = os.environ.get("SUPABASE_URL")
+    SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
+    if not SUPABASE_URL or not SUPABASE_API_KEY:
+        return
+    headers = {
+        "apikey": SUPABASE_API_KEY,
+        "Authorization": f"Bearer {SUPABASE_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "status": "已登出",
+        "logout_time": get_current_time()
+    }
+    response = requests.patch(
+        f"{SUPABASE_URL}/rest/v1/login_log?username=eq.{username}&status=eq.登录中",
+        headers=headers,
+        json=payload
+    )
+    if response.status_code not in [200, 204]:
+        print("[WARN] 自动登出时更新状态失败：", response.status_code, response.text)
+
 # ========== 登录前置钩子 ==========
 @app.before_request
 def check_session_timeout():
-    """每次请求前检查 session 是否超时，更新 last_active"""
+    """每次请求前检查 session 是否超时，若超时则自动登出并清除 session"""
     if 'username' in session:
         now = datetime.now()
         last_active = session.get('last_active')
         if last_active:
             last_dt = datetime.fromisoformat(last_active)
             if now - last_dt > timedelta(minutes=SESSION_TIMEOUT_MINUTES):
+                logout_user(session['username'])  # ✅ 自动登出数据库更新
                 session.clear()
                 return redirect(url_for('login'))
         session['last_active'] = now.isoformat()
         update_last_active(session['username'])
-        
+
 def debug_request():
     print(f"📥 请求到达: {request.path}")
 
@@ -155,8 +181,6 @@ def login_log():
 
     return render_template("login_log.html", logs=logs_mapped)
 
-from flask import jsonify
-
 @app.route('/api/logs')
 def get_login_logs():
     import psycopg2
@@ -169,6 +193,14 @@ def get_login_logs():
     conn.close()
 
     return jsonify(logs)
+
+# ✅ 新增：前端心跳机制支持路由，保持 session 活跃
+@app.route('/heartbeat')
+def heartbeat():
+    if 'username' in session:
+        session['last_active'] = datetime.now().isoformat()
+        return 'OK', 200
+    return 'Unauthorized', 401
 
 @app.route('/health')
 def health_check():

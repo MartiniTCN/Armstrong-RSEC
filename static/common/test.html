@@ -1661,7 +1661,10 @@ document.addEventListener("DOMContentLoaded", () => {
 <!-- PapaParse CSV 加载 + 动态题目填充脚本（匹配中文字段） -->
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script>
-let currentLang = 'zh';  // 默认语言
+  // 防止变量重复声明
+  if (typeof currentLang === 'undefined') {
+    var currentLang = 'zh';  // 默认语言
+  }
 
 // 加载 CSV 并填充所有题型
 function loadQuestionsFromCSV(csvPath) {
@@ -1822,7 +1825,10 @@ function switchLanguage(lang) {
 <!-- PapaParse CSV 加载 + 动态题目填充脚本（匹配中文字段） -->
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script>
-let currentLang = 'zh';  // 默认语言
+  // 防止变量重复声明
+  if (typeof currentLang === 'undefined') {
+    var currentLang = 'zh';  // 默认语言
+  }
 
 // 加载 CSV 并填充所有题型
 function loadQuestionsFromCSV(csvPath) {

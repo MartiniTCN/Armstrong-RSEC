@@ -1,0 +1,88 @@
+<!--
+文件路径：/static/common/test.html
+说明：统一课程测试模板，支持多课程共用、CSV 动态加载、评估、邮件发送、语言切换与暗黑模式，UI 参考 EE-W 测试页原始样式。
+-->
+<!DOCTYPE html>
+<html lang="zh" class="font-sans">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>课程测评 - Armstrong RSEC</title>
+  <link rel="stylesheet" href="../common/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
+  <script defer src="../common/render.js"></script>
+</head>
+
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+  <!-- 水印 -->
+  <div class="fixed inset-0 pointer-events-none opacity-5 text-7xl font-bold select-none text-center pt-64 z-0">
+    Armstrong RSEC
+  </div>
+
+  <!-- 顶部栏：Logo、课程名、倒计时、设置 -->
+  <header class="flex flex-wrap justify-between items-center p-4 shadow bg-white dark:bg-gray-800 sticky top-0 z-10">
+    <div class="flex items-center space-x-3">
+      <img src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=200" alt="Logo" class="h-8" />
+      <span class="text-xl font-bold" id="pageCourseName">课程测评系统</span>
+    </div>
+    <div class="flex items-center space-x-4">
+      <div id="timerBox" class="bg-red-100 text-red-800 px-4 py-1 rounded-full font-bold">00:00</div>
+      <div class="relative">
+        <button class="text-xl" onclick="toggleMenu()">⚙️</button>
+        <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-32 rounded bg-white dark:bg-gray-700 border shadow text-sm">
+          <button class="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600" onclick="switchTheme()">明暗切换</button>
+          <button class="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600" onclick="switchLanguage('zh')">🇨🇳 中文</button>
+          <button class="block w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600" onclick="switchLanguage('en')">🇺🇸 English</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 学员信息输入区 -->
+  <section class="max-w-5xl mx-auto mt-6 bg-gray-50 dark:bg-gray-800 p-4 rounded shadow" id="userInfo">
+    <h2 class="text-lg font-semibold mb-3">📋 学员信息</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <input type="text" id="company" placeholder="公司名称" class="input-box" />
+      <input type="text" id="username" placeholder="学员姓名" class="input-box" />
+      <input type="tel" id="phone" placeholder="手机号" class="input-box" />
+      <input type="email" id="email" placeholder="邮箱地址" class="input-box" />
+    </div>
+  </section>
+
+  <!-- CSV 题目容器 -->
+  <main class="max-w-5xl mx-auto p-4 space-y-6" id="testContainer">
+    <!-- PapaParse & render.js 会动态注入题目内容 -->
+  </main>
+
+  <!-- 提交按钮区 -->
+  <div class="text-center mt-6">
+    <button onclick="evaluateAll()" class="bg-blue-600 text-white px-6 py-2 text-lg rounded shadow hover:bg-blue-700">
+      ✅ 提交评估
+    </button>
+  </div>
+
+  <!-- 评估结果页 -->
+  <section id="resultPage" class="hidden max-w-4xl mx-auto mt-10 p-4 bg-white dark:bg-gray-800 rounded shadow">
+    <h2 class="text-xl font-bold mb-3">📊 评测结果</h2>
+    <div id="assessmentSummary"></div>
+    <div class="mt-4 text-right">
+      <button onclick="handleResultEmail()" class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded">📩 发送成绩邮件</button>
+    </div>
+  </section>
+
+  <!-- 动态口令弹窗 -->
+  <div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-700 p-6 rounded shadow-xl w-full max-w-sm">
+      <h3 class="text-lg font-bold mb-3">请输入动态口令以发送邮件</h3>
+      <input type="password" id="dynamicPasswordInput" placeholder="请输入口令..." class="input-box mb-4" />
+      <div class="flex justify-end space-x-2">
+        <button onclick="submitPassword()" class="bg-blue-600 text-white px-4 py-2 rounded">提交</button>
+        <button onclick="closePasswordModal()" class="bg-gray-500 text-white px-4 py-2 rounded">取消</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

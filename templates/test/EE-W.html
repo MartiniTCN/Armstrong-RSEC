@@ -1695,13 +1695,7 @@ function switchLanguage(lang) {
     });
   });
 </script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    loadQuestions();  // ⬅️ 调用渲染题目的主函数
-  });
-</script>
 
-</body> 标签前 -->
     <script>
       let lastActivityTime = Date.now();
   
@@ -1853,5 +1847,8 @@ function switchLanguage(lang) {
     });
   });
 </script>
+
+<script src="/static/common/render.js"></script>
+
 </body>
 </html>

@@ -15,6 +15,8 @@ window.addEventListener("DOMContentLoaded", () => {
 // ✅ 语言切换按钮处理
 function switchLanguage(lang) {
   currentLanguage = lang;
+  console.log(`🌐 已切换语言为：${lang}`);
+  alert(`🌐 已切换为 ${lang === 'zh' ? '中文' : 'English'} 模式`);
   renderQuestions(parsedQuestions);
 }
 
@@ -25,10 +27,16 @@ function loadCSVAndInit(courseName) {
     download: true,
     header: true,
     skipEmptyLines: true,
+  
     complete: function (results) {
       parsedQuestions = results.data;
       initCorrectAnswers(parsedQuestions);
       renderQuestions(parsedQuestions);
+    },
+  
+    error: function (err) {
+      alert("❌ 加载题库失败，请检查 CSV 路径是否正确！");
+      console.error("📛 PapaParse 加载错误：", err);
     }
   });
 }
@@ -154,7 +162,8 @@ function evaluateAll() {
   // 简答题（简单关键词匹配）
   correctAnswers.essay.forEach((answer, i) => {
     const input = document.getElementById(`eq${i + 1}`);
-    if (input && input.value.includes(answer)) score += 4; // 可调分数
+    const keywords = answer.split(',').map(k => k.trim());
+    if (keywords.some(kw => input.value.includes(kw))) score += 4;
     total += 4;
   });
 

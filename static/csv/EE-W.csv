@@ -1,4 +1,4 @@
-题型,题号,中文题干,A,B,C,D,正确答案,English Question,A_EN,B_EN,C_EN,D_EN,Correct_Answer_EN,标准答案（中文）,参考译文（EN）
+type,题号,question_zh,A,B,C,D,answer,question_en,A_EN,B_EN,C_EN,D_EN,answer,标准答案（中文）,参考译文（EN）
 单选题,S1,EE-W控制器的主要控制对象是？,风冷机组,水冷一次泵系统,冷却塔组,末端风机盘管,B,What is the main control target of the EE-W controller?,Air-cooled units,Primary chilled water pump system,Cooling tower group,Terminal fan coil units,B,,
 单选题,S2,EE-W10最多可控制多少台水泵？,3台,5台,6台,8台,C,How many pumps can EE-W10 control at most?,3 units,5 units,6 units,8 units,C,,
 单选题,S3,冷冻机启停控制的主要依据是？,机房负荷需求,设定温度值,电流参数,冷却水流量,A,What is the main basis for starting and stopping the chiller?,Plant load demand,Set temperature value,Current parameters,Cooling water flow rate,A,,

@@ -20,7 +20,7 @@ function switchLanguage(lang) {
 
 // ✅ 加载 CSV 文件并初始化题目与答案
 function loadCSVAndInit(courseName) {
-  const csvPath = `../courses/${courseName}/${courseName}.csv`;
+  const csvPath = `../static/${courseName}/${courseName}.csv`;
   Papa.parse(csvPath, {
     download: true,
     header: true,

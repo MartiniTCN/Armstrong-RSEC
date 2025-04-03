@@ -174,6 +174,8 @@ def course_select():
 
 @app.route('/EE-W_Test')
 def ee_w_test():
+    if 'username' not in session:
+        return redirect(url_for('login'))  # ✅ 建议加上登录校验
     return render_template('EE-W_Test.html')
 
 @app.route('/')
@@ -280,8 +282,10 @@ def register():
         data = request.get_json()
     else:
         data = request.form
+    # ✅ 提取字段前先打印日志
+    print(f"[注册请求] 来源 IP：{get_client_ip()}，原始数据：{dict(data)}")
 
-    # ✅ 不管前端格式是 JSON 还是表单，都统一从 data 提取字段
+    # ✅ 不管前端格式是 JSON 还是表单，都统一从 data 提取字段，统一处理数据格式
     username = data.get('username')
     password = data.get('password')
     company = data.get('company')
@@ -362,6 +366,41 @@ def register():
         return jsonify({"success": False, "message": "注册成功但更新邀请码失败"})
 
     return jsonify({"success": True, "message": "注册成功"})
+
+# ✅ 修改点 1：新增 APScheduler 定时任务
+from apscheduler.schedulers.background import BackgroundScheduler
+
+def auto_logout_inactive_users():
+    SUPABASE_URL = os.environ.get("SUPABASE_URL")
+    SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
+    if not SUPABASE_URL or not SUPABASE_API_KEY:
+        return
+
+    headers = {
+        "apikey": SUPABASE_API_KEY,
+        "Authorization": f"Bearer {SUPABASE_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    # 判断过去 15 分钟内无操作的登录用户
+    now = datetime.now(TIMEZONE)
+    cutoff = now - timedelta(minutes=SESSION_TIMEOUT_MINUTES)
+    cutoff_iso = cutoff.isoformat()
+
+    response = requests.patch(
+        f"{SUPABASE_URL}/rest/v1/login_log?status=eq.登录中&last_active=lt.{cutoff_iso}",
+        headers=headers,
+        json={
+            "status": "已登出",
+            "logout_time": now.isoformat()
+        }
+    )
+    print("[定时任务] 自动登出状态：", response.status_code)
+
+# 启动任务调度器
+scheduler = BackgroundScheduler()
+scheduler.add_job(auto_logout_inactive_users, 'interval', minutes=5)
+scheduler.start()
 
 
 @app.route('/health')

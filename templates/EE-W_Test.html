@@ -2363,46 +2363,83 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
 
 <!-- ✅ 页面心跳机制脚本（新增） -->
-<script>
-  let lastActivityTime = Date.now();
-
-  // 记录人工操作事件时间
-  const recordActivity = () => {
-  lastActivityTime = Date.now();
-  };
-
-  // ✅ 绑定所有人工操作事件（点击、滚动、输入等）
-  ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
-  document.addEventListener(evt, recordActivity);
-  });
-
-  // ✅ 每分钟发送心跳请求，仅在用户1分钟内有操作时才发送
-  setInterval(() => {
-  if (Date.now() - lastActivityTime < 60000) {
-      fetch('/heartbeat')
-      .then(res => {
-          if (res.status === 440) {
-          alert("登录已超时，请重新登录！");
-          window.location.href = "/login";
-          }
-      })
-      .catch(() => {});
-  }
-  }, 60000);
-</script>
-
-<!-- ✅ 会话心跳轮询，每分钟一次 -->
-<script>
-  setInterval(() => {
-      fetch("/heartbeat").then(res => {
-      if (res.status === 440) {
-          alert("会话已过期，请重新登录");
-          window.location.href = "/login";
-      }
-      }).catch(err => {
-      console.warn("⛔ 心跳请求失败", err);
+    <!-- ✅ 页面底部，在 </body> 标签前 -->
+    <script>
+      let lastActivityTime = Date.now();
+  
+      // 记录人工操作事件时间
+      const recordActivity = () => {
+      lastActivityTime = Date.now();
+      };
+  
+      // ✅ 绑定所有人工操作事件（点击、滚动、输入等）
+      ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
+      document.addEventListener(evt, recordActivity);
       });
-  }, 60000); // 每分钟轮询一次
+  
+      // ✅ 每分钟发送心跳请求，仅在用户1分钟内有操作时才发送
+      setInterval(() => {
+      if (Date.now() - lastActivityTime < 60000) {
+          fetch('/heartbeat')
+          .then(res => {
+              if (res.status === 440) {
+              alert("登录已超时，请重新登录！");
+              window.location.href = "/login";
+              }
+          })
+          .catch(() => {});
+      }
+      }, 60000);
+  </script>
+
+
+
+
+<!-- ✅ 登录弹窗 -->
+<div id="loginOverlay" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-xs shadow-xl">
+    <h2 class="text-lg font-bold text-center mb-4">会话已过期，请重新登录</h2>
+    <input id="reLoginUser" class="w-full mb-3 px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700" placeholder="用户名">
+    <input id="reLoginPass" type="password" class="w-full mb-3 px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700" placeholder="密码">
+    <button onclick="submitRelogin()" class="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">重新登录</button>
+  </div>
+</div>
+
+<!-- 页面末尾 -->
+<script>
+  function showLoginOverlay() {
+    document.getElementById("loginOverlay").classList.remove("hidden");
+  }
+  
+  async function submitRelogin() {
+    const username = document.getElementById("reLoginUser").value.trim();
+    const password = document.getElementById("reLoginPass").value.trim();
+  
+    const res = await fetch("/login", {
+      method: "POST",
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ username, password })
+    });
+  
+    if (res.redirected) {
+      location.reload();  // ✅ 登录成功后刷新页面继续使用
+    } else {
+      alert("重新登录失败，请检查用户名或密码");
+    }
+  }
+
+  document.getElementById("reLoginPass").addEventListener("keyup", function (e) {
+      if (e.key === "Enter") {
+          submitRelogin();
+      }
+  });
+  </script>
+
+  <!-- 关闭登录弹窗 -->
+  <script>
+      function closeLoginOverlay() {
+          document.getElementById("loginOverlay").classList.add("hidden");
+      }
   </script>
 
 </body>

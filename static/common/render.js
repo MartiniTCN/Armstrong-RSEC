@@ -20,7 +20,7 @@ function switchLanguage(lang) {
 
 // ✅ 加载 CSV 文件并初始化题目与答案
 function loadCSVAndInit(courseName) {
-  const csvPath = `../static/${courseName}/${courseName}.csv`;
+  const csvPath = `/static/csv/${courseName}.csv`;
   Papa.parse(csvPath, {
     download: true,
     header: true,
@@ -62,8 +62,8 @@ function renderQuestions(data) {
   data.forEach(row => {
     const type = row.type?.toLowerCase();
     const question = currentLanguage === 'zh' ? row.question_zh : row.question_en;
-    const options = [row.A, row.B, row.C, row.D].map(opt =>
-      currentLanguage === 'zh' ? opt : row[opt + '_en']
+    const options = ['A', 'B', 'C', 'D'].map(opt =>
+      currentLanguage === 'zh' ? row[opt] : row[`${opt}_EN`]
     );
 
     if (type === 'single') {

@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- ✅ csv 解析库 -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script> 
 
 	<!-- ✅ 🆕 立即加上这段，开启 dark 模式支持 -->
   <script>
@@ -355,9 +357,8 @@
             <h2 class="text-xl font-semibold mb-6 text-gray-800 dark:text-gray-200">
                 <i class="fas fa-list-ol mr-2 text-blue-500"></i>单选题（每题2分，共40分）
             </h2>
-            <div class="space-y-6">
-                <!-- Martin 插入单选题 csv -->
-            </div>
+            <!-- ✅ 单选题挂载区域：PapaParse 渲染的单选题将插入到这里 -->
+            <div class="space-y-6" data-section="single"></div>
         </div>
 
         <!-- 多选题 -->
@@ -365,9 +366,8 @@
             <h2 class="text-xl font-semibold mb-6 text-gray-800 dark:text-gray-200">
                 <i class="fas fa-tasks mr-2 text-green-500"></i>多选题（每题1分，共20分）
             </h2>
-            <div class="space-y-6">
-                 <!-- Martin 插入多选题 csv -->
-            </div>
+            <!-- ✅ 多选题挂载区域：PapaParse 渲染的多选题将插入到这里 -->
+            <div class="space-y-6" data-section="multi"></div>
         </div>
 
         <!-- 判断题 -->
@@ -375,9 +375,8 @@
             <h2 class="text-xl font-semibold mb-6 text-gray-800 dark:text-gray-200">
                 <i class="fas fa-check-circle mr-2 text-purple-500"></i>判断题（每题1分，共20分）
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Martin 插入判断题 csv -->
-            </div>
+            <!-- ✅ 判断题挂载区域：用于插入系统生成的判断题卡片（含 √ × 图标） -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" data-section="judge"></div>
         </div>     
 <!-- 简答题 -->
 <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
@@ -386,12 +385,8 @@
   </h2>
 
   <!-- 插入参考图片 -->
-  <div class="mb-4 text-center">
-
-  <!-- Martin 插入简单题 csv -->
-
-   
-  </div>
+  <!-- ✅ 简答题图片挂载区域：如果 CSV 中包含图片字段，则在此显示 -->
+    <div class="mb-4 text-center" data-section="essay-image"></div>
 
   <!-- 答题区 -->
   <textarea id="essay" rows="5"
@@ -1600,46 +1595,15 @@ function loadQuestionsFromCSV(csvPath) {
       const data = results.data;
 
       // ========== 1. 单选题 =========
-      const single = data.filter(q => q['题型'] === '单选题');
-      single.forEach((q, i) => {
-        const index = i + 1;
-        const container = document.querySelector(`#q${index}`);
-        if (!container) return;
-        const title = currentLang === 'en' ? q['English Question'] : q['中文题干'];
-        container.querySelector('h3').textContent = `${index}. ${title}`;
-        ['A', 'B', 'C', 'D'].forEach(opt => {
-          const label = container.querySelector(`label[for="q${index}-${opt}"]`);
-          const optionText = currentLang === 'en' ? q[opt + '_EN'] : q[opt];
-          if (label) label.innerHTML = `<input type="radio" id="q${index}-${opt}" name="q${index}" value="${opt}"> ${opt}. ${optionText || ''}`;
-        });
+      
       });
 
       // ========== 2. 多选题 =========
-      const multi = data.filter(q => q['题型'] === '多选题');
-      multi.forEach((q, i) => {
-        const index = i + 1;
-        const container = document.querySelector(`#multi${index}`);
-        if (!container) return;
-        const title = currentLang === 'en' ? q['English Question'] : q['中文题干'];
-        container.querySelector('h3').textContent = `${index}. ${title}`;
-        ['A', 'B', 'C', 'D', 'E', 'F'].forEach(opt => {
-          const label = container.querySelector(`label[for="m${index}-${opt}"]`);
-          const optionText = currentLang === 'en' ? q[opt + '_EN'] : q[opt];
-          if (label && optionText) {
-            label.innerHTML = `<input type="checkbox" id="m${index}-${opt}" name="multi${index}" value="${opt}"> ${opt}. ${optionText}`;
-          }
-        });
+      
       });
 
       // ========== 3. 判断题 =========
-      const judge = data.filter(q => q['题型'] === '判断题');
-      judge.forEach((q, i) => {
-        const index = i + 1;
-        const container = document.querySelector(`#jq${index}`);
-        if (!container) return;
-        const title = currentLang === 'en' ? q['English Question'] : q['中文题干'];
-        container.querySelector('h3').textContent = `${index}. ${title}`;
-      });
+      
 
       // ========== 4. 简答题 =========
       const short = data.filter(q => q['题型'] === '简答题');
@@ -1666,6 +1630,174 @@ function switchLanguage(lang) {
   loadQuestionsFromCSV("/static/csv/EE-W.csv");
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script>
+  if (typeof currentLang === 'undefined') var currentLang = 'zh';
+  document.addEventListener("DOMContentLoaded", function () {
+    Papa.parse("/static/csv/EE-W.csv", {
+      download: true,
+      header: true,
+      complete: function (results) {
+        const data = results.data;
+        // ✅ 单选题渲染
+        data.filter(q => q['题型'] === '单选题').forEach((q, i) => {
+          const index = i + 1;
+          const container = document.querySelector(`#q${index}`);
+          if (!container) return;
+          const title = currentLang === 'en' ? q['English Question'] : q['中文题干'];
+          const h3 = container.querySelector("h3");
+          if (h3) h3.textContent = `${index}. ${title}`;
+          ['A', 'B', 'C', 'D'].forEach(opt => {
+            const label = container.querySelector(`label[for="q${index}-${opt}"]`);
+            const text = currentLang === 'en' ? q[opt + '_EN'] : q[opt];
+            if (label && text) {
+              label.innerHTML = `<input type="radio" id="q${index}-${opt}" name="q${index}" value="${opt}"> ${opt}. ${text}`;
+            }
+          });
+        });
+        // ✅ 多选题渲染
+        data.filter(q => q['题型'] === '多选题').forEach((q, i) => {
+          const index = i + 1;
+          const container = document.querySelector(`#multi${index}`);
+          if (!container) return;
+          const title = currentLang === 'en' ? q['English Question'] : q['中文题干'];
+          const h3 = container.querySelector("h3");
+          if (h3) h3.textContent = `${index}. ${title}`;
+          ['A', 'B', 'C', 'D', 'E', 'F'].forEach(opt => {
+            const label = container.querySelector(`label[for="m${index}-${opt}"]`);
+            const text = currentLang === 'en' ? q[opt + '_EN'] : q[opt];
+            if (label && text) {
+              label.innerHTML = `<input type="checkbox" id="m${index}-${opt}" name="multi${index}" value="${opt}"> ${opt}. ${text}`;
+            }
+          });
+        });
+        // ✅ 判断题渲染
+        data.filter(q => q['题型'] === '判断题').forEach((q, i) => {
+          const index = i + 1;
+          const container = document.querySelector(`#jq${index}`);
+          if (!container) return;
+          const title = currentLang === 'en' ? q['English Question'] : q['中文题干'];
+          const h3 = container.querySelector("h3");
+          if (h3) h3.textContent = `${index}. ${title}`;
+        });
+        // ✅ 简答题渲染
+        const short = data.find(q => q['题型'] === '简答题');
+        const container = document.querySelector("#short1");
+        if (short && container) {
+          const title = currentLang === 'en' ? short['English Question'] : short['中文题干'];
+          const h3 = container.querySelector("h3");
+          if (h3) h3.textContent = title;
+        }
+      },
+      error: function (err) {
+        console.error("❌ 题库加载失败：", err);
+      }
+    });
+  });
+</script>
+
+<script>
+  // ✅ 当前语言：根据页面按钮设置中英文切换（默认中文）
+  let currentLang = 'zh'; // 或 'en'
+  
+  // ✅ 加载 CSV 并渲染题目
+  document.addEventListener("DOMContentLoaded", () => {
+    Papa.parse("/static/题库/EE-W.csv", {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const data = results.data;
+        renderSingleChoice(data);
+        renderMultiChoice(data);
+        renderJudge(data);
+        renderEssay(data);
+      }
+    });
+  });
+  
+  // ✅ 渲染单选题
+  function renderSingleChoice(data) {
+    const container = document.querySelector('[data-section="single"]');
+    const singles = data.filter(q => q['题型'] === '单选题');
+    singles.forEach((q, i) => {
+      const index = i + 1;
+      const div = document.createElement('div');
+      div.className = 'question-card';
+      const title = currentLang === 'en' ? q['English Question'] : q['中文题干'];
+  
+      const options = ['A', 'B', 'C', 'D'].map(opt => {
+        const txt = currentLang === 'en' ? q[`${opt}_EN`] : q[opt];
+        return `
+          <label class="option">
+            <input type="radio" name="q${index}" value="${opt}"/>
+            <span>${opt}. ${txt || ''}</span>
+          </label>`;
+      }).join('');
+  
+      div.innerHTML = `<h3 class="text-base font-semibold mb-2">${index}. ${title}</h3><div class="options-grid">${options}</div>`;
+      container.appendChild(div);
+    });
+  }
+  
+  // ✅ 渲染多选题
+  function renderMultiChoice(data) {
+    const container = document.querySelector('[data-section="multi"]');
+    const multis = data.filter(q => q['题型'] === '多选题');
+    multis.forEach((q, i) => {
+      const index = i + 1;
+      const div = document.createElement('div');
+      div.className = 'question-card';
+      const title = currentLang === 'en' ? q['English Question'] : q['中文题干'];
+  
+      const options = ['A', 'B', 'C', 'D', 'E', 'F'].map(opt => {
+        const txt = currentLang === 'en' ? q[`${opt}_EN`] : q[opt];
+        return txt ? `
+          <label class="option">
+            <input type="checkbox" name="${index}" value="${opt}"/>
+            <span>${opt}. ${txt}</span>
+          </label>` : '';
+      }).join('');
+  
+      div.innerHTML = `<h3 class="text-base font-semibold mb-2">${index}. ${title}</h3><div class="options-grid">${options}</div>`;
+      container.appendChild(div);
+    });
+  }
+  
+  // ✅ 渲染判断题
+  function renderJudge(data) {
+    const container = document.querySelector('[data-section="judge"]');
+    const judges = data.filter(q => q['题型'] === '判断题');
+    judges.forEach((q, i) => {
+      const index = i + 1;
+      const title = currentLang === 'en' ? q['English Question'] : q['中文题干'];
+      const div = document.createElement('div');
+      div.className = 'judge-card';
+  
+      div.innerHTML = `
+        <p class="mb-2 font-semibold">${index}. ${title}</p>
+        <div class="flex gap-4">
+          <label class="judge-btn"><input type="radio" name="jq${index}" value="true"/><i class="fas fa-check text-green-500"></i></label>
+          <label class="judge-btn"><input type="radio" name="jq${index}" value="false"/><i class="fas fa-times text-red-500"></i></label>
+        </div>`;
+      container.appendChild(div);
+    });
+  }
+  
+  // ✅ 渲染简答题参考图片
+  function renderEssay(data) {
+    const container = document.querySelector('[data-section="essay-image"]');
+    const essay = data.find(q => q['题型'] === '简答题');
+    if (essay && essay['图片']) {
+      const img = document.createElement('img');
+      img.src = essay['图片'];
+      img.alt = '参考图片';
+      img.className = 'max-w-full rounded shadow';
+      container.appendChild(img);
+    }
+  }
+  </script>
+
+<script src="/static/common/render.js"></script>
 
 </body> 标签前 -->
     <script>

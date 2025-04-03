@@ -287,50 +287,6 @@
   </button>
 </div>
     <!-- 删除首页 -->
-    <section id="homePage" class="page container mx-auto px-4 py-8">
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm text-center max-w-3xl mx-auto">
-            <h2 class="text-3xl font-bold mb-6 text-blue-600 dark:text-blue-400">EE-W 产品培训测试</h2>
-            <div class="space-y-6 text-left text-gray-700 dark:text-gray-300">
-                <p class="text-lg leading-relaxed">本次培训旨在帮助学员全面掌握EE-W系列解决方案的组成和应用，通过理论学习和实践操作相结合的方式，提升在水冷机房系统优化控制方面的专业技能。</p>
-                
-                <div class="p-4 bg-blue-50 dark:bg-gray-700 rounded-lg">
-                    <h3 class="text-xl font-semibold mb-3 text-blue-800 dark:text-blue-200">培训大纲</h3>
-                    <ul class="list-disc pl-6 space-y-2">
-                        <li>EE-W系列控制系统的组成</li>
-                        <li>水冷系统控制原理与优化策略</li>
-                        <li>高效机房各组件的控制策略</li>
-                        <li>市场竞争策略介绍</li>
-                        <li>项目BOD 介绍</li>
-                    </ul>
-                </div>
-
-                <div class="mt-6 p-4 bg-green-50 dark:bg-gray-700 rounded-lg">
-                    <h3 class="text-xl font-semibold mb-3 text-green-800 dark:text-green-200">考核说明</h3>
-                    <ul class="list-decimal pl-6 space-y-2">
-                        <li>考试时间：60分钟</li>
-                        <li>总分100分，80分合格</li>
-                        <li>允许查阅培训资料</li>
-                        <li>简答题需详细描述方案</li>
-						<li>导出试卷后，发送到 chinarsec@armstrongfluidtechnology.com </li>
-                    </ul>
-                </div>
-
-  <div class="flex justify-center mt-6">
-  <button onclick="showTestPage()" 
-    class="relative inline-flex items-center justify-center px-4 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600
-           text-white text-sm font-medium rounded-full shadow-md hover:from-indigo-500 hover:to-blue-600
-           transform hover:scale-105 transition-all duration-300 ease-in-out group overflow-hidden">
-    <span class="relative z-10 flex items-center">
-      <i class="fas fa-pen-to-square mr-2 text-white text-base"></i>
-      开始考试
-    </span>
-    <!-- 💫 光晕动画 -->
-    <div class="absolute inset-0 bg-white opacity-10 blur-xl group-hover:opacity-20 transition-all duration-500"></div>
-  </button>
-</div>
-            </div>
-        </div>
-    </section>
 
     <!-- 直接进入测试页 -->
     <section id="testPage" class="page active-page container mx-auto px-4 py-6">
@@ -718,50 +674,19 @@ function showTestPage() { // ✅ 切换到考试页面，并启动计时器/清�
    };
  
    // ✅ 正确答案库
-   const correctAnswers = {
-     single: ["B", "C", "A", "B", "D", "C", "C", "B", "B", "B", "D", "C", "C", "B", "C", "B", "C", "B", "B", "B", "C", "D", "D", "B", "B"],
-     multiple: [["A","B","D"],["C","D"],["A","B","C"],["A","B","D"],["A","B","C","D"],["A","B","C","D"],["A","B","C"],["A","B","C"],["A","B","C","D"],["A","B","C","D"],["A","B","D"],["A","B","D"],["A","B","C","D"],["A","B","C"],["A","B","C"],["A","B","C"],["A","B","C","D"],["A","B","C"],["A","B","C"],["A","B","C","D"]],
-     judge: ["true","false","false","true","true","false","true","true","false","true","false","true","false","true","false","true","true","false","true","false"]
-   };
+   
  
    // ✅ 单选题（25题 * 2分）
-   for (let i = 1; i <= 25; i++) {
-     const key = `q${i}`;
-     const your = answers.singleChoice[key] || '-';
-     const correct = correctAnswers.single[i - 1];
-     const score = (your === correct) ? 2 : 0;
-     totalScore += score;
-     createRow('单选题', i, your, correct, score);
-   }
+   
  
    // ✅ 多选题（20题 * 1分）
-   for (let i = 1; i <= 20; i++) {
-     const key = i.toString();
-     const your = answers.multipleChoice[key] || [];
-     const correct = correctAnswers.multiple[i - 1];
-     const isCorrect = JSON.stringify([...your].sort()) === JSON.stringify([...correct].sort());
-     const score = isCorrect ? 1 : 0;
-     totalScore += score;
-     createRow('多选题', i, your.join(', '), correct.join(', '), score);
-   }
+   
  
    // ✅ 判断题（20题 * 1分）
-   for (let i = 1; i <= 20; i++) {
-     const key = `jq${i}`;
-     const your = answers.judgment[key];
-     const correct = correctAnswers.judge[i - 1];
-     const score = (your === correct) ? 1 : 0;
-     totalScore += score;
-     createRow('判断题', i, your === 'true' ? '✔ 正确' : your === 'false' ? '✘ 错误' : '-', correct === 'true' ? '✔ 正确' : '✘ 错误', score);
-   }
+   
  
    // ✅ 简答题评分逻辑（关键词命中）
-let essayScore = 0;
-const keywords = ["传感器", "温度", "差压", "数量", "安装位置", "通信"];
-const matchCount = keywords.filter(k => answers.essay.includes(k)).length;
-if (matchCount >= 5) essayScore = 35;
-else if (matchCount >= 3) essayScore = 25;
-else if (matchCount >= 1) essayScore = 10;
+
 
 // ✅ 简答题仅显示用户答案与得分，不显示“正确答案”
 const essayRow = document.createElement('tr');
@@ -1822,89 +1747,6 @@ function switchLanguage(lang) {
   </script>
 
 
-<!-- PapaParse CSV 加载 + 动态题目填充脚本（匹配中文字段） -->
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script>
-  // 防止变量重复声明
-  if (typeof currentLang === 'undefined') {
-    var currentLang = 'zh';  // 默认语言
-  }
-
-// 加载 CSV 并填充所有题型
-function loadQuestionsFromCSV(csvPath) {
-  Papa.parse(csvPath, {
-    download: true,
-    header: true,
-    complete: function(results) {
-      const data = results.data;
-
-      // ========== 1. 单选题 =========
-      const single = data.filter(q => q['题型'] === '单选题');
-      single.forEach((q, i) => {
-        const index = i + 1;
-        const container = document.querySelector(`#q${index}`);
-        if (!container) return;
-        const title = currentLang === 'en' ? q['English Question'] : q['中文题干'];
-        container.querySelector('h3').textContent = `${index}. ${title}`;
-        ['A', 'B', 'C', 'D'].forEach(opt => {
-          const label = container.querySelector(`label[for="q${index}-${opt}"]`);
-          const optionText = currentLang === 'en' ? q[opt + '_EN'] : q[opt];
-          if (label) label.innerHTML = `<input type="radio" id="q${index}-${opt}" name="q${index}" value="${opt}"> ${opt}. ${optionText || ''}`;
-        });
-      });
-
-      // ========== 2. 多选题 =========
-      const multi = data.filter(q => q['题型'] === '多选题');
-      multi.forEach((q, i) => {
-        const index = i + 1;
-        const container = document.querySelector(`#multi${index}`);
-        if (!container) return;
-        const title = currentLang === 'en' ? q['English Question'] : q['中文题干'];
-        container.querySelector('h3').textContent = `${index}. ${title}`;
-        ['A', 'B', 'C', 'D', 'E', 'F'].forEach(opt => {
-          const label = container.querySelector(`label[for="m${index}-${opt}"]`);
-          const optionText = currentLang === 'en' ? q[opt + '_EN'] : q[opt];
-          if (label && optionText) {
-            label.innerHTML = `<input type="checkbox" id="m${index}-${opt}" name="multi${index}" value="${opt}"> ${opt}. ${optionText}`;
-          }
-        });
-      });
-
-      // ========== 3. 判断题 =========
-      const judge = data.filter(q => q['题型'] === '判断题');
-      judge.forEach((q, i) => {
-        const index = i + 1;
-        const container = document.querySelector(`#jq${index}`);
-        if (!container) return;
-        const title = currentLang === 'en' ? q['English Question'] : q['中文题干'];
-        container.querySelector('h3').textContent = `${index}. ${title}`;
-      });
-
-      // ========== 4. 简答题 =========
-      const short = data.filter(q => q['题型'] === '简答题');
-      if (short.length > 0) {
-        const q = short[0];
-        const container = document.querySelector(`#short1`);
-        if (container) {
-          const title = currentLang === 'en' ? q['English Question'] : q['中文题干'];
-          container.querySelector('h3').textContent = title;
-        }
-      }
-    }
-  });
-}
-
-// 页面加载后自动执行
-window.addEventListener("DOMContentLoaded", () => {
-  loadQuestionsFromCSV("/static/csv/EE-W.csv");
-});
-
-// 语言切换函数（通过按钮调用）
-function switchLanguage(lang) {
-  currentLang = lang;
-  loadQuestionsFromCSV("/static/csv/EE-W.csv");
-}
-</script>
 
 </body>
 </html>

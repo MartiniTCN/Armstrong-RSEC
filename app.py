@@ -132,6 +132,20 @@ def debug_request():
     print(f"📥 请求到达: {request.path}")
 
 # ========== 页面路由 ==========
+# ====  Martin 通用路由 ====
+@app.route('/course/<course_id>')
+def course_page(course_id):
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        # 尝试加载 test/<course_id>.html 页面
+        return render_template(f'test/{course_id}.html', username=session['username'])
+    except Exception as e:
+        print(f"[ERROR] 无法渲染课程页面：{course_id}, 错误信息：{e}")
+        return f"课程页面 {course_id} 不存在或出错", 404
+    
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -175,8 +189,8 @@ def course_select():
 @app.route('/EE-W_Test')
 def ee_w_test():
     if 'username' not in session:
-        return redirect(url_for('login'))  # ✅ 建议加上登录校验
-    return render_template('EE-W_Test.html')
+        return redirect(url_for('login'))  # ✅ 登录校验没问题
+    return render_template('test/EE-W.html')  # ✅ 路径指向新模板位置
 
 @app.route('/')
 def home():

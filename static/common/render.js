@@ -63,6 +63,12 @@ function initCorrectAnswers(data) {
 // ✅ 渲染题目结构（根据当前语言）
 function renderQuestions(data) {
   const container = document.getElementById("testContainer");
+  if (!container) {
+    alert("❌ 页面缺少 testContainer 容器，无法渲染题目！");
+    console.error("找不到 #testContainer 元素，无法渲染题目");
+    return;
+  }
+
   container.innerHTML = "";
 
   let index = { single: 1, multiple: 1, judge: 1, essay: 1 };
@@ -85,10 +91,7 @@ function renderQuestions(data) {
     }
   });
 
-  container.innerHTML += `
-    <div class="text-center mt-8">
-      <button onclick="evaluateAll()" class="bg-blue-600 text-white px-6 py-3 rounded text-lg">提交评估</button>
-    </div>`;
+  
 }
 
 // ✅ 渲染各类题型 HTML

@@ -252,6 +252,9 @@
 
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <!-- ✅ 动态题目容器（必须有这个 ID） -->
+  <div id="testContainer" class="mt-6 space-y-6"></div>
+  
     <!-- 加载遮罩 -->
     <div id="loading" class="fixed inset-0 bg-black/50 z-50 hidden">
         <div class="flex items-center justify-center h-full">
@@ -352,8 +355,6 @@
             </div>
         </div>
 
-        <!-- ✅ 动态题目容器（必须有这个 ID） -->
-        <div id="testContainer" class="mt-6 space-y-6"></div>
 
         <!-- 单选题 -->
         <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm mb-8">

@@ -254,7 +254,7 @@
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
   <!-- ✅ 动态题目容器（必须有这个 ID） -->
   <div id="testContainer" class="mt-6 space-y-6"></div>
-  
+
     <!-- 加载遮罩 -->
     <div id="loading" class="fixed inset-0 bg-black/50 z-50 hidden">
         <div class="flex items-center justify-center h-full">
@@ -1441,17 +1441,27 @@ function closeRetryModal() {
 }
 
 // 🧩 点击重试按钮时，重新初始化并推送邮件
-document.getElementById("retryEmailBtn").addEventListener("click", () => {
-  closeRetryModal();
+console.log("绑定 retryEmailBtn...");
+const btn = document.getElementById("retryEmailBtn");
+console.log("retryEmailBtn =", btn);
 
-  // ✅ 重新初始化 EmailJS（防止加载失败或异常）
-  if (window.emailjs) {
-    try {
-      emailjs.init("LoQCI3C98dk3FgEvj");
-    } catch (e) {
-      console.error("EmailJS 初始化失败", e);
+if (btn) {
+  btn.addEventListener("click", () => {
+    closeRetryModal();
+
+    if (window.emailjs) {
+      try {
+        emailjs.init("LoQCI3C98dk3FgEvj");
+      } catch (e) {
+        console.error("EmailJS 初始化失败", e);
+      }
     }
-  }
+
+    handleEmailSendAgain();
+  });
+} else {
+  console.warn("⚠️ 没有找到 #retryEmailBtn，跳过绑定");
+}
 
   // ✅ 重新发送邮件（调用你现有的函数）
   handleEmailSendAgain();
@@ -1518,6 +1528,25 @@ function showEmailResultPopup(message) {
     document.getElementById('emailResultPopup').remove();
   };
 }
+// ✅ 如何定位错误具体是哪一段代码？
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    console.log("[调试] 页面已加载");
+
+    // 尝试获取按钮或你绑定事件的元素
+    const testBtn = document.querySelector("#startButton");
+    console.log("[调试] 获取按钮 startButton：", testBtn);
+
+    if (testBtn) {
+      testBtn.addEventListener("click", () => {
+        console.log("[调试] 点击 startButton");
+      });
+    } else {
+      console.warn("[调试] 没有找到 startButton，跳过绑定事件！");
+    }
+  });
+</script>
+
 
  </script>
  <!--  By Martin 此处是核心函数及功能的代码 结尾 -->

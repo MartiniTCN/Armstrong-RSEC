@@ -73,14 +73,28 @@ function loadCSVAndRender(csvPath, lang = "zh") {
 
 // ✅ 渲染题目结构（根据当前语言）
 function renderQuestions(data) {
-  const container = document.getElementById("testContainer");
-  if (!container) {
-    alert("❌ 页面缺少 testContainer 容器，无法渲染题目！");
-    console.error("找不到 #testContainer 元素，无法渲染题目");
+  // ✅ 获取各题型对应容器
+  const singleContainer = document.getElementById("singleChoiceCard");
+  const multipleContainer = document.getElementById("multipleChoiceCard");
+  const judgeContainer = document.getElementById("judgeCard");
+  const essayContainer = document.getElementById("essayCard");
+
+  // ✅ 容错检查
+  if (!singleContainer || !multipleContainer || !judgeContainer || !essayContainer) {
+    alert("❌ 页面缺少题目容器，无法渲染题目！");
+    console.error("❌ 缺少容器：", {
+      singleContainer, multipleContainer, judgeContainer, essayContainer
+    });
     return;
   }
+
+  // ✅ 清空原内容
+  singleContainer.innerHTML = "";
+  multipleContainer.innerHTML = "";
+  judgeContainer.innerHTML = "";
+  essayContainer.innerHTML = "";
+
   console.log("准备渲染题目", data);
-  container.innerHTML = "";
 
   let index = { single: 1, multiple: 1, judge: 1, essay: 1 };
 
@@ -92,17 +106,18 @@ function renderQuestions(data) {
     );
 
     if (type === 'single') {
-      container.innerHTML += renderSingle(index.single++, question, options);
+      singleContainer.innerHTML += renderSingle(index.single++, question, options);
     } else if (type === 'multiple') {
-      container.innerHTML += renderMultiple(index.multiple++, question, options);
+      multipleContainer.innerHTML += renderMultiple(index.multiple++, question, options);
     } else if (type === 'judge') {
-      container.innerHTML += renderJudge(index.judge++, question);
+      judgeContainer.innerHTML += renderJudge(index.judge++, question);
     } else if (type === 'essay') {
-      container.innerHTML += renderEssay(index.essay++, question);
+      essayContainer.innerHTML += renderEssay(index.essay++, question);
     }
   });
 
-  
+  // ✅ 确保试题区可见（可选）
+  document.getElementById("testPage")?.classList.remove("hidden");
 }
 
 // ✅ 渲染各类题型 HTML

@@ -253,7 +253,7 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
   <!-- ✅ 动态题目容器（必须有这个 ID） -->
-  <div id="testContainer" class="mt-6 space-y-6"></div>
+  <!-- <div id="testContainer" class="mt-6 space-y-6"></div> -->
 
     <!-- 加载遮罩 -->
     <div id="loading" class="fixed inset-0 bg-black/50 z-50 hidden">
@@ -1864,7 +1864,14 @@ function switchLanguage(lang) {
   });
 </script>
 
+<!-- ✅ 加载 CSV 题库并渲染 -->
 <script src="/static/common/render.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // 加载并渲染 CSV 题目，EE-W 为默认题库路径
+    loadCSVAndRender("/static/csv/EE-W.csv", "zh");
+  });
+</script>
 
 </body>
 </html>

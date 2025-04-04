@@ -384,21 +384,14 @@
             <!-- ✅ 判断题挂载区域：用于插入系统生成的判断题卡片（含 √ × 图标） -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6" data-section="judge"></div>
         </div>     
-<!-- 简答题 -->
-<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+<!-- ✅ 简答题 -->
+<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm mb-8">
   <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">
     <i class="fas fa-pen mr-2 text-orange-500"></i>简答题（40分）
   </h2>
 
-  <!-- 插入参考图片 -->
-  <!-- ✅ 简答题图片挂载区域：如果 CSV 中包含图片字段，则在此显示 -->
-    <div class="mb-4 text-center" data-section="essay-image"></div>
-
-  <!-- 答题区 -->
-  <textarea id="essay" rows="5"
-    class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded p-2 w-full"
-    placeholder="请详细描述你的方案，字数不少于300字"
-    required></textarea>
+  <!-- ✅ PapaParse 渲染简答题插入区 -->
+  <div class="space-y-6" data-section="essay"></div>
 </div>
 
         <!-- 提交按钮 -->

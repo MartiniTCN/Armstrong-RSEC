@@ -73,29 +73,27 @@ function loadCSVAndRender(csvPath, lang = "zh") {
 
 // ✅ 渲染题目结构（根据当前语言）
 function renderQuestions(data) {
-  // ✅ 获取各题型对应容器
-  const singleContainer = document.getElementById("singleChoiceCard");
-  const multipleContainer = document.getElementById("multipleChoiceCard");
-  const judgeContainer = document.getElementById("judgeCard");
-  const essayContainer = document.getElementById("essayCard");
+  // ✅ 获取每个题型对应的插入区域
+  const sectionMap = {
+    single: document.querySelector("[data-section='single']"),
+    multiple: document.querySelector("[data-section='multi']"),
+    judge: document.querySelector("[data-section='judge']"),
+    essay: document.querySelector("[data-section='essay']"),
+  };
 
-  // ✅ 容错检查
-  if (!singleContainer || !multipleContainer || !judgeContainer || !essayContainer) {
-    alert("❌ 页面缺少题目容器，无法渲染题目！");
-    console.error("❌ 缺少容器：", {
-      singleContainer, multipleContainer, judgeContainer, essayContainer
-    });
-    return;
+  // ✅ 检查每个容器是否存在
+  for (const [type, container] of Object.entries(sectionMap)) {
+    if (!container) {
+      alert(`❌ 页面缺少 ${type} 类型题目的容器，无法渲染该类型题目！`);
+      console.error(`找不到 data-section='${type}' 的容器`);
+      return;
+    }
+    container.innerHTML = ""; // 清空旧内容
   }
-
-  // ✅ 清空原内容
-  singleContainer.innerHTML = "";
-  multipleContainer.innerHTML = "";
-  judgeContainer.innerHTML = "";
-  essayContainer.innerHTML = "";
 
   console.log("准备渲染题目", data);
 
+  // ✅ 渲染题目
   let index = { single: 1, multiple: 1, judge: 1, essay: 1 };
 
   data.forEach(row => {
@@ -105,19 +103,21 @@ function renderQuestions(data) {
       currentLanguage === 'zh' ? row[opt] : row[`${opt}_EN`]
     );
 
+    let html = "";
     if (type === 'single') {
-      singleContainer.innerHTML += renderSingle(index.single++, question, options);
+      html = renderSingle(index.single++, question, options);
     } else if (type === 'multiple') {
-      multipleContainer.innerHTML += renderMultiple(index.multiple++, question, options);
+      html = renderMultiple(index.multiple++, question, options);
     } else if (type === 'judge') {
-      judgeContainer.innerHTML += renderJudge(index.judge++, question);
+      html = renderJudge(index.judge++, question);
     } else if (type === 'essay') {
-      essayContainer.innerHTML += renderEssay(index.essay++, question);
+      html = renderEssay(index.essay++, question);
+    }
+
+    if (html && sectionMap[type]) {
+      sectionMap[type].innerHTML += html;
     }
   });
-
-  // ✅ 确保试题区可见（可选）
-  document.getElementById("testPage")?.classList.remove("hidden");
 }
 
 // ✅ 渲染各类题型 HTML

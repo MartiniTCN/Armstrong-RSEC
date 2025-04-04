@@ -665,27 +665,6 @@ function collectAnswers() {
   };
 }
 
-  return {
-    userInfo: {
-      company: safeValue('company'),
-      name: safeValue('name'),
-      phone: safeValue('phone'),
-      email: safeValue('email')
-    },
-    singleChoice: Array.from(document.querySelectorAll('input[type="radio"]:checked'))
-      .reduce((acc, el) => ({ ...acc, [el.name]: el.value }), {}),
-    multipleChoice: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-      .reduce((acc, el) => {
-        const group = el.name.replace('mq', '');
-        if (!acc[group]) acc[group] = [];
-        acc[group].push(el.value);
-        return acc;
-      }, {}),
-    judgment: Array.from(document.querySelectorAll('.judge-card input[type="radio"]:checked'))
-      .reduce((acc, el) => ({ ...acc, [el.name]: el.value }), {}),
-      essay: document.getElementById('essay').value
-  };
-}
  
  // ✅ 评估评分并渲染完成页
  function renderAssessmentResult(answers) {

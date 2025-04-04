@@ -73,37 +73,39 @@ function loadCSVAndRender(csvPath, lang = "zh") {
 
 // ✅ 渲染题目结构（根据当前语言）
 function renderQuestions(data) {
-  // ✅ 获取每个题型对应的插入区域
+  // ✅ 获取各题型的挂载容器
   const sectionMap = {
     single: document.querySelector("[data-section='single']"),
     multiple: document.querySelector("[data-section='multi']"),
     judge: document.querySelector("[data-section='judge']"),
-    essay: document.querySelector("[data-section='essay']"),
+    essay: document.querySelector("[data-section='essay']"), // 简答题
   };
 
-  // ✅ 检查每个容器是否存在
+  // ✅ 校验容器是否存在，避免挂载失败
   for (const [type, container] of Object.entries(sectionMap)) {
     if (!container) {
       alert(`❌ 页面缺少 ${type} 类型题目的容器，无法渲染该类型题目！`);
       console.error(`找不到 data-section='${type}' 的容器`);
       return;
     }
-    container.innerHTML = ""; // 清空旧内容
+    container.innerHTML = ""; // 每次渲染前清空容器
   }
 
   console.log("准备渲染题目", data);
 
-  // ✅ 渲染题目
+  // ✅ 各题型的题号索引计数器
   let index = { single: 1, multiple: 1, judge: 1, essay: 1 };
 
+  // ✅ 遍历每道题，根据类型渲染不同内容
   data.forEach(row => {
-    const type = row.type?.toLowerCase();
-    const question = currentLanguage === 'zh' ? row.question_zh : row.question_en;
+    const type = row.type?.toLowerCase(); // 获取题目类型（如：single, multiple, essay）
+    const question = currentLanguage === 'zh' ? row.question_zh : row.question_en; // 根据语言切换获取题干
     const options = ['A', 'B', 'C', 'D'].map(opt =>
       currentLanguage === 'zh' ? row[opt] : row[`${opt}_EN`]
     );
 
     let html = "";
+
     if (type === 'single') {
       html = renderSingle(index.single++, question, options);
     } else if (type === 'multiple') {
@@ -111,9 +113,12 @@ function renderQuestions(data) {
     } else if (type === 'judge') {
       html = renderJudge(index.judge++, question);
     } else if (type === 'essay') {
-      html = renderEssay(index.essay++, question);
+      // ✅ 简答题额外提取 image_url 字段（如无则为 ""）
+      const imageUrl = row.image_url || "";
+      html = renderEssay(index.essay++, question, imageUrl); // 💡 加入图片链接参数
     }
 
+    // ✅ 渲染内容插入对应容器
     if (html && sectionMap[type]) {
       sectionMap[type].innerHTML += html;
     }
@@ -174,28 +179,32 @@ function renderJudge(index, question) {
   </div>`;
 }
 
-function renderEssay(index, question) {
-  const currentRow = parsedQuestions[index - 1] || {};
-  const imageUrl = currentRow.image || currentRow.image_url || "";
-
+// ✅ 渲染简答题题型（支持图片、动态提示、字数提示）
+function renderEssay(index, question, imageUrl = "") {
   return `
-  <div class="essay-card mb-6">
-    <!-- 📝 题干 -->
-    <p class="font-bold mb-2">${index}. ${question}</p>
+    <div class="essay-card mb-6">
+      <!-- 简答题题干 -->
+      <p class="font-bold mb-2">${index}. ${question}</p>
 
-    <!-- 🖼️ 图片（可选） -->
-    ${imageUrl ? `<div class="flex justify-center mb-4"><img src="${imageUrl}" alt="参考图" class="max-w-full h-auto rounded-lg shadow-md"></div>` : ''}
+      <!-- ✅ 可选图片区域：仅当 imageUrl 存在时显示 -->
+      ${imageUrl
+        ? `<div class="flex justify-center mb-4">
+             <img src="${imageUrl}" alt="参考图" class="max-w-full max-h-64 rounded shadow" />
+           </div>`
+        : ''}
 
-    <!-- ✍️ 答题框 -->
-    <textarea id="eq${index}" rows="6" 
-      class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg resize-none"
-      placeholder="🔍 ${question}" 
-      oninput="updateEssayCharCount(${index})"
-      required></textarea>
-
-    <!-- 🔢 字数统计提示 -->
-    <p id="charCount${index}" class="text-sm text-gray-500 dark:text-gray-400 mt-1">已输入 0 字，建议不少于 300 字</p>
-  </div>`;
+      <!-- ✅ 答题输入框 + 字数统计 -->
+      <div class="relative">
+        <textarea
+          id="eq${index}"
+          rows="6"
+          class="w-full p-2 border dark:bg-gray-800 rounded"
+          placeholder="${question}（请围绕要点详细描述，建议不少于 300 字）"
+          oninput="updateWordCount(${index})"
+        ></textarea>
+        <p class="text-sm text-gray-500 mt-1" id="wordCount${index}">已输入 0 字，建议不少于 300 字</p>
+      </div>
+    </div>`;
 }
 
 // ✅ 评估评分逻辑
@@ -348,9 +357,22 @@ function buildEmailTable() {
 // ✅ 提交时调用（需口令验证）
 function submitPassword() {
   const pass = document.getElementById("dynamicPasswordInput").value;
+
   if (pass === "AFT2025") {
+    // ✅ 1. 评分
+    evaluateAnswers();
+
+    // ✅ 2. 渲染评估结果到结果页
+    renderAssessmentResult();
+
+    // ✅ 3. 显示结果页
+    showPage("resultPage");
+
+    // ✅ 4. 邮件发送
     const htmlContent = buildEmailTable();
     sendResultEmail(htmlContent);
+
+    // ✅ 5. 关闭弹窗
     closePasswordModal();
   } else {
     alert("❌ 动态口令错误，请重试！");

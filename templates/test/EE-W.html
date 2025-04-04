@@ -643,7 +643,7 @@ function showTestPage() { // ✅ 切换到考试页面，并启动计时器/清�
       }, {}),
     judgment: Array.from(document.querySelectorAll('.judge-card input[type="radio"]:checked'))
       .reduce((acc, el) => ({ ...acc, [el.name]: el.value }), {}),
-    essay: safeValue('essay')
+      essay: document.getElementById('essay').value
   };
 }
  

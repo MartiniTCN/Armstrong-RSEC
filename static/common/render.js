@@ -115,7 +115,7 @@ function renderQuestions(data) {
     } else if (type === 'essay') {
       // ✅ 简答题额外提取 image_url 字段（如无则为 ""）
       const imageUrl = row.image_url || "";
-      html = renderEssay(index.essay++, question, imageUrl); // 💡 加入图片链接参数
+      html = renderEssay(index.essay++, question, row.image_url || "", row.id || ""); // 💡 加入图片链接参数
     }
 
     // ✅ 渲染内容插入对应容器
@@ -180,29 +180,30 @@ function renderJudge(index, question) {
 }
 
 // ✅ 渲染简答题题型（支持图片、动态提示、字数提示）
-function renderEssay(index, question, imageUrl = "") {
+function renderEssay(index, question, imageUrl = "", id = "") {
   return `
     <div class="essay-card mb-6">
-      <!-- 简答题题干 -->
+      <!-- ✅ 简答题题干 -->
       <p class="font-bold mb-2">${index}. ${question}</p>
 
-      <!-- ✅ 可选图片区域：仅当 imageUrl 存在时显示 -->
+      <!-- ✅ 图片区域：仅当 imageUrl 存在时显示 -->
       ${imageUrl
         ? `<div class="flex justify-center mb-4">
              <img src="${imageUrl}" alt="参考图" class="max-w-full max-h-64 rounded shadow" />
            </div>`
         : ''}
 
-      <!-- ✅ 答题输入框 + 字数统计 -->
+      <!-- ✅ 输入框 + 统计 -->
       <div class="relative">
         <textarea
           id="eq${index}"
           rows="6"
-          class="w-full p-2 border dark:bg-gray-800 rounded"
-          placeholder="${question}（请围绕要点详细描述，建议不少于 300 字）"
-          oninput="updateWordCount(${index})"
+          data-essay-id="${id}"
+          class="w-full p-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded"
+          placeholder="请详细描述本题内容，建议不少于 300 字"
+          oninput="updateEssayCharCount(${index})"
         ></textarea>
-        <p class="text-sm text-gray-500 mt-1" id="wordCount${index}">已输入 0 字，建议不少于 300 字</p>
+        <p class="text-sm text-gray-500 mt-1" id="charCount${index}">已输入 0 字，建议不少于 300 字</p>
       </div>
     </div>`;
 }

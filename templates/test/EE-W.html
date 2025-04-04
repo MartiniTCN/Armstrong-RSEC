@@ -619,11 +619,51 @@ function showTestPage() { // ✅ 切换到考试页面，并启动计时器/清�
  });
  
  // ✅ 答案收集
- function collectAnswers() {
-  const safeValue = id => {
-    const el = document.getElementById(id);
-    return el ? el.value : "";
+function collectAnswers() {
+  return {
+    // 🧠 基础信息采集
+    userInfo: {
+      company: document.getElementById('company')?.value || "",
+      name: document.getElementById('name')?.value || "",
+      phone: document.getElementById('phone')?.value || "",
+      email: document.getElementById('email')?.value || ""
+    },
+
+    // ✅ 单选题收集（按 name 分组）
+    singleChoice: Array.from(document.querySelectorAll('input[type="radio"]:checked'))
+      .filter(el => el.name.startsWith('q'))
+      .reduce((acc, el) => {
+        acc[el.name] = el.value;
+        return acc;
+      }, {}),
+
+    // ✅ 多选题收集（按 name 分组）
+    multipleChoice: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+      .reduce((acc, el) => {
+        const group = el.name.replace('mq', '');
+        if (!acc[group]) acc[group] = [];
+        acc[group].push(el.value);
+        return acc;
+      }, {}),
+
+    // ✅ 判断题收集（只选中项）
+    judgment: Array.from(document.querySelectorAll('.judge-card input[type="radio"]:checked'))
+      .reduce((acc, el) => {
+        acc[el.name] = el.value;
+        return acc;
+      }, {}),
+
+    // ✅ 简答题收集：支持多个 textarea[data-essay-id]
+    essay: (() => {
+      const result = {};
+      document.querySelectorAll("textarea[data-essay-id]").forEach(textarea => {
+        const id = textarea.dataset.essayId;
+        result[id] = textarea.value.trim();
+      });
+      return result;
+    })()
   };
+}
 
   return {
     userInfo: {

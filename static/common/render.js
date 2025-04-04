@@ -125,9 +125,16 @@ function renderSingle(index, question, options) {
   return `
   <div class="question-card mb-6">
     <p class="font-bold mb-2">${index}. ${question}</p>
-    ${options.map((opt, i) => `
-      <label class="block"><input type="radio" name="q${index}" value="${String.fromCharCode(65 + i)}"> ${String.fromCharCode(65 + i)}. ${opt}</label>
-    `).join('')}
+
+    <!-- ✅ 网格容器：小屏1列，大屏2列 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      ${options.map((opt, i) => `
+        <label class="flex items-start gap-2">
+          <input type="radio" name="q${index}" value="${String.fromCharCode(65 + i)}">
+          <span>${String.fromCharCode(65 + i)}. ${opt}</span>
+        </label>
+      `).join('')}
+    </div>
   </div>`;
 }
 
@@ -135,9 +142,16 @@ function renderMultiple(index, question, options) {
   return `
   <div class="question-card mb-6">
     <p class="font-bold mb-2">${index}. ${question}（多选）</p>
-    ${options.map((opt, i) => `
-      <label class="block"><input type="checkbox" name="mq${index}" value="${String.fromCharCode(65 + i)}"> ${String.fromCharCode(65 + i)}. ${opt}</label>
-    `).join('')}
+
+    <!-- ✅ 网格容器：小屏1列，大屏2列 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      ${options.map((opt, i) => `
+        <label class="flex items-start gap-2">
+          <input type="checkbox" name="mq${index}" value="${String.fromCharCode(65 + i)}">
+          <span>${String.fromCharCode(65 + i)}. ${opt}</span>
+        </label>
+      `).join('')}
+    </div>
   </div>`;
 }
 
@@ -145,16 +159,42 @@ function renderJudge(index, question) {
   return `
   <div class="judge-card mb-6">
     <p class="font-bold mb-2">${index}. ${question}</p>
-    <label class="mr-4"><input type="radio" name="jq${index}" value="正确"> 正确</label>
-    <label><input type="radio" name="jq${index}" value="错误"> 错误</label>
+
+    <!-- ✅ 判断题响应式布局：小屏 1 列，大屏 2 列 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <label class="flex items-start gap-2">
+        <input type="radio" name="jq${index}" value="正确">
+        <span>正确</span>
+      </label>
+      <label class="flex items-start gap-2">
+        <input type="radio" name="jq${index}" value="错误">
+        <span>错误</span>
+      </label>
+    </div>
   </div>`;
 }
 
 function renderEssay(index, question) {
+  const currentRow = parsedQuestions[index - 1] || {};
+  const imageUrl = currentRow.image || currentRow.image_url || "";
+
   return `
   <div class="essay-card mb-6">
+    <!-- 📝 题干 -->
     <p class="font-bold mb-2">${index}. ${question}</p>
-    <textarea id="eq${index}" rows="4" class="w-full p-2 border dark:bg-gray-800"></textarea>
+
+    <!-- 🖼️ 图片（可选） -->
+    ${imageUrl ? `<div class="flex justify-center mb-4"><img src="${imageUrl}" alt="参考图" class="max-w-full h-auto rounded-lg shadow-md"></div>` : ''}
+
+    <!-- ✍️ 答题框 -->
+    <textarea id="eq${index}" rows="6" 
+      class="w-full p-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg resize-none"
+      placeholder="🔍 ${question}" 
+      oninput="updateEssayCharCount(${index})"
+      required></textarea>
+
+    <!-- 🔢 字数统计提示 -->
+    <p id="charCount${index}" class="text-sm text-gray-500 dark:text-gray-400 mt-1">已输入 0 字，建议不少于 300 字</p>
   </div>`;
 }
 
@@ -317,3 +357,11 @@ function submitPassword() {
   }
 }
 
+// ✅ 实时更新简答题字数统计
+function updateEssayCharCount(index) {
+  const textarea = document.getElementById(`eq${index}`);
+  const countDisplay = document.getElementById(`charCount${index}`);
+  const length = textarea.value.trim().length;
+
+  countDisplay.textContent = `已输入 ${length} 字，建议不少于 300 字`;
+}

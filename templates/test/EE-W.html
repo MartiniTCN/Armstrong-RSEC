@@ -620,27 +620,32 @@ function showTestPage() { // ✅ 切换到考试页面，并启动计时器/清�
  
  // ✅ 答案收集
  function collectAnswers() {
-   return {
-     userInfo: {
-       company: document.getElementById('company').value,
-       name: document.getElementById('name').value,
-       phone: document.getElementById('phone').value,
-       email: document.getElementById('email').value
-     },
-     singleChoice: Array.from(document.querySelectorAll('input[type="radio"]:checked'))
-       .reduce((acc, el) => ({ ...acc, [el.name]: el.value }), {}),
-     multipleChoice: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-       .reduce((acc, el) => {
-         const group = el.name.replace('mq', '');
-         if (!acc[group]) acc[group] = [];
-         acc[group].push(el.value);
-         return acc;
-       }, {}),
-     judgment: Array.from(document.querySelectorAll('.judge-card input[type="radio"]:checked'))
-       .reduce((acc, el) => ({ ...acc, [el.name]: el.value }), {}),
-     essay: document.getElementById('essay').value
-   };
- }
+  const safeValue = id => {
+    const el = document.getElementById(id);
+    return el ? el.value : "";
+  };
+
+  return {
+    userInfo: {
+      company: safeValue('company'),
+      name: safeValue('name'),
+      phone: safeValue('phone'),
+      email: safeValue('email')
+    },
+    singleChoice: Array.from(document.querySelectorAll('input[type="radio"]:checked'))
+      .reduce((acc, el) => ({ ...acc, [el.name]: el.value }), {}),
+    multipleChoice: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+      .reduce((acc, el) => {
+        const group = el.name.replace('mq', '');
+        if (!acc[group]) acc[group] = [];
+        acc[group].push(el.value);
+        return acc;
+      }, {}),
+    judgment: Array.from(document.querySelectorAll('.judge-card input[type="radio"]:checked'))
+      .reduce((acc, el) => ({ ...acc, [el.name]: el.value }), {}),
+    essay: safeValue('essay')
+  };
+}
  
  // ✅ 评估评分并渲染完成页
  function renderAssessmentResult(answers) {

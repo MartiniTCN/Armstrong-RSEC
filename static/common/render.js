@@ -60,6 +60,17 @@ function initCorrectAnswers(data) {
   });
 }
 
+// ✅ 加载 CSV 文件并渲染题目（语言切换）
+function loadCSVAndRender(csvPath, lang = "zh") {
+  Papa.parse(csvPath, {
+    download: true,
+    header: true,
+    complete: function (results) {
+      renderQuestions(results.data, lang);
+    }
+  });
+}
+
 // ✅ 渲染题目结构（根据当前语言）
 function renderQuestions(data) {
   const container = document.getElementById("testContainer");
@@ -68,7 +79,7 @@ function renderQuestions(data) {
     console.error("找不到 #testContainer 元素，无法渲染题目");
     return;
   }
-
+  console.log("准备渲染题目", data);
   container.innerHTML = "";
 
   let index = { single: 1, multiple: 1, judge: 1, essay: 1 };

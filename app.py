@@ -5,6 +5,8 @@ import os
 import requests
 
 app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static', static_folder='static')
+
 app.secret_key = os.environ.get('SECRET_KEY', 'Martin-Armstrong-Passw0rd-2025!')
 print(f"[DEBUG] 当前 SECRET_KEY: {os.environ.get('SECRET_KEY')}")
 

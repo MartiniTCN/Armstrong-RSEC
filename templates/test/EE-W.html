@@ -1525,24 +1525,8 @@ function showEmailResultPopup(message) {
     document.getElementById('emailResultPopup').remove();
   };
 }
-// ✅ 如何定位错误具体是哪一段代码？
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    console.log("[调试] 页面已加载");
 
-    // 尝试获取按钮或你绑定事件的元素
-    const testBtn = document.querySelector("#startButton");
-    console.log("[调试] 获取按钮 startButton：", testBtn);
 
-    if (testBtn) {
-      testBtn.addEventListener("click", () => {
-        console.log("[调试] 点击 startButton");
-      });
-    } else {
-      console.warn("[调试] 没有找到 startButton，跳过绑定事件！");
-    }
-  });
-</script>
 
 
  </script>

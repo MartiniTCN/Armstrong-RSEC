@@ -1442,7 +1442,7 @@ function closeRetryModal() {
 
 // 🧩 点击重试按钮时，重新初始化并推送邮件
 console.log("绑定 retryEmailBtn...");
-const btn = document.getElementById("retryEmailBtn");
+const btn = document.getElementById("retryEmailBtn");ß
 console.log("retryEmailBtn =", btn);
 
 if (btn) {
@@ -1582,10 +1582,10 @@ document.addEventListener("DOMContentLoaded", () => {
     <p class="text-lg font-semibold text-gray-900 dark:text-white mb-4">邮件发送失败，是否重试？</p>
     <div class="flex justify-center gap-4">
       <!-- 邮件失败弹窗按钮 -->
-    <button id="retryEmailButton" onclick="retryEmailSend()" class="bg-green-500 hover:bg-green-600 ...">
+    <button id="retryEmailBtn" onclick="retryEmailSend()" class="bg-green-500 hover:bg-green-600 ...">
       是，重新发送
     </button>
-    <button id="cancelRetryButton" onclick="hideEmailResultPopup()" class="bg-gray-400 hover:bg-gray-500 ...">
+    <button id="retryEmailBtn" onclick="hideEmailResultPopup()" class="bg-gray-400 hover:bg-gray-500 ...">
       否，暂不发送
     </button>
     </div>

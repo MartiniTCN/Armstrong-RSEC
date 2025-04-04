@@ -1,0 +1,42 @@
+# ========== 编辑器配置相关（不上传 VS Code、PyCharm 等） ==========
+.vscode/
+.idea/
+
+# ========== Python 编译缓存相关 ==========
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+*.tmp
+
+# ========== 系统和平台无关文件 ==========
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
+*.old
+
+# ========== 压缩包和归档文件 ==========
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# ========== 安装缓存、构建临时产物（Render 不需要） ==========
+poetry.lock
+Pipfile.lock
+.env
+*.egg-info/
+dist/
+build/
+site/
+node_modules/
+npm-debug.log
+
+# ========== 🟢 保留必要项目结构（不需要写在这里，Render 自动识别） ==========
+# /static/
+# /templates/
+# app.py
+# requirements.txt

@@ -1,6 +1,13 @@
 // 文件路径：/static/common/render.js
 // 说明：统一测试页面渲染与评估脚本，支持加载 CSV、评分、语言切换、邮件发送
 
+ // 🌈 基础样式统一定义，便于明暗主题切换 + 后期维护
+const textClass = "text-gray-800 dark:text-gray-100";
+const inputClass = "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded";
+const buttonClass = "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline";
+const cardClass = "bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mb-4";
+const modalClass = "fixed z-50 inset-0 overflow-y-auto bg-gray-800 bg-opacity-50 flex items-center justify-center";
+
 let currentLanguage = 'zh';
 let parsedQuestions = [];
 let correctAnswers = { single: [], multiple: [], judge: [], essay: [] };
@@ -128,16 +135,17 @@ function renderQuestions(data) {
 // ✅ 渲染各类题型 HTML
 function renderSingle(index, question, options) {
   return `
-  <div class="question-card mb-6">
-    <p class="font-bold mb-2">${index}. ${question}</p>
+  <div class="question-card mb-6 ${cardClass}">
+      <!-- 题目题干 -->
+      <p class="font-bold mb-2 ${textClass}">${index}. ${question}</p>
 
     <!-- ✅ 网格容器：小屏1列，大屏2列 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
       ${options.map((opt, i) => `
         <label class="flex items-start gap-2">
-          <input type="radio" name="q${index}" value="${String.fromCharCode(65 + i)}">
-          <span>${String.fromCharCode(65 + i)}. ${opt}</span>
-        </label>
+            <input type="radio" name="q${index}" value="${String.fromCharCode(65 + i)}">
+            <span class="${textClass}">${String.fromCharCode(65 + i)}. ${opt}</span>
+          </label>
       `).join('')}
     </div>
   </div>`;
@@ -145,16 +153,17 @@ function renderSingle(index, question, options) {
 
 function renderMultiple(index, question, options) {
   return `
-  <div class="question-card mb-6">
-    <p class="font-bold mb-2">${index}. ${question}（多选）</p>
+  <div class="question-card mb-6 ${cardClass}">
+      <!-- 题目题干 -->
+      <p class="font-bold mb-2 ${textClass}">${index}. ${question}（多选）</p>
 
     <!-- ✅ 网格容器：小屏1列，大屏2列 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
       ${options.map((opt, i) => `
         <label class="flex items-start gap-2">
-          <input type="checkbox" name="mq${index}" value="${String.fromCharCode(65 + i)}">
-          <span>${String.fromCharCode(65 + i)}. ${opt}</span>
-        </label>
+            <input type="checkbox" name="mq${index}" value="${String.fromCharCode(65 + i)}">
+            <span class="${textClass}">${String.fromCharCode(65 + i)}. ${opt}</span>
+          </label>
       `).join('')}
     </div>
   </div>`;
@@ -162,19 +171,20 @@ function renderMultiple(index, question, options) {
 
 function renderJudge(index, question) {
   return `
-  <div class="judge-card mb-6">
-    <p class="font-bold mb-2">${index}. ${question}</p>
+   <div class="judge-card mb-6 ${cardClass}">
+      <!-- 判断题题干 -->
+      <p class="font-bold mb-2 ${textClass}">${index}. ${question}</p>
 
     <!-- ✅ 判断题响应式布局：小屏 1 列，大屏 2 列 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
       <label class="flex items-start gap-2">
-        <input type="radio" name="jq${index}" value="正确">
-        <span>正确</span>
-      </label>
-      <label class="flex items-start gap-2">
-        <input type="radio" name="jq${index}" value="错误">
-        <span>错误</span>
-      </label>
+          <input type="radio" name="jq${index}" value="正确">
+          <span class="${textClass}">正确</span>
+        </label>
+        <label class="flex items-start gap-2">
+          <input type="radio" name="jq${index}" value="错误">
+          <span class="${textClass}">错误</span>
+        </label>
     </div>
   </div>`;
 }
@@ -182,9 +192,9 @@ function renderJudge(index, question) {
 // ✅ 渲染简答题题型（支持图片、动态提示、字数提示）
 function renderEssay(index, question, imageUrl = "", id = "") {
   return `
-    <div class="essay-card mb-6">
+    <div class="essay-card mb-6 ${cardClass}">
       <!-- ✅ 简答题题干 -->
-      <p class="font-bold mb-2">${index}. ${question}</p>
+      <p class="font-bold mb-2 ${textClass}">${index}. ${question}</p>
 
       <!-- ✅ 图片区域：仅当 imageUrl 存在时显示 -->
       ${imageUrl
@@ -198,10 +208,9 @@ function renderEssay(index, question, imageUrl = "", id = "") {
         <textarea
           id="eq${index}"
           rows="6"
-          data-essay-id="${id}"
-          class="w-full p-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded"
-          placeholder="请详细描述本题内容，建议不少于 300 字"
-          oninput="updateEssayCharCount(${index})"
+          class="w-full p-2 ${inputClass}"  <!-- ✅ 使用统一 inputClass -->
+          placeholder="${question}（请围绕要点详细描述，建议不少于 300 字）"
+          oninput="updateWordCount(${index})"
         ></textarea>
         <p class="text-sm text-gray-500 mt-1" id="charCount${index}">已输入 0 字，建议不少于 300 字</p>
       </div>
@@ -388,3 +397,29 @@ function updateEssayCharCount(index) {
 
   countDisplay.textContent = `已输入 ${length} 字，建议不少于 300 字`;
 }
+
+// ✅ 明暗主题初始化：自动读取 localStorage 并应用 dark 模式
+(function () {
+  if (!localStorage.theme) {
+    document.documentElement.classList.add("dark");
+    localStorage.theme = "dark";
+  } else if (localStorage.theme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+
+  // ✅ 等待 DOM 加载完成再绑定点击事件
+  window.addEventListener("DOMContentLoaded", () => {
+    const toggleBtn = document.getElementById("themeToggle");
+    if (!toggleBtn) {
+      console.warn("⚠️ 没有找到 #themeToggle 按钮，无法绑定主题切换功能");
+      return;
+    }
+
+    toggleBtn.addEventListener("click", () => {
+      const isDark = document.documentElement.classList.toggle("dark");
+      localStorage.theme = isDark ? "dark" : "light";
+    });
+  });
+})();

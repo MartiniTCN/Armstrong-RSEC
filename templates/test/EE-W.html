@@ -13,9 +13,13 @@
 
 	<!-- ✅ 🆕 立即加上这段，开启 dark 模式支持 -->
   <script>
-    tailwind.config = {
-      darkMode: 'class'
-    };
+    // 如果本地没有主题设置，默认启用 dark 模式
+    if (!localStorage.theme) {
+      document.documentElement.classList.add('dark');
+      localStorage.theme = 'dark';
+    } else if (localStorage.theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
   </script>
 
 
@@ -276,9 +280,12 @@
 		
 
             <div class="flex items-center gap-4">
-                <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <i class="fas fa-sun text-gray-600 dark:text-gray-300"></i>
-                </button>
+              <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                <!-- 🌞 浅色图标（白天） -->
+                <i id="sunIcon" class="fas fa-sun text-yellow-500 hidden dark:inline"></i>
+                <!-- 🌙 深色图标（夜晚） -->
+                <i id="moonIcon" class="fas fa-moon text-gray-800 dark:hidden"></i>
+              </button>
             </div>
         </div>
     </nav>

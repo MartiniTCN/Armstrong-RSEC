@@ -69,25 +69,12 @@ let currentLanguage = localStorage.getItem("language") || "zh";
 
 // ✅ 切换语言并刷新页面（或重载内容）
 function toggleLanguage() {
-  currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
-  localStorage.setItem("language", currentLanguage);
+  const nextLang = currentLanguage === 'en' ? 'zh' : 'en';
+  localStorage.setItem("language", nextLang);
 
-  // ✅ 更新语言图标
-  const flag = document.getElementById("languageFlag");
-  if (flag) {
-    flag.src = `https://flagcdn.com/${currentLanguage === 'en' ? 'cn' : 'us'}.svg`;
-    flag.alt = currentLanguage === 'en' ? "中文" : "English";
-  }
+  // ✅ 切换语言后允许弹出一次加载提示
+  localStorage.setItem("showLoadingOnce", "true");
 
-  // ✅ 语言切换提示文案
-  const message = currentLanguage === "zh"
-    ? "测试题加载中，请稍后…"
-    : "Loading questions, please wait...";
-
-  // ✅ 显示模态弹窗，防止用户误以为没反应
-  createModal("loadingModal", currentLanguage === "zh" ? "提示" : "Notice", message, null, false);
-
-  // ✅ 刷新页面加载新语言
   location.reload();
 }
 
@@ -575,18 +562,28 @@ function updateEssayCharCount(index) {
   }
 
   // ✅ 等待 DOM 加载完成再绑定点击事件
-  window.addEventListener("DOMContentLoaded", () => {
-    const toggleBtn = document.getElementById("themeToggle");
-    if (!toggleBtn) {
-      console.warn("⚠️ 没有找到 #themeToggle 按钮，无法绑定主题切换功能");
-      return;
-    }
+  // ✅ 页面加载时：只在首次进入或语言切换时弹出一次加载提示
+window.addEventListener("DOMContentLoaded", () => {
+  const course = new URLSearchParams(window.location.search).get("course") || "EE-W";
 
-    toggleBtn.addEventListener("click", () => {
-      const isDark = document.documentElement.classList.toggle("dark");
-      localStorage.theme = isDark ? "dark" : "light";
-    });
-  });
+  // ✅ 是否显示加载提示，由 localStorage 控制
+  const showLoading = localStorage.getItem("showLoadingOnce") !== "false";
+
+  if (showLoading) {
+    const lang = localStorage.getItem("language") || "zh";
+    const messages = {
+      zh: "测试题加载中，请稍后…",
+      en: "Loading questions, please wait..."
+    };
+    createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);
+  }
+
+  // ✅ 加载题库
+  loadCSVAndInit(course);
+
+  // ✅ 下次页面加载时不再自动弹出（除非语言切换后刷新）
+  localStorage.setItem("showLoadingOnce", "false");
+});
 })();
 
 // ✅ 显示通用模态框

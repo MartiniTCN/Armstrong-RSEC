@@ -16,10 +16,12 @@ let currentLanguage = localStorage.getItem("language") || "zh";
 
 // ✅ 切换语言并刷新页面（或重载内容）
 function toggleLanguage() {
-  currentLanguage = currentLanguage === "zh" ? "en" : "zh";
-  localStorage.setItem("language", currentLanguage);
-  updateLangIcon();
-  location.reload(); // 或重新调用 renderQuestions()
+  currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
+  document.getElementById('languageFlag').src = `https://flagcdn.com/${currentLanguage === 'en' ? 'cn' : 'us'}.svg`;
+  document.getElementById('pageTitle').textContent = translations[currentLanguage].title;
+  document.getElementById('searchInput').placeholder = translations[currentLanguage].searchPlaceholder;
+  initCategories();
+  updateCourseGrid();
 }
 
 // ✅ 更新语言按钮图标

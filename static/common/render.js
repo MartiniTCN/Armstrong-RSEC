@@ -160,35 +160,14 @@ function loadCSVAndInit(courseName) {
   });
 }
 
+
 // ✅ 工具函数：关闭指定 ID 的模态框
 function closeModal(id) {
   const modal = document.getElementById(id);
   if (modal) modal.remove();
 }
 
-  // ✅ 显示加载弹窗（无关闭按钮）
-  createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);
-
-  Papa.parse(csvPath, {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-
-    complete: function (results) {
-      parsedQuestions = results.data;
-      initCorrectAnswers(parsedQuestions);
-      renderQuestions(parsedQuestions);
-
-      // ✅ 加载完毕后移除弹窗
-      document.getElementById("loadingModal")?.remove();
-    },
-
-    error: function (err) {
-      createModal("errorModal", "加载失败", "❌ 加载题库失败，请检查 CSV 路径是否正确！");
-      console.error("📛 PapaParse 加载错误：", err);
-    }
-  });
-}
+  
 
 // ✅ 弹出“确认提交答卷”的模态框
 function confirmSubmitTest() {

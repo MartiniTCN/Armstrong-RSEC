@@ -72,14 +72,23 @@ function toggleLanguage() {
   currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
   localStorage.setItem("language", currentLanguage);
 
-  // 更新语言图标（通用）
+  // ✅ 更新语言图标
   const flag = document.getElementById("languageFlag");
   if (flag) {
     flag.src = `https://flagcdn.com/${currentLanguage === 'en' ? 'cn' : 'us'}.svg`;
     flag.alt = currentLanguage === 'en' ? "中文" : "English";
   }
 
-  location.reload(); // 或 renderQuestions(parsedQuestions);
+  // ✅ 语言切换提示文案
+  const message = currentLanguage === "zh"
+    ? "测试题加载中，请稍后…"
+    : "Loading questions, please wait...";
+
+  // ✅ 显示模态弹窗，防止用户误以为没反应
+  createModal("loadingModal", currentLanguage === "zh" ? "提示" : "Notice", message, null, false);
+
+  // ✅ 刷新页面加载新语言
+  location.reload();
 }
 
 // ✅ 更新语言按钮图标

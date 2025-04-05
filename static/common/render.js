@@ -128,12 +128,43 @@ function updateLoadingText() {
 function loadCSVAndInit(courseName) {
   const csvPath = `/static/csv/${courseName}.csv`;
 
-  // ✅ 语言切换支持
+  // ✅ 获取当前语言（默认中文）
   const lang = localStorage.getItem("language") || "zh";
-  const messages = {
-    zh: "测试题加载中，请稍后…",
-    en: "Loading questions, please wait..."
-  };
+
+  // ✅ 中英文提示文本
+  const loadingText = lang === "zh" ? "测试题加载中，请稍后…" : "Loading questions, please wait...";
+
+  // ✅ 调用统一风格模态框，显示“加载中”提示（不带按钮，不能关闭）
+  createModal("loadingModal", "", loadingText, null, false);
+
+  // ✅ 使用 PapaParse 加载 CSV 文件
+  Papa.parse(csvPath, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+
+    complete: function (results) {
+      parsedQuestions = results.data;
+      initCorrectAnswers(parsedQuestions);
+      renderQuestions(parsedQuestions);
+
+      // ✅ 加载完成后关闭模态弹窗
+      closeModal("loadingModal");
+    },
+
+    error: function (err) {
+      closeModal("loadingModal"); // 关闭加载框
+      alert("❌ 加载题库失败，请检查 CSV 路径是否正确！");
+      console.error("📛 PapaParse 加载错误：", err);
+    }
+  });
+}
+
+// ✅ 工具函数：关闭指定 ID 的模态框
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.remove();
+}
 
   // ✅ 显示加载弹窗（无关闭按钮）
   createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);

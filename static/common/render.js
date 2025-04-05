@@ -616,36 +616,53 @@ function closeUniversalModal() {
 
 // ✅ 1. 初始化明暗模式（仅绑定一次，保留用户选择）
 (function initTheme() {
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const savedTheme = localStorage.getItem("theme");
-  if (!savedTheme) {
-    document.documentElement.classList.add("dark");
-    localStorage.setItem("theme", "dark");
-  } else if (savedTheme === "dark") {
+
+  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
     document.documentElement.classList.add("dark");
   } else {
     document.documentElement.classList.remove("dark");
   }
+
+  updateThemeIcon(); // 初始化时同步图标
 })();
 
 // ✅ 2. 绑定明暗模式切换按钮
 document.addEventListener("DOMContentLoaded", () => {
+  // ✅ 初始化主题
+  const savedTheme = localStorage.getItem("theme") || "dark";
+  if (savedTheme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+
+  // ✅ 初始化图标状态
+  const sun = document.getElementById("sunIcon");
+  const moon = document.getElementById("moonIcon");
+  if (sun && moon) {
+    const isDark = document.documentElement.classList.contains("dark");
+    sun.classList.toggle("hidden", !isDark);
+    moon.classList.toggle("hidden", isDark);
+  }
+
+  // ✅ 绑定按钮点击切换逻辑
   const themeBtn = document.getElementById("themeToggle");
   if (themeBtn) {
     themeBtn.addEventListener("click", () => {
       const isDark = document.documentElement.classList.toggle("dark");
       localStorage.setItem("theme", isDark ? "dark" : "light");
 
-      // 同步按钮图标（如有）
-      const sun = document.getElementById("sunIcon");
-      const moon = document.getElementById("moonIcon");
+      // ✅ 同步图标
       if (sun && moon) {
         sun.classList.toggle("hidden", !isDark);
         moon.classList.toggle("hidden", isDark);
       }
     });
   }
+});
 
-  // ✅ 3. 初始化语言切换按钮
   // ✅ 3. 初始化语言切换按钮
 const langBtn = document.getElementById("langToggle");
 const langIcon = document.getElementById("languageFlag");
@@ -667,3 +684,18 @@ if (langBtn && langIcon) {
   });
 }
 });
+
+function updateThemeIcon() {
+  const icon = document.getElementById("themeIcon");
+  if (!icon) return;
+
+  if (document.documentElement.classList.contains("dark")) {
+    icon.classList.remove("fa-moon");
+    icon.classList.add("fa-sun");
+  } else {
+    icon.classList.remove("fa-sun");
+    icon.classList.add("fa-moon");
+  }
+}
+
+// ✅ 同步图标函数（切换 🌙/☀️）

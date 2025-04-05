@@ -279,12 +279,16 @@
             </div>
 		
 
+            <!-- ✅ 明暗模式 + 语言切换按钮区域 -->
             <div class="flex items-center gap-4">
+              <!-- 明暗切换按钮 -->
               <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                <!-- 🌞 浅色图标（白天） -->
-                <i id="sunIcon" class="fas fa-sun text-yellow-500 hidden dark:inline"></i>
-                <!-- 🌙 深色图标（夜晚） -->
-                <i id="moonIcon" class="fas fa-moon text-gray-800 dark:hidden"></i>
+                <i id="themeIcon" class="fas fa-moon text-gray-800 dark:text-gray-200"></i>
+              </button>
+
+              <!-- 语言切换按钮 -->
+              <button id="langToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                <img id="langIcon" src="/static/flags/zh.svg" alt="中文" class="w-5 h-5">
               </button>
             </div>
         </div>

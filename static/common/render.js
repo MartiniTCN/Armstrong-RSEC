@@ -8,7 +8,6 @@ const buttonClass = "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-
 const cardClass = "bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 mb-4";
 const modalClass = "fixed z-50 inset-0 overflow-y-auto bg-gray-800 bg-opacity-50 flex items-center justify-center";
 
-let currentLanguage = 'zh';
 let parsedQuestions = [];
 let correctAnswers = { single: [], multiple: [], judge: [], essay: [] };
 
@@ -479,40 +478,53 @@ function closeUniversalModal() {
   document.getElementById("universalModal").classList.add("hidden");
 }
 
-// ✅ 初始化主题（页面加载时自动应用用户偏好）
+// ✅ 1. 初始化明暗模式（仅绑定一次，保留用户选择）
 (function initTheme() {
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const savedTheme = localStorage.theme;
-
-  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+  const savedTheme = localStorage.getItem("theme");
+  if (!savedTheme) {
     document.documentElement.classList.add("dark");
-    localStorage.theme = "dark";
+    localStorage.setItem("theme", "dark");
+  } else if (savedTheme === "dark") {
+    document.documentElement.classList.add("dark");
   } else {
     document.documentElement.classList.remove("dark");
-    localStorage.theme = "light";
   }
-  updateThemeIcon(); // 图标样式同步
 })();
 
-// ✅ 切换主题的按钮点击逻辑
-const toggleBtn = document.getElementById("themeToggle");
-if (toggleBtn) {
-  toggleBtn.addEventListener("click", () => {
-    const isDark = document.documentElement.classList.toggle("dark");
-    localStorage.theme = isDark ? "dark" : "light";
-    updateThemeIcon(); // 同步按钮图标
-  });
-}
+// ✅ 2. 绑定明暗模式切换按钮
+document.addEventListener("DOMContentLoaded", () => {
+  const themeBtn = document.getElementById("themeToggle");
+  if (themeBtn) {
+    themeBtn.addEventListener("click", () => {
+      const isDark = document.documentElement.classList.toggle("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
 
-// ✅ 更新按钮图标显示（太阳 / 月亮）
-function updateThemeIcon() {
-  const icon = document.getElementById("themeIcon");
-  if (!icon) return;
-  if (document.documentElement.classList.contains("dark")) {
-    icon.classList.remove("fa-moon");
-    icon.classList.add("fa-sun");
-  } else {
-    icon.classList.remove("fa-sun");
-    icon.classList.add("fa-moon");
+      // 同步按钮图标（如有）
+      const sun = document.getElementById("sunIcon");
+      const moon = document.getElementById("moonIcon");
+      if (sun && moon) {
+        sun.classList.toggle("hidden", !isDark);
+        moon.classList.toggle("hidden", isDark);
+      }
+    });
   }
-}
+
+  // ✅ 3. 初始化语言切换按钮
+  const langBtn = document.getElementById("langToggle");
+  if (langBtn) {
+    langBtn.addEventListener("click", () => {
+      const current = localStorage.getItem("language") || "zh";
+      const nextLang = current === "zh" ? "en" : "zh";
+      localStorage.setItem("language", nextLang);
+      location.reload(); // 或重新渲染题目
+    });
+
+    // 设置初始语言图标
+    const icon = document.getElementById("langIcon");
+    const lang = localStorage.getItem("language") || "zh";
+    if (icon) {
+      icon.src = lang === "zh" ? "/static/flags/zh.svg" : "/static/flags/en.svg";
+      icon.alt = lang === "zh" ? "中文" : "English";
+    }
+  }
+});

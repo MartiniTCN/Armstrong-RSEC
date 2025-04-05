@@ -12,6 +12,30 @@ let currentLanguage = 'zh';
 let parsedQuestions = [];
 let correctAnswers = { single: [], multiple: [], judge: [], essay: [] };
 
+// 🌐 当前语言变量（你已有 currentLanguage 的话可省略）
+let currentLanguage = localStorage.getItem("language") || "zh";
+
+// ✅ 切换语言并刷新页面（或重载内容）
+function toggleLanguage() {
+  currentLanguage = currentLanguage === "zh" ? "en" : "zh";
+  localStorage.setItem("language", currentLanguage);
+  updateLangIcon();
+  location.reload(); // 或重新调用 renderQuestions()
+}
+
+// ✅ 更新语言按钮图标
+function updateLangIcon() {
+  const icon = document.getElementById("langIcon");
+  if (icon) {
+    icon.src = currentLanguage === "zh" ? "/static/flags/zh.svg" : "/static/flags/en.svg";
+    icon.alt = currentLanguage === "zh" ? "中文" : "English";
+  }
+}
+
+// ✅ 初始化语言按钮
+document.getElementById("langToggle")?.addEventListener("click", toggleLanguage);
+updateLangIcon(); // 页面加载时更新图标
+
 // ✅ 页面加载后自动启动
 window.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -453,4 +477,42 @@ function showUniversalModal(title, message, showInput = false, onConfirm = null)
 // ✅ 关闭模态框
 function closeUniversalModal() {
   document.getElementById("universalModal").classList.add("hidden");
+}
+
+// ✅ 初始化主题（页面加载时自动应用用户偏好）
+(function initTheme() {
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const savedTheme = localStorage.theme;
+
+  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+    document.documentElement.classList.add("dark");
+    localStorage.theme = "dark";
+  } else {
+    document.documentElement.classList.remove("dark");
+    localStorage.theme = "light";
+  }
+  updateThemeIcon(); // 图标样式同步
+})();
+
+// ✅ 切换主题的按钮点击逻辑
+const toggleBtn = document.getElementById("themeToggle");
+if (toggleBtn) {
+  toggleBtn.addEventListener("click", () => {
+    const isDark = document.documentElement.classList.toggle("dark");
+    localStorage.theme = isDark ? "dark" : "light";
+    updateThemeIcon(); // 同步按钮图标
+  });
+}
+
+// ✅ 更新按钮图标显示（太阳 / 月亮）
+function updateThemeIcon() {
+  const icon = document.getElementById("themeIcon");
+  if (!icon) return;
+  if (document.documentElement.classList.contains("dark")) {
+    icon.classList.remove("fa-moon");
+    icon.classList.add("fa-sun");
+  } else {
+    icon.classList.remove("fa-sun");
+    icon.classList.add("fa-moon");
+  }
 }

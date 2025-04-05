@@ -95,12 +95,6 @@ function updateLangIcon() {
 document.getElementById("langToggle")?.addEventListener("click", toggleLanguage);
 updateLangIcon(); // 页面加载时更新图标
 
-// ✅ 页面加载后自动启动
-window.addEventListener("DOMContentLoaded", () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const course = urlParams.get("course") || "EE-W";
-  loadCSVAndInit(course);
-});
 
 // ✅ 语言切换按钮处理
 function switchLanguage(lang) {
@@ -614,75 +608,56 @@ function closeUniversalModal() {
   document.getElementById("universalModal").classList.add("hidden");
 }
 
-// ✅ 1. 初始化明暗模式（仅绑定一次，保留用户选择）
-(function initTheme() {
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const savedTheme = localStorage.getItem("theme");
 
-  if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-    document.documentElement.classList.add("dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-  }
-
-  updateThemeIcon(); // 初始化时同步图标
-})();
-
-// ✅ 2. 绑定明暗模式切换按钮
+// ✅  绑定明暗模式切换按钮
 document.addEventListener("DOMContentLoaded", () => {
-  // ✅ 初始化主题
+  // ✅ 初始化主题样式
   const savedTheme = localStorage.getItem("theme") || "dark";
-  if (savedTheme === "dark") {
-    document.documentElement.classList.add("dark");
-  } else {
-    document.documentElement.classList.remove("dark");
-  }
+  document.documentElement.classList.toggle("dark", savedTheme === "dark");
 
-  // ✅ 初始化图标状态
+  // ✅ 初始化明暗图标
   const sun = document.getElementById("sunIcon");
   const moon = document.getElementById("moonIcon");
   if (sun && moon) {
-    const isDark = document.documentElement.classList.contains("dark");
-    sun.classList.toggle("hidden", !isDark);
-    moon.classList.toggle("hidden", isDark);
+    sun.classList.toggle("hidden", savedTheme !== "dark");
+    moon.classList.toggle("hidden", savedTheme === "dark");
   }
 
-  // ✅ 绑定按钮点击切换逻辑
+  // ✅ 绑定主题切换按钮
   const themeBtn = document.getElementById("themeToggle");
   if (themeBtn) {
     themeBtn.addEventListener("click", () => {
       const isDark = document.documentElement.classList.toggle("dark");
       localStorage.setItem("theme", isDark ? "dark" : "light");
-
-      // ✅ 同步图标
       if (sun && moon) {
         sun.classList.toggle("hidden", !isDark);
         moon.classList.toggle("hidden", isDark);
       }
     });
   }
-});
 
-  // ✅ 3. 初始化语言切换按钮
-const langBtn = document.getElementById("langToggle");
-const langIcon = document.getElementById("languageFlag");
+  // ✅ 初始化语言图标
+  const langIcon = document.getElementById("languageFlag");
+  const lang = localStorage.getItem("language") || "zh";
+  if (langIcon) {
+    langIcon.src = lang === "zh" ? "https://flagcdn.com/cn.svg" : "https://flagcdn.com/us.svg";
+    langIcon.alt = lang === "zh" ? "中文" : "English";
+  }
 
-if (langBtn && langIcon) {
-  const currentLang = localStorage.getItem("language") || "zh";
+  // ✅ 绑定语言切换按钮
+  const langBtn = document.getElementById("langToggle");
+  if (langBtn) {
+    langBtn.addEventListener("click", () => {
+      const nextLang = lang === "zh" ? "en" : "zh";
+      localStorage.setItem("language", nextLang);
+      location.reload();
+    });
+  }
 
-  // ✅ 初始图标设置（页面第一次加载）
-  langIcon.src = currentLang === "zh" 
-    ? "https://flagcdn.com/cn.svg" 
-    : "https://flagcdn.com/us.svg";
-  langIcon.alt = currentLang === "zh" ? "中文" : "English";
-
-  // ✅ 按钮绑定点击事件
-  langBtn.addEventListener("click", () => {
-    const nextLang = currentLang === "zh" ? "en" : "zh";
-    localStorage.setItem("language", nextLang);
-    location.reload(); // 也可调用 renderQuestions()
-  });
-}
+  // ✅ 加载题库
+  const urlParams = new URLSearchParams(window.location.search);
+  const course = urlParams.get("course") || "EE-W";
+  loadCSVAndInit(course);
 });
 
 function updateThemeIcon() {

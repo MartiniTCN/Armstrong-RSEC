@@ -189,30 +189,33 @@ function renderJudge(index, question) {
   </div>`;
 }
 
-// ✅ 渲染简答题题型（支持图片、动态提示、字数提示）
-function renderEssay(index, question, imageUrl = "", id = "") {
+// ✅ 渲染简答题模块（带图片、自动统计字数、统一样式）
+function renderEssay(index, question, imageUrl = "") {
+  // ✅ 提示文字作为 placeholder
+  const placeholder = `${question}（请围绕要点详细描述，建议不少于 300 字）`;
+
   return `
     <div class="essay-card mb-6 ${cardClass}">
-      <!-- ✅ 简答题题干 -->
+      <!-- ✅ 简答题题目 -->
       <p class="font-bold mb-2 ${textClass}">${index}. ${question}</p>
 
-      <!-- ✅ 图片区域：仅当 imageUrl 存在时显示 -->
+      <!-- ✅ 显示题目配图（如果有） -->
       ${imageUrl
         ? `<div class="flex justify-center mb-4">
              <img src="${imageUrl}" alt="参考图" class="max-w-full max-h-64 rounded shadow" />
            </div>`
         : ''}
 
-      <!-- ✅ 输入框 + 统计 -->
+      <!-- ✅ 答题输入区 + 字数统计 -->
       <div class="relative">
         <textarea
           id="eq${index}"
           rows="6"
-          class="w-full p-2 ${inputClass}"  <!-- ✅ 使用统一 inputClass -->
-          placeholder="${question}（请围绕要点详细描述，建议不少于 300 字）"
+          class="w-full p-2 ${inputClass}"
+          placeholder="${placeholder.replace(/"/g, '&quot;')}" 
           oninput="updateWordCount(${index})"
         ></textarea>
-        <p class="text-sm text-gray-500 mt-1" id="charCount${index}">已输入 0 字，建议不少于 300 字</p>
+        <p class="text-sm text-gray-500 mt-1" id="wordCount${index}">已输入 0 字，建议不少于 300 字</p>
       </div>
     </div>`;
 }
@@ -423,3 +426,31 @@ function updateEssayCharCount(index) {
     });
   });
 })();
+
+// ✅ 显示通用模态框
+function showUniversalModal(title, message, showInput = false, onConfirm = null) {
+  // 设置内容
+  document.getElementById("modalTitle").textContent = title;
+  document.getElementById("modalMessage").textContent = message;
+
+  // 控制输入框是否显示
+  const inputEl = document.getElementById("modalInput");
+  inputEl.classList.toggle("hidden", !showInput);
+  inputEl.value = ""; // 清空
+
+  // 设置确认按钮逻辑
+  const confirmBtn = document.getElementById("modalConfirmBtn");
+  confirmBtn.onclick = () => {
+    const value = showInput ? inputEl.value.trim() : null;
+    if (onConfirm) onConfirm(value); // 回调
+    closeUniversalModal();
+  };
+
+  // 显示弹窗
+  document.getElementById("universalModal").classList.remove("hidden");
+}
+
+// ✅ 关闭模态框
+function closeUniversalModal() {
+  document.getElementById("universalModal").classList.add("hidden");
+}

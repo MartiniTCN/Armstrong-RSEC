@@ -1044,7 +1044,14 @@ function promptPasswordAndSend(answers) {
   // 回调函数：根据用户点击决定是否发送
   window.confirmPassword = async function(sendEmail) {
     const password = document.getElementById("passwordInput").value.trim();
-    document.getElementById("passwordModal").classList.add("hidden");
+    showUniversalModal("动态验证码", "请输入验证码以发送成绩", true, (val) => {
+      if (val === "AFT2025") {
+        const html = buildEmailTable();
+        sendResultEmail(html);
+      } else {
+        alert("验证码错误");
+      }
+});
 
     // 判断口令有效性（默认正确口令：AFT2025）
     const isValid = password === "AFT2025";
@@ -1896,6 +1903,31 @@ function switchLanguage(lang) {
     loadCSVAndRender("/static/csv/EE-W.csv", "zh");
   });
 </script>
+
+<!-- ✅ 通用模态弹窗模板 -->
+<div id="universalModal" class="fixed z-50 inset-0 overflow-y-auto bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+  <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-lg w-full max-w-md text-center">
+    <h2 id="modalTitle" class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">提示标题</h2>
+    <p id="modalMessage" class="text-gray-700 dark:text-gray-300 mb-6">提示内容文本，可根据实际内容动态设置</p>
+
+    <!-- 可选输入框（例如动态口令） -->
+    <input
+      id="modalInput"
+      class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded p-2 w-full mb-4 hidden"
+      type="text"
+      placeholder="请输入内容"
+    />
+
+    <div class="flex justify-end gap-4">
+      <button id="modalConfirmBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+        确定
+      </button>
+      <button onclick="closeUniversalModal()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded">
+        取消
+      </button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

@@ -17,11 +17,16 @@ let currentLanguage = localStorage.getItem("language") || "zh";
 // ✅ 切换语言并刷新页面（或重载内容）
 function toggleLanguage() {
   currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
-  document.getElementById('languageFlag').src = `https://flagcdn.com/${currentLanguage === 'en' ? 'cn' : 'us'}.svg`;
-  document.getElementById('pageTitle').textContent = translations[currentLanguage].title;
-  document.getElementById('searchInput').placeholder = translations[currentLanguage].searchPlaceholder;
-  initCategories();
-  updateCourseGrid();
+  localStorage.setItem("language", currentLanguage);
+
+  // 更新语言图标（通用）
+  const flag = document.getElementById("languageFlag");
+  if (flag) {
+    flag.src = `https://flagcdn.com/${currentLanguage === 'en' ? 'cn' : 'us'}.svg`;
+    flag.alt = currentLanguage === 'en' ? "中文" : "English";
+  }
+
+  location.reload(); // 或 renderQuestions(parsedQuestions);
 }
 
 // ✅ 更新语言按钮图标
@@ -51,24 +56,51 @@ function switchLanguage(lang) {
   alert(`🌐 已切换为 ${lang === 'zh' ? '中文' : 'English'} 模式`);
   renderQuestions(parsedQuestions);
 }
+// ✅ 支持的中英文提示（全局）
+const loadingMessages = {
+  zh: "测试题加载中，请稍后…",
+  en: "Loading questions, please wait..."
+};
+
+// ✅ 根据语言更新加载提示
+function updateLoadingText() {
+  const lang = localStorage.getItem("language") || "zh";
+  const loadingText = document.getElementById("loadingText");
+  if (loadingText) {
+    loadingText.textContent = loadingMessages[lang];
+  }
+}
 
 // ✅ 加载 CSV 文件并初始化题目与答案
 function loadCSVAndInit(courseName) {
+  // ✅ 显示加载提示
+  const loadingEl = document.getElementById("loadingMessage");
+  if (loadingEl) {
+    loadingEl.classList.remove("hidden");
+    updateLoadingText(); // 根据语言更新提示文本
+  }
+
   const csvPath = `/static/csv/${courseName}.csv`;
   Papa.parse(csvPath, {
     download: true,
     header: true,
     skipEmptyLines: true,
-  
+
     complete: function (results) {
       parsedQuestions = results.data;
       initCorrectAnswers(parsedQuestions);
       renderQuestions(parsedQuestions);
+
+      // ✅ 隐藏加载提示
+      if (loadingEl) loadingEl.classList.add("hidden");
     },
-  
+
     error: function (err) {
       alert("❌ 加载题库失败，请检查 CSV 路径是否正确！");
       console.error("📛 PapaParse 加载错误：", err);
+
+      // ✅ 无论成功失败都隐藏
+      if (loadingEl) loadingEl.classList.add("hidden");
     }
   });
 }
@@ -512,21 +544,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ✅ 3. 初始化语言切换按钮
-  const langBtn = document.getElementById("langToggle");
-  if (langBtn) {
-    langBtn.addEventListener("click", () => {
-      const current = localStorage.getItem("language") || "zh";
-      const nextLang = current === "zh" ? "en" : "zh";
-      localStorage.setItem("language", nextLang);
-      location.reload(); // 或重新渲染题目
-    });
+  // ✅ 3. 初始化语言切换按钮
+const langBtn = document.getElementById("langToggle");
+const langIcon = document.getElementById("languageFlag");
 
-    // 设置初始语言图标
-    const icon = document.getElementById("langIcon");
-    const lang = localStorage.getItem("language") || "zh";
-    if (icon) {
-      icon.src = lang === "zh" ? "/static/flags/zh.svg" : "/static/flags/en.svg";
-      icon.alt = lang === "zh" ? "中文" : "English";
-    }
-  }
+if (langBtn && langIcon) {
+  const currentLang = localStorage.getItem("language") || "zh";
+
+  // ✅ 初始图标设置（页面第一次加载）
+  langIcon.src = currentLang === "zh" 
+    ? "https://flagcdn.com/cn.svg" 
+    : "https://flagcdn.com/us.svg";
+  langIcon.alt = currentLang === "zh" ? "中文" : "English";
+
+  // ✅ 按钮绑定点击事件
+  langBtn.addEventListener("click", () => {
+    const nextLang = currentLang === "zh" ? "en" : "zh";
+    localStorage.setItem("language", nextLang);
+    location.reload(); // 也可调用 renderQuestions()
+  });
+}
 });

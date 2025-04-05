@@ -412,7 +412,7 @@
 
         <!-- 提交按钮 -->
  <div class="flex justify-center mt-8">
-  <button onclick="submitTest()"
+  <button onclick="confirmSubmitTest()"
     class="relative inline-flex items-center justify-center px-4 py-1.5 bg-gradient-to-r from-green-500 to-emerald-600
            text-white text-sm font-medium rounded-full shadow-md hover:from-emerald-500 hover:to-green-600
            transform hover:scale-105 transition-all duration-300 ease-in-out group overflow-hidden">
@@ -885,13 +885,6 @@ function sendResultEmail(answers) {
   }
 }
 
-// ✅ 提交答卷，只跳转，不执行评测、不导出、不发送邮件
-function submitTest() {
-  const answers = collectAnswers(); // 📝 收集用户答题数据
-  sessionStorage.setItem("userAnswers", JSON.stringify(answers)); // 📦 存储到 sessionStorage，稍后用于评测
-  showPage("completePage"); // 📄 跳转到完成页
-  renderAnswersOnCompletePage(answers); // ✅ 仅展示答题情况，不显示正确答案与得分
-}
 
 // ✅ 渲染完成页上用户提交的答案（不包含正确答案与得分）
 function renderAnswersOnCompletePage(answers) {

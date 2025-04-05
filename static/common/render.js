@@ -11,6 +11,59 @@ const modalClass = "fixed z-50 inset-0 overflow-y-auto bg-gray-800 bg-opacity-50
 let parsedQuestions = [];
 let correctAnswers = { single: [], multiple: [], judge: [], essay: [] };
 
+// ✅ 工具函数：创建并显示统一风格的模态弹窗
+// ✅ 工具函数：创建并显示统一风格的模态弹窗（支持输入框、确认/关闭按钮）
+function createModal(id, title, message, onConfirm = null, showClose = true, showInput = false, inputPlaceholder = "") {
+  // 移除已有同名模态框
+  const existing = document.getElementById(id);
+  if (existing) existing.remove();
+
+  // 创建模态容器
+  const modal = document.createElement("div");
+  modal.id = id;
+  modal.className = modalClass;
+
+  // 构造模态内容区域
+  modal.innerHTML = `
+    <div class="bg-white dark:bg-gray-900 text-gray-800 dark:text-white rounded-xl p-6 w-80 shadow-lg text-center">
+      <h3 class="text-lg font-bold mb-2">${title}</h3>
+      <p class="mb-4">${message}</p>
+
+      ${showInput ? `
+        <input
+          id="${id}-input"
+          type="text"
+          placeholder="${inputPlaceholder || '请输入'}"
+          class="w-full p-2 mb-4 rounded border dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+        />
+      ` : ''}
+
+      <div class="flex justify-center gap-4">
+        ${onConfirm ? `<button id="${id}-confirmBtn" class="${buttonClass}">确认</button>` : ''}
+        ${showClose ? `<button id="${id}-closeBtn" class="bg-gray-300 dark:bg-gray-700 text-black dark:text-white px-4 py-2 rounded">关闭</button>` : ''}
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // ✅ 绑定确认按钮事件（带输入）
+  if (onConfirm) {
+    const confirmBtn = document.getElementById(`${id}-confirmBtn`);
+    confirmBtn?.addEventListener("click", () => {
+      const value = showInput ? document.getElementById(`${id}-input`).value.trim() : null;
+      onConfirm(value); // 将输入值作为参数传入回调函数
+      modal.remove();
+    });
+  }
+
+  // ✅ 绑定关闭按钮事件
+  if (showClose) {
+    const closeBtn = document.getElementById(`${id}-closeBtn`);
+    closeBtn?.addEventListener("click", () => modal.remove());
+  }
+}
+
 // 🌐 当前语言变量（你已有 currentLanguage 的话可省略）
 let currentLanguage = localStorage.getItem("language") || "zh";
 
@@ -73,14 +126,18 @@ function updateLoadingText() {
 
 // ✅ 加载 CSV 文件并初始化题目与答案
 function loadCSVAndInit(courseName) {
-  // ✅ 显示加载提示
-  const loadingEl = document.getElementById("loadingMessage");
-  if (loadingEl) {
-    loadingEl.classList.remove("hidden");
-    updateLoadingText(); // 根据语言更新提示文本
-  }
-
   const csvPath = `/static/csv/${courseName}.csv`;
+
+  // ✅ 语言切换支持
+  const lang = localStorage.getItem("language") || "zh";
+  const messages = {
+    zh: "测试题加载中，请稍后…",
+    en: "Loading questions, please wait..."
+  };
+
+  // ✅ 显示加载弹窗（无关闭按钮）
+  createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);
+
   Papa.parse(csvPath, {
     download: true,
     header: true,
@@ -91,17 +148,29 @@ function loadCSVAndInit(courseName) {
       initCorrectAnswers(parsedQuestions);
       renderQuestions(parsedQuestions);
 
-      // ✅ 隐藏加载提示
-      if (loadingEl) loadingEl.classList.add("hidden");
+      // ✅ 加载完毕后移除弹窗
+      document.getElementById("loadingModal")?.remove();
     },
 
     error: function (err) {
-      alert("❌ 加载题库失败，请检查 CSV 路径是否正确！");
+      createModal("errorModal", "加载失败", "❌ 加载题库失败，请检查 CSV 路径是否正确！");
       console.error("📛 PapaParse 加载错误：", err);
-
-      // ✅ 无论成功失败都隐藏
-      if (loadingEl) loadingEl.classList.add("hidden");
     }
+  });
+}
+
+// ✅ 弹出“确认提交答卷”的模态框
+function confirmSubmitTest() {
+  const lang = localStorage.getItem("language") || "zh";
+
+  const title = lang === "zh" ? "确认提交" : "Submit Confirmation";
+  const message = lang === "zh"
+    ? "你确定要提交本次答卷吗？提交后将无法修改。"
+    : "Are you sure you want to submit your answers? You won’t be able to change them after.";
+
+  // ✅ 使用统一风格的模态框
+  createModal("submitConfirmModal", title, message, () => {
+    submitTest(); // 点击确认后才真正提交答卷
   });
 }
 
@@ -325,7 +394,22 @@ function evaluateAll() {
 
 // ✅ 邮件发送（可集成 EmailJS）
 function handleResultEmail() {
-  document.getElementById("passwordModal").classList.remove("hidden");
+  const lang = localStorage.getItem("language") || "zh";
+  const title = lang === "zh" ? "验证口令" : "Enter Password";
+  const message = lang === "zh" ? "请输入动态口令进行验证" : "Please enter the verification code";
+
+  createModal("passwordModal", title, message, (value) => {
+    if (value === "AFT2025") {
+      evaluateAnswers();
+      renderAssessmentResult();
+      showPage("resultPage");
+
+      const htmlContent = buildEmailTable();
+      sendResultEmail(htmlContent);
+    } else {
+      createModal("failPwd", "验证失败", "❌ 动态口令错误，请重试！");
+    }
+  }, true, true, "请输入动态口令");
 }
 
 function closePasswordModal() {
@@ -393,27 +477,30 @@ function allQuestionsAnswered() {
   });
 
   if (unanswered.length > 0) {
-    alert("⚠️ 以下题目尚未作答：\n" + unanswered.join("\n"));
+    const lang = localStorage.getItem("language") || "zh";
+    const message = lang === "zh"
+      ? "以下题目尚未作答：\n" + unanswered.join("\n")
+      : "The following questions are unanswered:\n" + unanswered.join("\n");
+
+    createModal("unansweredModal", lang === "zh" ? "未完成答题" : "Unanswered", message);
     return false;
   }
+
 
   return true;
 }
 
 function sendResultEmail(dataHTML) {
-  const serviceID = "service_csl8frv";
-  const templateID = "template_0v2mqw9";
-  const publicKey = "LoQCI3C98dk3FgEvj";
-
   emailjs.init(publicKey);
   emailjs.send(serviceID, templateID, {
     table_html: dataHTML
   }).then(
     function () {
-      alert("📩 成绩邮件已成功发送！");
+      const lang = localStorage.getItem("language") || "zh";
+      createModal("mailOK", lang === "zh" ? "发送成功" : "Success", "📩 成绩邮件已成功发送！");
     },
     function (error) {
-      alert("❌ 邮件发送失败：" + JSON.stringify(error));
+      createModal("mailFail", "邮件发送失败", "❌ 邮件发送失败，请检查网络或稍后再试");
     }
   );
 }

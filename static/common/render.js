@@ -624,7 +624,10 @@ function updateEssayCharCount(index) {
     // ✅ 初始化主题（根据 localStorage 设置 html 的 dark 类）
     const html = document.documentElement;
     const savedTheme = localStorage.getItem("theme") || "dark";
+    console.log("[主题检测] 当前存储的 theme =", savedTheme);
+
     html.classList.toggle("dark", savedTheme === "dark");
+    console.log("[主题应用] html.classList 是否含 dark？", html.classList.contains("dark"));
   
     // ✅ 初始化明暗模式图标（显示太阳或月亮）
     const sun = document.getElementById("sunIcon");
@@ -632,6 +635,10 @@ function updateEssayCharCount(index) {
     if (sun && moon) {
       sun.classList.toggle("hidden", savedTheme !== "dark"); // 暗模式下显示太阳
       moon.classList.toggle("hidden", savedTheme === "dark"); // 亮模式下显示月亮
+      console.log("[图标切换] 已同步 icon：sun.hidden =", sun.classList.contains("hidden"), "moon.hidden =", moon.classList.contains("hidden"));
+  } else {
+    console.warn("⚠️ 没找到明暗图标元素（sunIcon 或 moonIcon）");
+  }
     }
   
     // ✅ 绑定明暗模式切换按钮
@@ -640,19 +647,22 @@ function updateEssayCharCount(index) {
       themeBtn.addEventListener("click", () => {
         const isDark = html.classList.toggle("dark"); // 切换 html 上的 dark 类
         localStorage.setItem("theme", isDark ? "dark" : "light"); // 更新本地存储
-  
+        console.log("[切换主题] 用户点击后，设置为：", isDark ? "dark" : "light");
         // 同步按钮图标
         if (sun && moon) {
           sun.classList.toggle("hidden", !isDark);
           moon.classList.toggle("hidden", isDark);
         }
       });
+    } else {
+      console.warn("⚠️ 未找到主题切换按钮 #themeToggle");
     }
   
     // ✅ 若语言切换中，关闭语言切换提示
     if (localStorage.getItem("isSwitchingLanguage") === "true") {
       closeModal("switchLangModal");
       localStorage.removeItem("isSwitchingLanguage");
+      console.log("[语言切换] 已关闭 switchLangModal");
     }
   
     // ✅ 是否需要显示加载提示（语言切换后设置的）
@@ -662,10 +672,12 @@ function updateEssayCharCount(index) {
         zh: "测试题加载中，请稍后…",
         en: "Loading questions, please wait..."
       };
+      console.log("[加载提示] 弹出 loadingModal");
       createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);
     }
   
     // ✅ 加载题目数据
+    console.log("[加载题库] 准备加载课程：", course);
     loadCSVAndInit(course);
   });
 })();

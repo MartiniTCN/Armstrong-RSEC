@@ -604,40 +604,38 @@ function updateEssayCharCount(index) {
 
 // ✅ 明暗主题初始化：自动读取 localStorage 并应用 dark 模式
 (function () {
+  // ✅ 读取本地主题设置，若无则默认暗色
   if (!localStorage.theme) {
-    document.documentElement.classList.add("dark");
-    localStorage.theme = "dark";
+    document.body.classList.add("dark");         // ✅ 设置暗色主题
+    localStorage.theme = "dark";                 // ✅ 保存设置
   } else if (localStorage.theme === "dark") {
-    document.documentElement.classList.add("dark");
+    document.body.classList.add("dark");         // ✅ 若是 dark 也加上
   } else {
-    document.documentElement.classList.remove("dark");
+    document.body.classList.remove("dark");      // ✅ 明确移除 dark 类
   }
 
-  // ✅ 等待 DOM 加载完成再绑定点击事件
-  // ✅ 页面加载时：只在首次进入或语言切换时弹出一次加载提示
+  // ✅ 等待页面加载后绑定逻辑
   window.addEventListener("DOMContentLoaded", () => {
     const course = new URLSearchParams(window.location.search).get("course") || "EE-W";
-  
-    // ✅ 获取语言设置
     const lang = localStorage.getItem("language") || "zh";
-  
-    // ✅ 若是语言切换后，优先关闭语言切换弹窗
+
+    // ✅ 若语言切换中，优先关闭语言切换提示框
     if (localStorage.getItem("isSwitchingLanguage") === "true") {
       closeModal("switchLangModal");
       localStorage.removeItem("isSwitchingLanguage");
     }
-  
-    // ✅ 检查是否需要弹出加载提示（语言切换中设置的）
+
+    // ✅ 是否需要显示一次性加载提示
     if (localStorage.getItem("showLoadingOnce") === "true") {
-      localStorage.removeItem("showLoadingOnce"); // 只弹一次
+      localStorage.removeItem("showLoadingOnce"); // ⚠️ 只弹一次
       const messages = {
         zh: "测试题加载中，请稍后…",
         en: "Loading questions, please wait..."
       };
       createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);
     }
-  
-    // ✅ 加载题库（加载完毕时关闭弹窗）
+
+    // ✅ 渲染题目
     loadCSVAndInit(course);
   });
 })();
@@ -673,24 +671,25 @@ function closeUniversalModal() {
 
 // ✅  绑定明暗模式切换按钮
 document.addEventListener("DOMContentLoaded", () => {
-  // ✅ 初始化主题样式
+  // ✅ 1. 初始化主题样式（从 localStorage 读取）
   const savedTheme = localStorage.getItem("theme") || "dark";
-  document.documentElement.classList.toggle("dark", savedTheme === "dark");
+  document.body.classList.toggle("dark", savedTheme === "dark"); // ✅ 使用 body 替代 documentElement
 
-  // ✅ 初始化明暗图标
+  // ✅ 2. 初始化明暗图标
   const sun = document.getElementById("sunIcon");
   const moon = document.getElementById("moonIcon");
   if (sun && moon) {
-    sun.classList.toggle("hidden", savedTheme !== "dark");
-    moon.classList.toggle("hidden", savedTheme === "dark");
+    sun.classList.toggle("hidden", savedTheme !== "dark"); // ✅ dark 模式时显示 sun
+    moon.classList.toggle("hidden", savedTheme === "dark"); // ✅ light 模式时显示 moon
   }
 
-  // ✅ 绑定主题切换按钮
+  // ✅ 3. 绑定主题切换按钮点击事件
   const themeBtn = document.getElementById("themeToggle");
   if (themeBtn) {
     themeBtn.addEventListener("click", () => {
-      const isDark = document.documentElement.classList.toggle("dark");
-      localStorage.setItem("theme", isDark ? "dark" : "light");
+      const isDark = document.body.classList.toggle("dark"); // ✅ 切换 dark 类
+      localStorage.setItem("theme", isDark ? "dark" : "light"); // ✅ 存储设置
+
       if (sun && moon) {
         sun.classList.toggle("hidden", !isDark);
         moon.classList.toggle("hidden", isDark);
@@ -698,25 +697,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ✅ 初始化语言图标
+  // ✅ 4. 初始化语言图标
   const langIcon = document.getElementById("languageFlag");
   const lang = localStorage.getItem("language") || "zh";
   if (langIcon) {
-    langIcon.src = lang === "zh" ? "https://flagcdn.com/cn.svg" : "https://flagcdn.com/us.svg";
+    langIcon.src = lang === "zh"
+      ? "https://flagcdn.com/cn.svg"
+      : "https://flagcdn.com/us.svg";
     langIcon.alt = lang === "zh" ? "中文" : "English";
   }
 
-  // ✅ 绑定语言切换按钮
+  // ✅ 5. 绑定语言切换按钮事件
   const langBtn = document.getElementById("langToggle");
   if (langBtn) {
     langBtn.addEventListener("click", () => {
       const nextLang = lang === "zh" ? "en" : "zh";
       localStorage.setItem("language", nextLang);
-      location.reload();
+      localStorage.setItem("showLoadingOnce", "true"); // ✅ 切换语言后显示加载提示
+      location.reload(); // ✅ 页面刷新
     });
   }
 
-  // ✅ 加载题库
+  // ✅ 6. 加载题库（根据 URL 参数）
   const urlParams = new URLSearchParams(window.location.search);
   const course = urlParams.get("course") || "EE-W";
   loadCSVAndInit(course);

@@ -15,10 +15,40 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* 暗色模式支持 */
+/* ✅ 明暗模式切换背景 */
 body.dark {
-  background-color: #121212;
+  background-color: #1a1a1a;
+  color: #f1f1f1;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ✅ 卡片类在暗模式下 */
+body.dark .card,
+body.dark .question-card,
+body.dark .judge-card,
+body.dark .essay-card {
+  background-color: #2b2b2b;
   color: #f5f5f5;
+  border-color: #444;
+}
+
+/* ✅ 通用文字类 */
+body.dark p,
+body.dark h1,
+body.dark h2,
+body.dark label,
+body.dark span {
+  color: #f5f5f5;
+}
+
+/* ✅ 表单控件 */
+body.dark textarea,
+body.dark input[type="text"],
+body.dark input[type="radio"],
+body.dark input[type="checkbox"] {
+  background-color: #1e1e1e;
+  color: #fff;
+  border: 1px solid #444;
 }
 
 /* Logo + 标题区 */

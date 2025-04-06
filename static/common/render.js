@@ -80,17 +80,17 @@ function toggleLanguage() {
     flag.alt = currentLanguage === 'en' ? "中文" : "English";
   }
 
-  // ✅ 3. 标记刷新后需要显示加载弹窗
+  // ✅ 3. 标记刷新后 是否需要显示加载弹窗，true 显示，false 不显示
   localStorage.setItem("showLoadingOnce", "true");
 
   // ✅ 4. 弹出加载提示（当前语言）
-  const lang = currentLanguage;
+  /* const lang = currentLanguage;
   const messages = {
     zh: "测试题加载中，请稍后…",
     en: "Loading questions, please wait..."
   };
   createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);
-
+  */
   // ✅ 5. 最后刷新页面
   setTimeout(() => {
     location.reload();
@@ -582,27 +582,29 @@ function updateEssayCharCount(index) {
 
   // ✅ 等待 DOM 加载完成再绑定点击事件
   // ✅ 页面加载时：只在首次进入或语言切换时弹出一次加载提示
-window.addEventListener("DOMContentLoaded", () => {
-  const course = new URLSearchParams(window.location.search).get("course") || "EE-W";
-
-  // ✅ 是否显示加载提示，由 localStorage 控制
-  const showLoading = localStorage.getItem("showLoadingOnce") !== "false";
-
-  if (showLoading) {
+  window.addEventListener("DOMContentLoaded", () => {
+    const course = new URLSearchParams(window.location.search).get("course") || "EE-W";
+  
+    // ✅ 获取当前语言
     const lang = localStorage.getItem("language") || "zh";
-    const messages = {
-      zh: "测试题加载中，请稍后…",
-      en: "Loading questions, please wait..."
-    };
-    createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);
-  }
-
-  // ✅ 加载题库
-  loadCSVAndInit(course);
-
-  // ✅ 下次页面加载时不再自动弹出（除非语言切换后刷新）
-  localStorage.setItem("showLoadingOnce", "false");
-});
+  
+    // ✅ 检查是否需要显示“加载中”弹窗（用于语言切换后）
+    if (localStorage.getItem("showLoadingOnce") === "true") {
+      const messages = {
+        zh: "测试题加载中，请稍后…",
+        en: "Loading questions, please wait..."
+      };
+  
+      // ✅ 只显示一次：加载后即关闭该标志
+      localStorage.removeItem("showLoadingOnce");
+  
+      // ✅ 显示加载提示弹窗
+      createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);
+    }
+  
+    // ✅ 加载题库（加载完成后由 loadCSVAndInit 关闭弹窗）
+    loadCSVAndInit(course);
+  });
 })();
 
 // ✅ 显示通用模态框

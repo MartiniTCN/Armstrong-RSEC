@@ -69,32 +69,34 @@ let currentLanguage = localStorage.getItem("language") || "zh";
 
 // ✅ 切换语言并刷新页面（或重载内容）
 function toggleLanguage() {
-  // ✅ 1. 切换语言变量并保存
+  // ✅ 1. 切换语言变量
   currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
   localStorage.setItem("language", currentLanguage);
 
-  // ✅ 2. 立即切换图标
+  // ✅ 2. 立即更新图标
   const flag = document.getElementById("languageFlag");
   if (flag) {
     flag.src = `https://flagcdn.com/${currentLanguage === 'en' ? 'cn' : 'us'}.svg`;
     flag.alt = currentLanguage === 'en' ? "中文" : "English";
   }
 
-  // ✅ 3. 标记刷新后 是否需要显示加载弹窗，true 显示，false 不显示
+  // ✅ 3. 设置状态标记（后续渲染用）
   localStorage.setItem("showLoadingOnce", "true");
+  localStorage.setItem("isSwitchingLanguage", "true");
 
-  // ✅ 4. 弹出加载提示（当前语言）
-  /* const lang = currentLanguage;
-  const messages = {
-    zh: "测试题加载中，请稍后…",
-    en: "Loading questions, please wait..."
-  };
-  createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);
-  */
-  // ✅ 5. 最后刷新页面
-  setTimeout(() => {
-    location.reload();
-  }, 200); // 稍作延迟让提示框渲染（避免闪烁）
+  // ✅ 4. 弹出“语言切换中”模态框
+  createModal(
+    "switchLangModal",
+    "",
+    `<p class="text-center text-base leading-6">
+      语言切换中...<br/>Switching language...
+    </p>`,
+    null,
+    false
+  );
+
+  // ✅ 5. 刷新页面
+  setTimeout(() => location.reload(), 300);
 }
 
 // ✅ 更新语言按钮图标
@@ -585,24 +587,26 @@ function updateEssayCharCount(index) {
   window.addEventListener("DOMContentLoaded", () => {
     const course = new URLSearchParams(window.location.search).get("course") || "EE-W";
   
-    // ✅ 获取当前语言
+    // ✅ 获取语言设置
     const lang = localStorage.getItem("language") || "zh";
   
-    // ✅ 检查是否需要显示“加载中”弹窗（用于语言切换后）
+    // ✅ 若是语言切换后，优先关闭语言切换弹窗
+    if (localStorage.getItem("isSwitchingLanguage") === "true") {
+      closeModal("switchLangModal");
+      localStorage.removeItem("isSwitchingLanguage");
+    }
+  
+    // ✅ 检查是否需要弹出加载提示（语言切换中设置的）
     if (localStorage.getItem("showLoadingOnce") === "true") {
+      localStorage.removeItem("showLoadingOnce"); // 只弹一次
       const messages = {
         zh: "测试题加载中，请稍后…",
         en: "Loading questions, please wait..."
       };
-  
-      // ✅ 只显示一次：加载后即关闭该标志
-      localStorage.removeItem("showLoadingOnce");
-  
-      // ✅ 显示加载提示弹窗
       createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);
     }
   
-    // ✅ 加载题库（加载完成后由 loadCSVAndInit 关闭弹窗）
+    // ✅ 加载题库（加载完毕时关闭弹窗）
     loadCSVAndInit(course);
   });
 })();

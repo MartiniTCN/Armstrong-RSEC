@@ -701,7 +701,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const langIcon = document.getElementById("languageFlag");
   const lang = localStorage.getItem("language") || "zh";
   if (langIcon) {
-    langIcon.src = lang === "zh" ? "https://flagcdn.com/cn.svg" : "https://flagcdn.com/us.svg";
     langIcon.src = lang === "zh"
       ? "https://flagcdn.com/cn.svg"
       : "https://flagcdn.com/us.svg";
@@ -718,7 +717,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ✅ 加载题库
   // ✅ 6. 加载题库（根据 URL 参数）
   const urlParams = new URLSearchParams(window.location.search);
   const course = urlParams.get("course") || "EE-W";

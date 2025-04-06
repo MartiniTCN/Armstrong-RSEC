@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth dark">
+<html lang="zh-CN" class="">
   <!-- ✅ html2pdf.js CDN：用于将页面导出为 PDF -->
 <head>
     <meta charset="UTF-8">
@@ -1952,30 +1952,29 @@ function switchLanguage(lang) {
 </div>
 
 <script>
-  // 初始化主题（从 localStorage 读取）
   window.addEventListener('DOMContentLoaded', () => {
-    const savedTheme = localStorage.getItem('theme');
     const html = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+  
+    // 从 localStorage 恢复主题
+    const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
       html.classList.add('dark');
+      console.log('[Init] 恢复为 dark 模式');
     } else {
-      html.classList.remove('dark'); // 默认 light
-    }
-  });
-  
-  // 切换主题并保存
-  document.getElementById('themeToggle').addEventListener('click', () => {
-    const html = document.documentElement;
-    const isDark = html.classList.contains('dark');
-    if (isDark) {
       html.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    } else {
-      html.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
+      console.log('[Init] 默认 light 模式');
     }
+  
+    // 添加点击事件
+    themeToggle.addEventListener('click', () => {
+      const isDark = html.classList.contains('dark');
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+      console.log(`[Click] 主题切换为 ${isDark ? 'light' : 'dark'}`);
+    });
   });
   </script>
-  
+
 </body>
 </html>

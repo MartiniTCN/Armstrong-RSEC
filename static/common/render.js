@@ -604,38 +604,68 @@ function updateEssayCharCount(index) {
 
 // ✅ 明暗主题初始化：自动读取 localStorage 并应用 dark 模式
 (function () {
-  // ✅ 读取本地主题设置，若无则默认暗色
-  if (!localStorage.theme) {
-    document.body.classList.add("dark");         // ✅ 设置暗色主题
-    localStorage.theme = "dark";                 // ✅ 保存设置
-  } else if (localStorage.theme === "dark") {
-    document.body.classList.add("dark");         // ✅ 若是 dark 也加上
+  // ✅ 初始化 html 的 dark 类（首次访问默认暗）
+  const html = document.documentElement;
+  const theme = localStorage.getItem("theme");
+  if (!theme) {
+    html.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+  } else if (theme === "dark") {
+    html.classList.add("dark");
   } else {
-    document.body.classList.remove("dark");      // ✅ 明确移除 dark 类
+    html.classList.remove("dark");
   }
 
   // ✅ 等待页面加载后绑定逻辑
   window.addEventListener("DOMContentLoaded", () => {
     const course = new URLSearchParams(window.location.search).get("course") || "EE-W";
     const lang = localStorage.getItem("language") || "zh";
-
-    // ✅ 若语言切换中，优先关闭语言切换提示框
+  
+    // ✅ 初始化主题（根据 localStorage 设置 html 的 dark 类）
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    html.classList.toggle("dark", savedTheme === "dark");
+  
+    // ✅ 初始化明暗模式图标（显示太阳或月亮）
+    const sun = document.getElementById("sunIcon");
+    const moon = document.getElementById("moonIcon");
+    if (sun && moon) {
+      sun.classList.toggle("hidden", savedTheme !== "dark"); // 暗模式下显示太阳
+      moon.classList.toggle("hidden", savedTheme === "dark"); // 亮模式下显示月亮
+    }
+  
+    // ✅ 绑定明暗模式切换按钮
+    const themeBtn = document.getElementById("themeToggle");
+    if (themeBtn) {
+      themeBtn.addEventListener("click", () => {
+        const isDark = html.classList.toggle("dark"); // 切换 html 上的 dark 类
+        localStorage.setItem("theme", isDark ? "dark" : "light"); // 更新本地存储
+  
+        // 同步按钮图标
+        if (sun && moon) {
+          sun.classList.toggle("hidden", !isDark);
+          moon.classList.toggle("hidden", isDark);
+        }
+      });
+    }
+  
+    // ✅ 若语言切换中，关闭语言切换提示
     if (localStorage.getItem("isSwitchingLanguage") === "true") {
       closeModal("switchLangModal");
       localStorage.removeItem("isSwitchingLanguage");
     }
-
-    // ✅ 是否需要显示一次性加载提示
+  
+    // ✅ 是否需要显示加载提示（语言切换后设置的）
     if (localStorage.getItem("showLoadingOnce") === "true") {
-      localStorage.removeItem("showLoadingOnce"); // ⚠️ 只弹一次
+      localStorage.removeItem("showLoadingOnce"); // 只弹一次
       const messages = {
         zh: "测试题加载中，请稍后…",
         en: "Loading questions, please wait..."
       };
       createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);
     }
-
-    // ✅ 渲染题目
+  
+    // ✅ 加载题目数据
     loadCSVAndInit(course);
   });
 })();

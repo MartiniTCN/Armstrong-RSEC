@@ -690,7 +690,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ✅ 3. 绑定主题切换按钮点击事件
   themeBtn?.addEventListener("click", () => {
-    
+    const html = document.documentElement;
     const isDark = html.classList.toggle("dark");
     localStorage.setItem("theme", isDark ? "dark" : "light");
 

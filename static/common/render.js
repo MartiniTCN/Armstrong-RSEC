@@ -320,7 +320,7 @@ function renderSingle(index, question, options) {
     <!-- ✅ 网格容器：小屏1列，大屏2列 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
       ${options.map((opt, i) => `
-        <label class="flex items-start gap-2">
+        <label class="flex items-center gap-2">  <!-- ✅ 修改了 items-start 为 items-center -->
             <input type="radio" name="q${index}" value="${String.fromCharCode(65 + i)}">
             <span class="${textClass}">${String.fromCharCode(65 + i)}. ${opt}</span>
           </label>
@@ -338,7 +338,7 @@ function renderMultiple(index, question, options) {
     <!-- ✅ 网格容器：小屏1列，大屏2列 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
       ${options.map((opt, i) => `
-        <label class="flex items-start gap-2">
+        <label class="flex items-center gap-2">
             <input type="checkbox" name="mq${index}" value="${String.fromCharCode(65 + i)}">
             <span class="${textClass}">${String.fromCharCode(65 + i)}. ${opt}</span>
           </label>
@@ -348,23 +348,28 @@ function renderMultiple(index, question, options) {
 }
 
 function renderJudge(index, question) {
+  // ✅ 判断题选项根据语言切换
+  const isZh = currentLanguage === 'zh';
+  const optionTrue = isZh ? "正确" : "True";
+  const optionFalse = isZh ? "错误" : "False";
+
   return `
    <div class="judge-card mb-6 ${cardClass}">
       <!-- 判断题题干 -->
       <p class="font-bold mb-2 ${textClass}">${index}. ${question}</p>
 
-    <!-- ✅ 判断题响应式布局：小屏 1 列，大屏 2 列 -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-      <label class="flex items-start gap-2">
-          <input type="radio" name="jq${index}" value="正确">
-          <span class="${textClass}">正确</span>
+      <!-- ✅ 判断题响应式布局：小屏 1 列，大屏 2 列 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <label class="flex items-center gap-2">
+            <input type="radio" name="jq${index}" value="${optionTrue}">
+            <span class="${textClass}">${optionTrue}</span>
         </label>
-        <label class="flex items-start gap-2">
-          <input type="radio" name="jq${index}" value="错误">
-          <span class="${textClass}">错误</span>
+        <label class="flex items-center gap-2">
+            <input type="radio" name="jq${index}" value="${optionFalse}">
+            <span class="${textClass}">${optionFalse}</span>
         </label>
-    </div>
-  </div>`;
+      </div>
+    </div>`;
 }
 
 // ✅ 渲染简答题模块（带图片、自动统计字数、统一样式）

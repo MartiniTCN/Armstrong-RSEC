@@ -296,6 +296,7 @@
               class="h-9 px-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               aria-label="Toggle dark mode"
               >
+              <!-- 使用 Font Awesome 图标 -->
               <i class="fas fa-sun dark:hidden"></i>
               <i class="fas fa-moon hidden dark:block"></i>
               </button>
@@ -1950,5 +1951,31 @@ function switchLanguage(lang) {
   </div>
 </div>
 
+<script>
+  // 初始化主题（从 localStorage 读取）
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme');
+    const html = document.documentElement;
+    if (savedTheme === 'dark') {
+      html.classList.add('dark');
+    } else {
+      html.classList.remove('dark'); // 默认 light
+    }
+  });
+  
+  // 切换主题并保存
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const html = document.documentElement;
+    const isDark = html.classList.contains('dark');
+    if (isDark) {
+      html.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    } else {
+      html.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+  </script>
+  
 </body>
 </html>

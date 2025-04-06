@@ -87,10 +87,10 @@ function toggleLanguage() {
   // ✅ 4. 弹出“语言切换中”模态框
   createModal(
     "switchLangModal",
-    "",
-    `<p class="text-center text-base leading-6">
-      语言切换中...<br/>Switching language...
-    </p>`,
+    currentLanguage === "zh" ? "切换语言中" : "Switching Language",
+    currentLanguage === "zh"
+      ? "语言切换中，请稍候…"
+      : "Switching language, please wait...",
     null,
     false
   );

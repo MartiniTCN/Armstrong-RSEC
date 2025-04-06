@@ -739,15 +739,14 @@ function updateThemeIcon() {
 // 🌙 主题切换
 function initTheme() {
   const savedTheme = localStorage.getItem('theme') || 'dark';
+  const isDark = savedTheme === 'dark'; // ✅ 先定义
   const htmlEl = document.documentElement;
 
-  if (savedTheme === 'dark') {
-    htmlEl.classList.add('dark');
-    updateThemeIcon(true);
-  } else {
-    htmlEl.classList.remove('dark');
-    updateThemeIcon(false);
-  }
+  // ✅ 设置 html 的 dark 类
+  htmlEl.classList.toggle('dark', isDark);
+
+  // ✅ 更新图标
+  updateThemeIcon(isDark);
 }
 
 function updateThemeIcon(isDark) {

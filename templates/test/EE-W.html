@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="">
+<html lang="zh-CN" class="scroll-smooth dark">
   <!-- ✅ html2pdf.js CDN：用于将页面导出为 PDF -->
 <head>
     <meta charset="UTF-8">
@@ -8,20 +8,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
-    <script>
-      tailwind.config = {
-        darkMode: 'class'
-      };
-    </script>
+    <!-- ✅ csv 解析库 -->
 
 
 	<!-- ✅ 🆕 立即加上这段，开启 dark 模式支持 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/papaparse/5.3.0/papaparse.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script>
+    // 如果本地没有主题设置，默认启用 dark 模式
+    if (!localStorage.theme) {
+      document.documentElement.classList.add('dark');
+      localStorage.theme = 'dark';
+    } else if (localStorage.theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
 
-    <!-- ✅ 这里是 CSS 样式 -->
+
+
 <style>
   /* ✅ 避免分页时拆行 */
   tr {
@@ -291,12 +293,11 @@
               <!-- 明暗模式切换按钮（统一圆角+边框+背景） -->
               <button
               id="themeToggle"
-              onclick="toggleTheme()"
               class="h-9 px-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               aria-label="Toggle dark mode"
               >
-              <i id="sunIcon" class="fas fa-sun"></i>
-              <i id="moonIcon" class="fas fa-moon hidden"></i>
+              <i class="fas fa-sun dark:hidden"></i>
+              <i class="fas fa-moon hidden dark:block"></i>
               </button>
 
               <!-- 语言切换按钮（统一圆角+边框+背景） -->
@@ -309,7 +310,7 @@
                 id="languageFlag"
                 src="https://flagcdn.com/cn.svg"
                 alt="Language"
-                class="w-5 h-4" 
+                class="w-5 h-4"
               />
               </button>
 
@@ -637,7 +638,20 @@ function showTestPage() { // ✅ 切换到考试页面，并启动计时器/清�
  
  document.addEventListener('DOMContentLoaded', updateCountdown);
  
- 
+ // 🌙 主题切换
+ function initTheme() {
+   const isDark = localStorage.getItem('theme') === 'dark' ||
+     (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+   document.documentElement.classList.toggle('dark', isDark);
+   document.getElementById('themeToggle').innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+ }
+ document.addEventListener('DOMContentLoaded', () => {
+   initTheme();
+   document.getElementById('themeToggle').addEventListener('click', () => {
+     localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'light' : 'dark');
+     initTheme();
+   });
+ });
  
  // ✅ 答案收集
 function collectAnswers() {

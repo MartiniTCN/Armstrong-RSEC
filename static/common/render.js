@@ -671,51 +671,53 @@ function closeUniversalModal() {
 document.addEventListener("DOMContentLoaded", () => {
 
   // ✅ 1. 初始化主题样式（从 localStorage 读取）
-   const savedTheme = localStorage.getItem("theme") || "dark";
-  document.documentElement.classList.toggle("dark", savedTheme === "dark");
-
+  const savedTheme = localStorage.getItem("theme") || "dark";
+  document.body.classList.toggle("dark", savedTheme === "dark"); // ✅ 使用 body 替代 documentElement
 
   // ✅ 2. 初始化明暗图标
-  const themeBtn = document.getElementById("themeToggle");
-  const sunIcon = themeBtn?.querySelector(".fa-sun");
-  const moonIcon = themeBtn?.querySelector(".fa-moon");
-
-  if (savedTheme === "dark") {
-    sunIcon.classList.remove("hidden");
-    moonIcon.classList.add("hidden");
-  } else {
-    sunIcon.classList.add("hidden");
-    moonIcon.classList.remove("hidden");
+  const sun = document.getElementById("sunIcon");
+  const moon = document.getElementById("moonIcon");
+  if (sun && moon) {
+    sun.classList.toggle("hidden", savedTheme !== "dark"); // ✅ dark 模式时显示 sun
+    moon.classList.toggle("hidden", savedTheme === "dark"); // ✅ light 模式时显示 moon
   }
 
   // ✅ 3. 绑定主题切换按钮点击事件
-  themeBtn?.addEventListener("click", () => {
-    
-    const isDark = html.classList.toggle("dark");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
+  const themeBtn = document.getElementById("themeToggle");
+  if (themeBtn) {
+    themeBtn.addEventListener("click", () => {
+      const isDark = document.body.classList.toggle("dark"); // ✅ 切换 dark 类
+      localStorage.setItem("theme", isDark ? "dark" : "light"); // ✅ 存储设置
 
-    sunIcon?.classList.toggle("hidden", isDark);
-    moonIcon?.classList.toggle("hidden", !isDark);
-  });
-
+      if (sun && moon) {
+        sun.classList.toggle("hidden", !isDark);
+        moon.classList.toggle("hidden", isDark);
+      }
+    });
+  }
 
   // ✅ 4. 初始化语言图标
   const langIcon = document.getElementById("languageFlag");
   const lang = localStorage.getItem("language") || "zh";
   if (langIcon) {
     langIcon.src = lang === "zh" ? "https://flagcdn.com/cn.svg" : "https://flagcdn.com/us.svg";
+    langIcon.src = lang === "zh"
+      ? "https://flagcdn.com/cn.svg"
+      : "https://flagcdn.com/us.svg";
     langIcon.alt = lang === "zh" ? "中文" : "English";
   }
 
+  // ✅ 5. 绑定语言切换按钮事件
   const langBtn = document.getElementById("langToggle");
   if (langBtn) {
     langBtn.addEventListener("click", () => {
-      const newLang = localStorage.getItem("language") === "zh" ? "en" : "zh";
-      localStorage.setItem("language", newLang);
+      const nextLang = lang === "zh" ? "en" : "zh";
+      localStorage.setItem("language", nextLang);
       location.reload();
     });
   }
 
+  // ✅ 加载题库
   // ✅ 6. 加载题库（根据 URL 参数）
   const urlParams = new URLSearchParams(window.location.search);
   const course = urlParams.get("course") || "EE-W";
@@ -735,59 +737,3 @@ function updateThemeIcon() {
   }
 }
 
-
-// 🌙 主题切换
-function initTheme() {
-  const savedTheme = localStorage.getItem('theme') || 'dark';
-  const isDark = savedTheme === 'dark'; // ✅ 先定义
-  const htmlEl = document.documentElement;
-
-  // ✅ 设置 html 的 dark 类
-  htmlEl.classList.toggle('dark', isDark);
-
-  // ✅ 更新图标
-  updateThemeIcon(isDark);
-}
-
-function updateThemeIcon(isDark) {
-  const sunIcon = document.getElementById('sunIcon');
-  const moonIcon = document.getElementById('moonIcon');
-  if (sunIcon && moonIcon) {
-    sunIcon.classList.toggle('hidden', isDark);     // 🌙 dark 模式 => 隐藏太阳
-    moonIcon.classList.toggle('hidden', !isDark);   // ☀️ light 模式 => 隐藏月亮
-  }
-}
-
-
-// 主题切换函数，绑定到按钮 onclick
-function toggleTheme() {
-  const html = document.documentElement;
-  const icon = document.getElementById('themeIcon');
-
-  // 判断当前是否是 dark 模式
-  const isDark = html.classList.contains('dark');
-
-  // 切换 class（dark <-> light）
-  html.classList.toggle('dark');
-  localStorage.setItem('theme', isDark ? 'light' : 'dark');
-
-  // 更换图标：白天太阳图、晚上月亮图
-  icon.src = isDark
-    ? 'https://cdn-icons-png.flaticon.com/512/650/650634.png' // 太阳图
-    : 'https://cdn-icons-png.flaticon.com/512/581/581601.png'; // 月亮图
-}
-
-// 页面加载时初始化主题（从 localStorage 读取）
-window.addEventListener('DOMContentLoaded', () => {
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  const html = document.documentElement;
-  const icon = document.getElementById('themeIcon');
-
-  if (savedTheme === 'dark') {
-    html.classList.add('dark');
-    icon.src = 'https://cdn-icons-png.flaticon.com/512/581/581601.png'; // 月亮图
-  } else {
-    html.classList.remove('dark');
-    icon.src = 'https://cdn-icons-png.flaticon.com/512/650/650634.png'; // 太阳图
-  }
-});

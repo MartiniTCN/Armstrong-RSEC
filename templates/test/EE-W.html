@@ -229,27 +229,27 @@
 
 @media (max-width: 640px) {
   #examStatusBar {
-    top: auto !important;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 0.2rem 0.6rem;
+    top: 50% !important;              /* 居中对齐 */
+    left: auto !important;
+    right: 0.5rem !important;         /* 靠右 */
+    transform: translateY(-50%);      /* 垂直居中 */
+    flex-direction: column;           /* 垂直排列：时间在上，按钮在下 */
+    padding: 0.5rem 0.8rem;
     font-size: 0.75rem;
     gap: 0.5rem;
+    border-radius: 1rem;
+    background-color: #dc2626;        /* 红色背景保留 */
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    z-index: 9999;
   }
 
   #examStatusBar button {
-    padding: 0.15rem 0.5rem;
-    font-size: 0.6rem;
-  }
-
-  #examStatusBar button i {
-    margin-right: 0 !important;
+    padding: 0.3rem 0.75rem;
     font-size: 0.75rem;
   }
 
   #examStatusBar button span {
-    display: none;
+    display: inline;
   }
 }
     </style>
@@ -302,25 +302,14 @@
         </div>
     </nav>
     	<!-- ✅ 将 examStatusBar 放在这里 -->
-      <!-- ✅ 固定右侧中部浮动条 -->
-        <div id="examStatusBar"
-        class="fixed right-4 top-1/2 transform -translate-y-1/2 z-50 flex flex-col items-center gap-2
-              bg-red-600 text-white px-4 py-2 rounded-xl shadow-lg font-semibold w-36
-              md:flex-row md:w-auto md:top-6 md:right-6 md:transform-none">
-
-        <!-- 倒计时 -->
-        <span class="flex items-center text-sm md:text-base">
-        <i class="fas fa-clock mr-1"></i>
-        <span id="countdown">60:00</span>
+      <div id="examStatusBar" class="flex items-center gap-4 bg-red-600 text-white px-5 py-2 rounded-lg shadow-lg font-semibold">
+        <span class="flex items-center">
+          <i class="fas fa-clock mr-2"></i><span id="countdown">60:00</span>
         </span>
-
-        <!-- 暂停按钮 -->
-        <button onclick="togglePause()"
-            id="pauseBtn"
-            class="mt-2 md:mt-0 bg-white text-red-600 px-3 py-1 rounded-md text-sm md:text-base hover:bg-red-100 transition-all">
-        <i class="fas fa-pause mr-1"></i><span>暂停</span>
-        </button>
-        </div>
+        <button onclick="togglePause()" id="pauseBtn" class="bg-white text-red-600 px-3 py-1 rounded-md hover:bg-red-100 transition-all">
+          <i class="fas fa-pause mr-1"></i><span>暂停</span>
+  </button>
+</div>
     <!-- 删除首页 -->
 
     <!-- 直接进入测试页 -->

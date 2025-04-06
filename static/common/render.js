@@ -673,20 +673,21 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ 1. 初始化主题样式（从 localStorage 读取）
   const savedTheme = localStorage.getItem("theme") || "dark";
   document.documentElement.classList.toggle("dark", savedTheme === "dark"); // ✅ 正确使用 html 元素
+  html.classList.toggle("dark", savedTheme === "dark"); // ✅ 将 dark 类加到 <html>
 
   // ✅ 2. 初始化明暗图标
+  const themeBtn = document.getElementById("themeToggle");
   const sun = document.getElementById("sunIcon");
   const moon = document.getElementById("moonIcon");
   if (sun && moon) {
-    sun.classList.toggle("hidden", savedTheme !== "dark"); // ✅ dark 模式时显示 sun
-    moon.classList.toggle("hidden", savedTheme === "dark"); // ✅ light 模式时显示 moon
+    sunIcon.classList.toggle("hidden", savedTheme === "dark");  // 暗模式下隐藏太阳
+    moonIcon.classList.toggle("hidden", savedTheme !== "dark"); // 亮模式下隐藏月亮
   }
 
   // ✅ 3. 绑定主题切换按钮点击事件
-  const themeBtn = document.getElementById("themeToggle");
   if (themeBtn) {
     themeBtn.addEventListener("click", () => {
-      const isDark = document.documentElement.classList.toggle("dark"); // ✅ 切换 dark 类到 <html>
+      const isDark = html.classList.toggle("dark"); // ✅ 切换 dark 类到 <html>
       localStorage.setItem("theme", isDark ? "dark" : "light"); // ✅ 存储设置
 
       if (sun && moon) {

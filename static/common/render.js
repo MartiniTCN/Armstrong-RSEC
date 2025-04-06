@@ -680,14 +680,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const sunIcon = themeBtn?.querySelector(".fa-sun");
   const moonIcon = themeBtn?.querySelector(".fa-moon");
 
-  if (sunIcon && moonIcon) {
-    sunIcon.classList.toggle("hidden", savedTheme === "dark");
-    moonIcon.classList.toggle("hidden", savedTheme !== "dark");
+  if (savedTheme === "dark") {
+    sunIcon.classList.remove("hidden");
+    moonIcon.classList.add("hidden");
+  } else {
+    sunIcon.classList.add("hidden");
+    moonIcon.classList.remove("hidden");
   }
 
   // ✅ 3. 绑定主题切换按钮点击事件
   themeBtn?.addEventListener("click", () => {
-    const html = document.documentElement;
+    
     const isDark = html.classList.toggle("dark");
     localStorage.setItem("theme", isDark ? "dark" : "light");
 

@@ -12,18 +12,11 @@
 
 
 	<!-- ✅ 🆕 立即加上这段，开启 dark 模式支持 -->
-  <script>
-    // 如果本地没有主题设置，默认启用 dark 模式
-    if (!localStorage.theme) {
-      document.documentElement.classList.add('dark');
-      localStorage.theme = 'dark';
-    } else if (localStorage.theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    }
-  </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/papaparse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-
-
+    <!-- ✅ 这里是 CSS 样式 -->
 <style>
   /* ✅ 避免分页时拆行 */
   tr {
@@ -310,7 +303,7 @@
                 id="languageFlag"
                 src="https://flagcdn.com/cn.svg"
                 alt="Language"
-                class="w-5 h-4"
+                class="w-5 h-4" 
               />
               </button>
 

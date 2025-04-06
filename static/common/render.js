@@ -672,7 +672,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ✅ 1. 初始化主题样式（从 localStorage 读取）
   const savedTheme = localStorage.getItem("theme") || "dark";
-  document.body.classList.toggle("dark", savedTheme === "dark"); // ✅ 使用 body 替代 documentElement
+  document.documentElement.classList.toggle("dark", savedTheme === "dark"); // ✅ 正确使用 html 元素
 
   // ✅ 2. 初始化明暗图标
   const sun = document.getElementById("sunIcon");
@@ -686,7 +686,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeBtn = document.getElementById("themeToggle");
   if (themeBtn) {
     themeBtn.addEventListener("click", () => {
-      const isDark = document.body.classList.toggle("dark"); // ✅ 切换 dark 类
+      const isDark = document.documentElement.classList.toggle("dark"); // ✅ 切换 dark 类到 <html>
       localStorage.setItem("theme", isDark ? "dark" : "light"); // ✅ 存储设置
 
       if (sun && moon) {

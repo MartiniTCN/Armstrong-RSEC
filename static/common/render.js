@@ -64,6 +64,32 @@ function createModal(id, title, message, onConfirm = null, showClose = true, sho
   }
 }
 
+function updateLanguageUI(lang) {
+  // ✅ 页面标题
+  document.getElementById('pageTitle').innerText =
+    lang === 'en' ? '| EE-W Product Test System' : '｜ EE-W 产品培训测试系统';
+
+  // ✅ 返回课程
+  document.querySelector('a[href="/course"]').innerHTML =
+    lang === 'en'
+      ? '<i class="fas fa-arrow-left mr-2"></i>Back to course list'
+      : '<i class="fas fa-arrow-left mr-2"></i>返回课程选择页';
+
+  // ✅ 倒计时提示
+  document.querySelector('#examStatusBar button span').innerText =
+    isPaused ? (lang === 'en' ? 'Resume' : '继续') : (lang === 'en' ? 'Pause' : '暂停');
+
+  // ✅ 学员信息标题
+  document.querySelector('h2 i.fa-id-card').parentElement.innerHTML =
+    lang === 'en'
+      ? '<i class="fas fa-id-card mr-2 text-blue-500"></i>Student Information'
+      : '<i class="fas fa-id-card mr-2 text-blue-500"></i>学员信息';
+
+  // ✅ 表单字段（公司/姓名/电话/邮箱等）后续可继续添加
+  document.querySelector('label[for="company"]').innerHTML =
+    lang === 'en' ? '<span class="text-red-500">*</span> Company Name' : '<span class="text-red-500">*</span> 公司名称';
+}
+
 // 🌐 当前语言变量（你已有 currentLanguage 的话可省略）
 let currentLanguage = localStorage.getItem("language") || "zh";
 
@@ -704,4 +730,3 @@ function updateThemeIcon() {
   }
 }
 
-// ✅ 同步图标函数（切换 🌙/☀️）

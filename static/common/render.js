@@ -671,48 +671,43 @@ function closeUniversalModal() {
 document.addEventListener("DOMContentLoaded", () => {
 
   // ✅ 1. 初始化主题样式（从 localStorage 读取）
-  const savedTheme = localStorage.getItem("theme") || "dark";
-  document.documentElement.classList.toggle("dark", savedTheme === "dark"); // ✅ 正确使用 html 元素
-  html.classList.toggle("dark", savedTheme === "dark"); // ✅ 将 dark 类加到 <html>
+  const theme = localStorage.getItem("theme") || "dark";
+  document.documentElement.classList.toggle("dark", theme === "dark");
 
   // ✅ 2. 初始化明暗图标
   const themeBtn = document.getElementById("themeToggle");
-  const sun = document.getElementById("sunIcon");
-  const moon = document.getElementById("moonIcon");
-  if (sun && moon) {
-    sunIcon.classList.toggle("hidden", savedTheme === "dark");  // 暗模式下隐藏太阳
-    moonIcon.classList.toggle("hidden", savedTheme !== "dark"); // 亮模式下隐藏月亮
+  const sunIcon = themeBtn?.querySelector(".fa-sun");
+  const moonIcon = themeBtn?.querySelector(".fa-moon");
+
+  if (sunIcon && moonIcon) {
+    sunIcon.classList.toggle("hidden", theme === "dark");
+    moonIcon.classList.toggle("hidden", theme !== "dark");
   }
 
   // ✅ 3. 绑定主题切换按钮点击事件
-  if (themeBtn) {
-    themeBtn.addEventListener("click", () => {
-      const isDark = html.classList.toggle("dark"); // ✅ 切换 dark 类到 <html>
-      localStorage.setItem("theme", isDark ? "dark" : "light"); // ✅ 存储设置
+  themeBtn?.addEventListener("click", () => {
+    const html = document.documentElement;
+    const isDark = html.classList.toggle("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
 
-      if (sun && moon) {
-        sun.classList.toggle("hidden", !isDark);
-        moon.classList.toggle("hidden", isDark);
-      }
-    });
-  }
+    sunIcon?.classList.toggle("hidden", isDark);
+    moonIcon?.classList.toggle("hidden", !isDark);
+  });
+
 
   // ✅ 4. 初始化语言图标
   const langIcon = document.getElementById("languageFlag");
   const lang = localStorage.getItem("language") || "zh";
   if (langIcon) {
-    langIcon.src = lang === "zh"
-      ? "https://flagcdn.com/cn.svg"
-      : "https://flagcdn.com/us.svg";
+    langIcon.src = lang === "zh" ? "https://flagcdn.com/cn.svg" : "https://flagcdn.com/us.svg";
     langIcon.alt = lang === "zh" ? "中文" : "English";
   }
 
-  // ✅ 5. 绑定语言切换按钮事件
   const langBtn = document.getElementById("langToggle");
   if (langBtn) {
     langBtn.addEventListener("click", () => {
-      const nextLang = lang === "zh" ? "en" : "zh";
-      localStorage.setItem("language", nextLang);
+      const newLang = localStorage.getItem("language") === "zh" ? "en" : "zh";
+      localStorage.setItem("language", newLang);
       location.reload();
     });
   }

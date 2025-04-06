@@ -634,9 +634,16 @@ function showTestPage() { // ✅ 切换到考试页面，并启动计时器/清�
  // 🌙 主题切换
  function initTheme() {
   const savedTheme = localStorage.getItem('theme') || 'dark';
-  const isDark = savedTheme === 'dark';
-  document.documentElement.classList.toggle('dark', isDark);
-  updateThemeIcon(isDark);
+  const htmlEl = document.documentElement;
+  
+  // 🚫 不使用 toggle，改为明确 set
+  if (savedTheme === 'dark') {
+    htmlEl.classList.add('dark');
+    updateThemeIcon(true);
+  } else {
+    htmlEl.classList.remove('dark');
+    updateThemeIcon(false);
+  }
 }
 
 function updateThemeIcon(isDark) {

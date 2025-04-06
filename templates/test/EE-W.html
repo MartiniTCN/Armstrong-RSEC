@@ -631,42 +631,7 @@ function showTestPage() { // ✅ 切换到考试页面，并启动计时器/清�
  
  document.addEventListener('DOMContentLoaded', updateCountdown);
  
- // 🌙 主题切换
- function initTheme() {
-  const savedTheme = localStorage.getItem('theme') || 'dark';
-  const htmlEl = document.documentElement;
-  
-  // 🚫 不使用 toggle，改为明确 set
-  if (savedTheme === 'dark') {
-    htmlEl.classList.add('dark');
-    updateThemeIcon(true);
-  } else {
-    htmlEl.classList.remove('dark');
-    updateThemeIcon(false);
-  }
-}
-
-function updateThemeIcon(isDark) {
-  const themeToggle = document.getElementById('themeToggle');
-  if (themeToggle) {
-    themeToggle.innerHTML = isDark
-      ? '<i class="fas fa-moon"></i>'
-      : '<i class="fas fa-sun"></i>';
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
-
-  const themeToggle = document.getElementById('themeToggle');
-  if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-      const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      updateThemeIcon(isDark);
-    });
-  }
-});
+ 
  
  // ✅ 答案收集
 function collectAnswers() {

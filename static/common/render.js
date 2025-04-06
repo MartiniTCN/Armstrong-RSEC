@@ -735,3 +735,41 @@ function updateThemeIcon() {
   }
 }
 
+
+// 🌙 主题切换
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  const htmlEl = document.documentElement;
+
+  if (savedTheme === 'dark') {
+    htmlEl.classList.add('dark');
+    updateThemeIcon(true);
+  } else {
+    htmlEl.classList.remove('dark');
+    updateThemeIcon(false);
+  }
+}
+
+function updateThemeIcon(isDark) {
+  const sunIcon = document.getElementById('sunIcon');
+  const moonIcon = document.getElementById('moonIcon');
+  if (sunIcon && moonIcon) {
+    sunIcon.classList.toggle('hidden', isDark);     // 🌙 dark 模式 => 隐藏太阳
+    moonIcon.classList.toggle('hidden', !isDark);   // ☀️ light 模式 => 隐藏月亮
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const htmlEl = document.documentElement;
+      const isDark = !htmlEl.classList.contains('dark');
+      htmlEl.classList.toggle('dark', isDark);
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      updateThemeIcon(isDark);
+    });
+  }
+});

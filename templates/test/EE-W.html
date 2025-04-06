@@ -274,10 +274,16 @@
     <!-- 导航栏 -->
     <nav class="sticky top-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur border-b border-gray-200 dark:border-gray-700 z-40">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <img src="https://i.stardots.io/armstrong/Armstrong Logo - Martin.png?width=500&rotate=0&blur=0&quality=50" 
-                     alt="Logo" class="h-8">
-                <h1 class="text-xl font-bold text-gray-800 dark:text-gray-200">｜ EE-W产品培训测试系统</h1>
+            <!-- 🔧 自适应顶部 Logo + 标题 -->
+            <div class="flex items-center gap-2 px-4 py-2 overflow-hidden">
+              <!-- 左侧 Logo -->
+              <img src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500&rotate=0&blur=0&quality=50" 
+                  alt="Logo" class="h-6 md:h-8 w-auto" />
+
+              <!-- 右侧标题，自动缩放避免换行 -->
+              <h1 class="text-base md:text-xl font-bold text-gray-800 dark:text-gray-200 whitespace-nowrap truncate">
+                ｜ EE-W 产品培训测试系统
+              </h1>
             </div>
 		
 
@@ -296,14 +302,25 @@
         </div>
     </nav>
     	<!-- ✅ 将 examStatusBar 放在这里 -->
-      <div id="examStatusBar" class="flex items-center gap-4 bg-red-600 text-white px-5 py-2 rounded-lg shadow-lg font-semibold">
-        <span class="flex items-center">
-          <i class="fas fa-clock mr-2"></i><span id="countdown">60:00</span>
+      <!-- ✅ 固定右侧中部浮动条 -->
+        <div id="examStatusBar"
+        class="fixed right-4 top-1/2 transform -translate-y-1/2 z-50 flex flex-col items-center gap-2
+              bg-red-600 text-white px-4 py-2 rounded-xl shadow-lg font-semibold w-36
+              md:flex-row md:w-auto md:top-6 md:right-6 md:transform-none">
+
+        <!-- 倒计时 -->
+        <span class="flex items-center text-sm md:text-base">
+        <i class="fas fa-clock mr-1"></i>
+        <span id="countdown">60:00</span>
         </span>
-        <button onclick="togglePause()" id="pauseBtn" class="bg-white text-red-600 px-3 py-1 rounded-md hover:bg-red-100 transition-all">
-          <i class="fas fa-pause mr-1"></i><span>暂停</span>
-  </button>
-</div>
+
+        <!-- 暂停按钮 -->
+        <button onclick="togglePause()"
+            id="pauseBtn"
+            class="mt-2 md:mt-0 bg-white text-red-600 px-3 py-1 rounded-md text-sm md:text-base hover:bg-red-100 transition-all">
+        <i class="fas fa-pause mr-1"></i><span>暂停</span>
+        </button>
+        </div>
     <!-- 删除首页 -->
 
     <!-- 直接进入测试页 -->

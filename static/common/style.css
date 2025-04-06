@@ -1,11 +1,12 @@
 /* 文件路径：/static/common/style.css */
 /* 用于 test.html 的通用样式，支持响应式、深浅色切换、苹果字体、卡片风格 */
 
+/* ✅ 设置全局字体变量（兼容苹果系统） */
 :root {
   --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
 }
 
-/* 全局基础 */
+/* ✅ 全局基础样式 */
 body {
   font-family: var(--font-main);
   line-height: 1.6;
@@ -15,43 +16,43 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* ✅ 明暗模式切换背景 */
-body.dark {
+/* ✅ 暗黑模式：背景颜色与文字颜色切换 */
+html.dark body {
   background-color: #1a1a1a;
   color: #f1f1f1;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ✅ 卡片类在暗模式下 */
-body.dark .card,
-body.dark .question-card,
-body.dark .judge-card,
-body.dark .essay-card {
+/* ✅ 卡片容器在暗色模式下样式 */
+html.dark .card,
+html.dark .question-card,
+html.dark .judge-card,
+html.dark .essay-card {
   background-color: #2b2b2b;
   color: #f5f5f5;
   border-color: #444;
 }
 
-/* ✅ 通用文字类 */
-body.dark p,
-body.dark h1,
-body.dark h2,
-body.dark label,
-body.dark span {
+/* ✅ 文字元素在暗色模式下颜色调整 */
+html.dark p,
+html.dark h1,
+html.dark h2,
+html.dark label,
+html.dark span {
   color: #f5f5f5;
 }
 
-/* ✅ 表单控件 */
-body.dark textarea,
-body.dark input[type="text"],
-body.dark input[type="radio"],
-body.dark input[type="checkbox"] {
+/* ✅ 表单控件在暗色模式下样式 */
+html.dark textarea,
+html.dark input[type="text"],
+html.dark input[type="radio"],
+html.dark input[type="checkbox"] {
   background-color: #1e1e1e;
   color: #fff;
   border: 1px solid #444;
 }
 
-/* Logo + 标题区 */
+/* ✅ 页面顶部：Logo 与标题区域 */
 header {
   display: flex;
   justify-content: space-between;
@@ -59,17 +60,19 @@ header {
   padding: 1rem;
 }
 
+/* ✅ Logo 尺寸 */
 header img.logo {
   height: 48px;
 }
 
+/* ✅ 顶部按钮组样式 */
 header .controls button {
   margin-left: 0.5rem;
   font-size: 1.2rem;
   cursor: pointer;
 }
 
-/* 水印 */
+/* ✅ 页面固定水印文字样式 */
 #watermark {
   position: fixed;
   top: 2rem;
@@ -81,7 +84,7 @@ header .controls button {
   user-select: none;
 }
 
-/* ✅ 用于动态生成的打乱水印元素样式 */
+/* ✅ 动态生成的随机水印图片样式 */
 .watermark-random {
   position: fixed;
   width: 220px;
@@ -95,7 +98,7 @@ header .controls button {
   pointer-events: none;
 }
 
-/* 输入区样式 */
+/* ✅ 学员信息表单区域样式 */
 .input-section {
   background-color: #fff;
   border-radius: 12px;
@@ -104,15 +107,18 @@ header .controls button {
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-body.dark .input-section {
+/* ✅ 暗色主题下的输入区域样式 */
+html.dark .input-section {
   background-color: #1e1e1e;
   color: #ddd;
 }
 
+/* ✅ 表单字段标签字体加粗 */
 .input-section label {
   font-weight: bold;
 }
 
+/* ✅ 表单输入框样式 */
 .input-section input {
   width: 100%;
   padding: 0.5rem;
@@ -123,12 +129,13 @@ body.dark .input-section {
   transition: all 0.2s;
 }
 
+/* ✅ 输入框聚焦状态样式 */
 .input-section input:focus {
   border-color: #4f46e5;
   outline: none;
 }
 
-/* 卡片结构（题目区） */
+/* ✅ 所有题目类型卡片的通用样式 */
 .question-card,
 .judge-card,
 .essay-card {
@@ -139,14 +146,15 @@ body.dark .input-section {
   box-shadow: 0 2px 5px rgba(0,0,0,0.06);
 }
 
-body.dark .question-card,
-body.dark .judge-card,
-body.dark .essay-card {
+/* ✅ 题目卡片在暗色模式下样式 */
+html.dark .question-card,
+html.dark .judge-card,
+html.dark .essay-card {
   background-color: #1f1f1f;
   color: #f0f0f0;
 }
 
-/* 按钮样式 */
+/* ✅ 按钮基础样式 */
 button {
   font-family: inherit;
   font-size: 1rem;
@@ -157,30 +165,31 @@ button {
   transition: background 0.3s;
 }
 
+/* ✅ 禁用状态按钮样式 */
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
+/* ✅ 主按钮样式（蓝色） */
 button.primary {
   background-color: #2563eb;
   color: white;
 }
-
 button.primary:hover {
   background-color: #1d4ed8;
 }
 
+/* ✅ 次按钮样式（灰色） */
 button.secondary {
   background-color: #9ca3af;
   color: white;
 }
-
 button.secondary:hover {
   background-color: #6b7280;
 }
 
-/* 成绩卡片 */
+/* ✅ 成绩区域卡片样式 */
 #assessmentSummary {
   font-size: 1.2rem;
   padding: 1.5rem;
@@ -188,16 +197,14 @@ button.secondary:hover {
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-
-body.dark #assessmentSummary {
+html.dark #assessmentSummary {
   background-color: #262626;
 }
 
-/* 弹窗遮罩 */
+/* ✅ 密码验证弹窗遮罩层样式 */
 #passwordModal {
   background-color: rgba(0, 0, 0, 0.6);
 }
-
 #passwordModal input {
   font-size: 1rem;
   padding: 0.5rem;
@@ -205,7 +212,7 @@ body.dark #assessmentSummary {
   border: 1px solid #ccc;
 }
 
-/* 响应式支持 */
+/* ✅ 响应式支持：768px 以下屏幕优化 */
 @media screen and (max-width: 768px) {
   header {
     flex-direction: column;

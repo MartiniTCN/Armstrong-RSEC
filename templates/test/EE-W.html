@@ -8,7 +8,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- ✅ csv 解析库 -->
+    
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      };
+    </script>
 
 
 	<!-- ✅ 🆕 立即加上这段，开启 dark 模式支持 -->
@@ -286,6 +291,7 @@
               <!-- 明暗模式切换按钮（统一圆角+边框+背景） -->
               <button
               id="themeToggle"
+              onclick="toggleTheme()"
               class="h-9 px-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               aria-label="Toggle dark mode"
               >

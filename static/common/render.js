@@ -758,17 +758,36 @@ function updateThemeIcon(isDark) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
 
-  const themeToggle = document.getElementById('themeToggle');
-  if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-      const htmlEl = document.documentElement;
-      const isDark = !htmlEl.classList.contains('dark');
-      htmlEl.classList.toggle('dark', isDark);
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      updateThemeIcon(isDark);
-    });
+// 主题切换函数，绑定到按钮 onclick
+function toggleTheme() {
+  const html = document.documentElement;
+  const icon = document.getElementById('themeIcon');
+
+  // 判断当前是否是 dark 模式
+  const isDark = html.classList.contains('dark');
+
+  // 切换 class（dark <-> light）
+  html.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+
+  // 更换图标：白天太阳图、晚上月亮图
+  icon.src = isDark
+    ? 'https://cdn-icons-png.flaticon.com/512/650/650634.png' // 太阳图
+    : 'https://cdn-icons-png.flaticon.com/512/581/581601.png'; // 月亮图
+}
+
+// 页面加载时初始化主题（从 localStorage 读取）
+window.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  const html = document.documentElement;
+  const icon = document.getElementById('themeIcon');
+
+  if (savedTheme === 'dark') {
+    html.classList.add('dark');
+    icon.src = 'https://cdn-icons-png.flaticon.com/512/581/581601.png'; // 月亮图
+  } else {
+    html.classList.remove('dark');
+    icon.src = 'https://cdn-icons-png.flaticon.com/512/650/650634.png'; // 太阳图
   }
 });

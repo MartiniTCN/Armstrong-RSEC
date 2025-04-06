@@ -258,3 +258,20 @@ html.dark #assessmentSummary {
     padding: 0.8rem;
   }
 }
+
+/* ✅ 页面主体容器暗色统一背景 */
+html.dark .page-container {
+  background-color: #121212 !important;
+  color: #e5e5e5;
+}
+
+/* ✅ 弹窗、语言切换菜单、浮动组件的默认背景 */
+html.dark .dropdown,
+html.dark .modal,
+html.dark .popup,
+html.dark .language-switcher {
+  background-color: #1f1f1f !important;
+  color: #fff;
+  border: 1px solid #333;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}

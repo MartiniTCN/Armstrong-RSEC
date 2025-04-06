@@ -798,12 +798,15 @@ function toggleTheme() {
 }
 
 // 页面加载时初始化主题（从 localStorage 读取）
+// 初始化函数
 window.addEventListener('DOMContentLoaded', () => {
-  const html = document.documentElement;
+  const themeToggleBtn = document.getElementById('themeToggle');
   const sunIcon = document.querySelector('.fa-sun');
   const moonIcon = document.querySelector('.fa-moon');
+  const html = document.documentElement;
   const savedTheme = localStorage.getItem('theme') || 'light';
 
+  // 恢复主题
   if (savedTheme === 'dark') {
     html.classList.add('dark');
     sunIcon.classList.add('hidden');
@@ -814,5 +817,21 @@ window.addEventListener('DOMContentLoaded', () => {
     moonIcon.classList.add('hidden');
   }
 
-  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+  // 点击切换
+  themeToggleBtn.addEventListener('click', () => {
+    const isDark = html.classList.contains('dark');
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+
+    // 图标切换
+    if (isDark) {
+      sunIcon.classList.remove('hidden');
+      moonIcon.classList.add('hidden');
+    } else {
+      sunIcon.classList.add('hidden');
+      moonIcon.classList.remove('hidden');
+    }
+
+    console.log(`[Click] 主题切换为 ${isDark ? 'light' : 'dark'}`);
+  });
 });

@@ -289,15 +289,31 @@
 
             <!-- ✅ 明暗模式 + 语言切换按钮区域 -->
             <div class="flex items-center gap-4">
-              <!-- 明暗切换按钮 -->
-              <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                <i id="themeIcon" class="fas fa-moon text-gray-800 dark:text-gray-200"></i>
+
+              <!-- 明暗模式切换按钮（统一圆角+边框+背景） -->
+              <button
+              id="themeToggle"
+              class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              aria-label="Toggle dark mode"
+              >
+              <i class="fas fa-sun dark:hidden"></i>
+              <i class="fas fa-moon hidden dark:block"></i>
               </button>
 
-              <!-- 语言切换按钮 -->
-              <button id="langToggle" onclick="toggleLanguage()" class="p-2">
-                <img id="languageFlag" src="https://flagcdn.com/cn.svg" class="w-5 h-5 rounded-full" />
+              <!-- 语言切换按钮（统一圆角+边框+背景） -->
+              <button
+              id="langToggle"
+              onclick="toggleLanguage()"
+              class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+              <img
+                id="languageFlag"
+                src="https://flagcdn.com/cn.svg"
+                alt="Language"
+                class="w-5 h-4"
+              />
               </button>
+
             </div>
         </div>
     </nav>

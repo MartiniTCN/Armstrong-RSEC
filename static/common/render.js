@@ -1,4 +1,3 @@
-@ -1,643 +1,641 @@
 // 文件路径：/static/common/render.js
 // 说明：统一测试页面渲染与评估脚本，支持加载 CSV、评分、语言切换、邮件发送
 
@@ -687,8 +686,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeBtn = document.getElementById("themeToggle");
   if (themeBtn) {
     themeBtn.addEventListener("click", () => {
-      const isDark = document.documentElement.classList.toggle("dark");
-      localStorage.setItem("theme", isDark ? "dark" : "light");
       const isDark = document.body.classList.toggle("dark"); // ✅ 切换 dark 类
       localStorage.setItem("theme", isDark ? "dark" : "light"); // ✅ 存储设置
 
@@ -717,8 +714,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const nextLang = lang === "zh" ? "en" : "zh";
       localStorage.setItem("language", nextLang);
       location.reload();
-      localStorage.setItem("showLoadingOnce", "true"); // ✅ 切换语言后显示加载提示
-      location.reload(); // ✅ 页面刷新
     });
   }
 

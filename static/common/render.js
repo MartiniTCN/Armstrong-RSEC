@@ -69,13 +69,32 @@ let currentLanguage = localStorage.getItem("language") || "zh";
 
 // ✅ 切换语言并刷新页面（或重载内容）
 function toggleLanguage() {
-  const nextLang = currentLanguage === 'en' ? 'zh' : 'en';
-  localStorage.setItem("language", nextLang);
+  // ✅ 1. 切换语言变量并保存
+  currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
+  localStorage.setItem("language", currentLanguage);
 
-  // ✅ 切换语言后允许弹出一次加载提示
+  // ✅ 2. 立即切换图标
+  const flag = document.getElementById("languageFlag");
+  if (flag) {
+    flag.src = `https://flagcdn.com/${currentLanguage === 'en' ? 'cn' : 'us'}.svg`;
+    flag.alt = currentLanguage === 'en' ? "中文" : "English";
+  }
+
+  // ✅ 3. 标记刷新后需要显示加载弹窗
   localStorage.setItem("showLoadingOnce", "true");
 
-  location.reload();
+  // ✅ 4. 弹出加载提示（当前语言）
+  const lang = currentLanguage;
+  const messages = {
+    zh: "测试题加载中，请稍后…",
+    en: "Loading questions, please wait..."
+  };
+  createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);
+
+  // ✅ 5. 最后刷新页面
+  setTimeout(() => {
+    location.reload();
+  }, 200); // 稍作延迟让提示框渲染（避免闪烁）
 }
 
 // ✅ 更新语言按钮图标

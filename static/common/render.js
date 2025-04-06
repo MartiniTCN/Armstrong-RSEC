@@ -671,8 +671,9 @@ function closeUniversalModal() {
 document.addEventListener("DOMContentLoaded", () => {
 
   // ✅ 1. 初始化主题样式（从 localStorage 读取）
-  const theme = localStorage.getItem("theme") || "dark";
-  document.documentElement.classList.toggle("dark", theme === "dark");
+   const savedTheme = localStorage.getItem("theme") || "dark";
+  document.documentElement.classList.toggle("dark", savedTheme === "dark");
+
 
   // ✅ 2. 初始化明暗图标
   const themeBtn = document.getElementById("themeToggle");
@@ -680,8 +681,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const moonIcon = themeBtn?.querySelector(".fa-moon");
 
   if (sunIcon && moonIcon) {
-    sunIcon.classList.toggle("hidden", theme === "dark");
-    moonIcon.classList.toggle("hidden", theme !== "dark");
+    sunIcon.classList.toggle("hidden", savedTheme === "dark");
+    moonIcon.classList.toggle("hidden", savedTheme !== "dark");
   }
 
   // ✅ 3. 绑定主题切换按钮点击事件

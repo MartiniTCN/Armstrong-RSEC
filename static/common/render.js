@@ -667,79 +667,104 @@ function closeUniversalModal() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
-  updateCountdown(); // 启动倒计时
-  updateLoadingText(); // 更新加载提示文本
-  // ✅ 初始化主题：读取 localStorage 或默认 dark
   const html = document.documentElement;
-  const savedTheme = localStorage.getItem("theme") || "dark";
-  const isDark = savedTheme === "dark";
+  const savedTheme = localStorage.getItem("theme");
+  let isDark;
+
+  // ✅ [1] 首次加载：判断 localStorage 或系统偏好
+  if (savedTheme) {
+    isDark = savedTheme === "dark";
+  } else {
+    // 💡 如果用户首次访问，根据系统设定确定默认主题
+    isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  }
+
+  // ✅ [2] 应用初始主题样式（加上 html.class）
   html.classList.toggle("dark", isDark);
 
-  // ✅ 图标控制方式：使用 TailwindCSS 的类（非 innerHTML 替换）
+  // ✅ [3] 明暗按钮图标联动处理
   const themeBtn = document.getElementById("themeToggle");
   const sunIcon = themeBtn?.querySelector(".fa-sun");
   const moonIcon = themeBtn?.querySelector(".fa-moon");
 
-  sunIcon?.classList.toggle("hidden", isDark);   // 🌞 白天图标：深色下隐藏
-  moonIcon?.classList.toggle("hidden", !isDark); // 🌙 夜间图标：浅色下隐藏
+  if (sunIcon && moonIcon) {
+    sunIcon.classList.toggle("hidden", isDark);
+    moonIcon.classList.toggle("hidden", !isDark);
+  }
 
-  // ✅ 点击按钮切换主题 明暗按钮事件
+  // ✅ [4] 点击切换明暗模式
   themeBtn?.addEventListener("click", () => {
     const nowDark = html.classList.toggle("dark");
     localStorage.setItem("theme", nowDark ? "dark" : "light");
 
     sunIcon?.classList.toggle("hidden", nowDark);
     moonIcon?.classList.toggle("hidden", !nowDark);
+
+    // 手动切换时更新卡片样式
+    updateCardStyle(nowDark);
   });
 
-  // ✅ 初始化语言图标（保留）
+  // ✅ [5] 设置卡片样式（默认调用一次 + 支持切换）
+  function updateCardStyle(darkMode) {
+    const cards = document.querySelectorAll(".card-darkmode");
+    cards.forEach(card => {
+      card.style.backgroundColor = darkMode ? "#1f1f1f" : "#ffffff";
+      card.style.color = darkMode ? "#ccc" : "#333";
+    });
+  }
+
+  // 初始化卡片背景色
+  updateCardStyle(isDark);
+
+  // ✅ [6] 监听系统主题变化（如 macOS/iOS 跳转 dark 模式）
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+    const prefersDark = e.matches;
+
+    // ✅ 将新状态写入 localStorage，以便页面刷新后仍然一致
+    localStorage.setItem("theme", prefersDark ? "dark" : "light");
+
+    // ✅ 应用主题样式和重新设置卡片颜色
+    html.classList.toggle("dark", prefersDark);
+    updateCardStyle(prefersDark);
+
+    // ✅ 图标同步
+    sunIcon?.classList.toggle("hidden", prefersDark);
+    moonIcon?.classList.toggle("hidden", !prefersDark);
+  });
+
+  // ✅ [7] 语言切换功能
   const langIcon = document.getElementById("languageFlag");
   const lang = localStorage.getItem("language") || "zh";
+
   if (langIcon) {
     langIcon.src = lang === "zh" ? "https://flagcdn.com/cn.svg" : "https://flagcdn.com/us.svg";
     langIcon.alt = lang === "zh" ? "中文" : "English";
   }
 
   const langBtn = document.getElementById("langToggle");
-  if (langBtn) {
-    langBtn.addEventListener("click", () => {
-      const newLang = lang === "zh" ? "en" : "zh";
-      localStorage.setItem("language", newLang);
-      location.reload();
-    });
-  }
+  langBtn?.addEventListener("click", () => {
+    const newLang = lang === "zh" ? "en" : "zh";
+    localStorage.setItem("language", newLang);
+    location.reload();
+  });
 
-  // ✅ 加载 CSV 题库
-  const urlParams = new URLSearchParams(window.location.search);
-  const course = urlParams.get("course") || "EE-W";
-  loadCSVAndInit(course);
-
-  // ✅ 动态渲染登录用户名
-  // 假设登录用户名存储在 localStorage 中（例如登录时保存了）
+  // ✅ [8] 显示登录用户名
   const username = localStorage.getItem("username") || "未登录";
-
-  // 找到导航栏中展示用户名的 span
   const userDisplay = document.getElementById("loggedInUser");
-
-  // 插入用户欢迎文字
   if (userDisplay) {
     userDisplay.textContent = `欢迎：${username}`;
   }
 
-  // ✅ 设置卡片背景色兼容 light 和 dark
-  const cards = document.querySelectorAll('.card-darkmode'); // 统一类名
-  cards.forEach(card => {
-  if (isDark) {
-    card.style.backgroundColor = '#1f1f1f';
-    card.style.color = '#ccc'; // 可选：确保文字颜色亮一点
-  } else {
-    card.style.backgroundColor = '#ffffff';
-    card.style.color = '#333'; // light 模式下字体设为深色
-  }
+  // ✅ [9] 启动倒计时 / 加载提示
+  updateCountdown();
+  updateLoadingText();
 
-  }); // forEach 结束
-});   // DOMContentLoaded 的箭头函数闭合
+  // ✅ [10] 加载题库
+  const urlParams = new URLSearchParams(window.location.search);
+  const course = urlParams.get("course") || "EE-W";
+  loadCSVAndInit(course);
+});
 
 function updateThemeIcon() {
   const icon = document.getElementById("themeIcon");

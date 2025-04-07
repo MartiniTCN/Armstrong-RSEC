@@ -306,55 +306,67 @@ html.dark .card-darkmode:hover {
   box-shadow: 0 0 18px rgba(255, 255, 255, 0.08); /* dark 模式下更亮 */
 }
 
-/* ✅ 通用卡片样式：默认显示圆角+阴影+舒适内边距 */
+
+
+
+/* ✅ 通用卡片样式：圆角、阴影、平滑过渡 */
 .card {
-  background-color: #ffffff;              /* 默认背景：白色（light 模式） */
-  color: #111;                            /* 默认字体颜色 */
-  border-radius: 12px;                    /* 卡片圆角 */
-  padding: 1.5rem 2rem;                   /* 上下 1.5rem，左右 2rem：更宽松 */
-  margin-bottom: 2rem;                    /* 卡片之间的间距 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* 默认阴影，轻微悬浮效果 */
-  transition: all 0.3s ease;              /* 平滑切换过渡 */
+  background-color: #ffffff;                     /* light 模式背景 */
+  color: #111;                                   /* light 模式文字颜色 */
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
 }
 
-/* ✅ 暗色模式下的卡片样式（背景+边框+阴影） */
+/* ✅ 暗色模式下的卡片背景、边框、阴影 */
 html.dark .card {
-  background-color: #1f1f1f;              /* 深灰背景，适配深色模式 */
-  color: #f0f0f0;                         /* 浅色文字 */
-  border: 1px solid rgba(255, 255, 255, 0.08); /* 浅边框增强卡片边界感 */
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.05); /* 柔和亮色阴影 */
+  background-color: #1f1f1f;
+  color: #f0f0f0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.05);
 }
 
-/* ✅ 鼠标悬停时加强浮起感（可选） */
+/* ✅ 悬浮效果：微浮起 + 加强阴影 */
 .card:hover {
-  transform: translateY(-2px);            /* 微微上浮 */
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12); /* 更强阴影 */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 html.dark .card:hover {
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); /* 暗色模式下稍亮光晕 */
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
-/* ✅ 移动端适配：减少 padding 避免压缩过度 */
+/* ✅ 移动端适配：缩小内边距 */
 @media screen and (max-width: 768px) {
   .card {
-    padding: 1rem 1.2rem;                 /* 小屏设备缩小内边距 */
+    padding: 1rem 1.2rem;
   }
 }
 
-/* 🌞 Light 模式下 label 样式 */
+/* ✅ 卡片标题专用样式（h2） */
+.card h2 {
+  font-weight: 700;                /* 加粗标题 */
+  font-size: 1.25rem;              /* 与 Tailwind text-xl 对应 */
+  margin-bottom: 1.5rem;
+  color: #111;                     /* light 模式下字体色 */
+}
+html.dark .card h2 {
+  color: #f5f5f5;                  /* dark 模式下标题亮白 */
+}
+
+/* ✅ 表单标签与说明文字样式（普通字体，不加粗） */
 .card label,
 .card span,
 .card p {
-  color: #1a1a1a;               /* 深灰或接近黑色 */
-  font-weight: 600;             /* 加粗 */
-  font-size: 1rem;              /* 统一为 text-base 大小 */
+  color: #1a1a1a;
+  font-weight: 400;               /* 保持正常字体粗细 */
+  font-size: 0.95rem;
 }
-
-/* 🌙 Dark 模式下 label 样式 */
 html.dark .card label,
 html.dark .card span,
 html.dark .card p {
-  color: #f5f5f5 !important;    /* 高对比亮白 */
-  font-weight: 600 !important;
-  font-size: 1rem !important;
+  color: #f5f5f5 !important;
+  font-weight: 400 !important;
+  font-size: 0.95rem !important;
 }

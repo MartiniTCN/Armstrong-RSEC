@@ -274,56 +274,41 @@
 
     <!-- ✅ 圆角矩形导航栏 + 倒计时居中 -->
 <nav class="sticky top-4 mx-auto max-w-7xl bg-white/80 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 z-40 rounded-2xl shadow-md">
-  <div class="relative flex items-center justify-between px-4 py-3">
+  <!-- ✅ 替换原 <nav> 内部结构 -->
+<div class="flex flex-col items-center justify-center px-4 py-3">
+  <!-- Logo 居中 -->
+  <img
+    src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500"
+    alt="Logo"
+    class="h-12 mb-1"
+  />
 
-    <!-- ✅ 左侧：Logo + 标题 -->
-    <div class="flex items-center gap-2 overflow-hidden">
-      <!-- ✅ Logo 放大 50% -->
-      <img
-        src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500&rotate=0&blur=0&quality=50"
-        alt="Logo"
-        class="h-7 md:h-10 w-auto"
-      />
+  <!-- 测试题标题 -->
+  <h1
+    id="pageTitle"
+    class="text-sm font-bold text-gray-800 dark:text-gray-200 tracking-wide"
+  >
+    EE-W 产品培训测试系统
+  </h1>
 
-      <!-- ✅ 标题缩小字体，防止压缩冲突 -->
-      <h1
-        id="pageTitle"
-        class="text-sm md:text-base font-bold text-gray-800 dark:text-gray-200 whitespace-nowrap truncate"
-      >
-        ｜ EE-W 产品培训测试系统
-      </h1>
-    </div>
+  <!-- 下方：用户名 + 模式切换 -->
+  <div class="w-full mt-3 flex justify-between items-center px-2 text-sm text-gray-600 dark:text-gray-300">
+    <span id="loggedInUser">欢迎：张三</span> <!-- ✅ 登录用户显示（可 JS 替换） -->
 
-    <!-- ✅ 中间：居中倒计时（防重叠 + 自动缩放） -->
-  
-
-    <!-- ✅ 右侧：模式和语言切换 -->
     <div class="flex items-center gap-3">
-      <!-- 明暗模式按钮 -->
-      <button
-        id="themeToggle"
-        class="h-9 px-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-        aria-label="Toggle dark mode"
-      >
-        <i class="fas fa-sun dark:hidden"></i>
-        <i class="fas fa-moon hidden dark:block"></i>
+      <!-- 明暗模式切换 -->
+      <button id="themeToggle" class="h-8 w-8 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white">
+        <i class="fas fa-moon dark:hidden"></i>
+        <i class="fas fa-sun hidden dark:block"></i>
       </button>
 
-      <!-- 语言按钮 -->
-      <button
-        id="langToggle"
-        onclick="toggleLanguage()"
-        class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-      >
-        <img
-          id="languageFlag"
-          src="https://flagcdn.com/cn.svg"
-          alt="Language"
-          class="w-5 h-4"
-        />
+      <!-- 语言切换 -->
+      <button id="langToggle" onclick="toggleLanguage()" class="h-8 w-8 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+        <img id="languageFlag" src="https://flagcdn.com/cn.svg" alt="语言" class="w-5 h-4 mx-auto" />
       </button>
     </div>
   </div>
+</div>
 </nav>
     	<!-- ✅ 导航栏下方悬浮倒计时卡片 -->
       <div

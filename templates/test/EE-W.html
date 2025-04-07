@@ -272,7 +272,8 @@
         </div>
     </div>
 
-    <!-- ✅ 导航栏卡片 -->
+  <!-- ✅ 导航栏 + 倒计时统一放入一个相对定位容器中 -->
+<div class="relative z-40 max-w-7xl mx-auto">
 <nav class="sticky top-4 mx-auto max-w-7xl bg-white/80 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 z-40 rounded-2xl shadow-md">
   <div class="flex flex-col px-4 py-2 gap-1">
 
@@ -299,33 +300,35 @@
     <div class="flex justify-between items-center mt-2 text-sm text-gray-700 dark:text-gray-300">
       
       <!-- 左侧：用户名显示（JS 渲染） -->
-      <span id="loggedInUser">欢迎：未知用户</span>
+      <span id="loggedInUser" class="font-semibold">欢迎：Armstrong</span>
 
       <!-- 右侧：明暗模式 + 语言切换 -->
       <div class="flex items-center gap-3">
         <!-- 明暗模式切换按钮 -->
+        <!-- 明暗模式按钮 -->
         <button
-          id="themeToggle"
-          class="h-8 w-8 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700"
-          aria-label="切换明暗模式"
+        id="themeToggle"
+        class="px-1.5 py-1 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+        aria-label="切换明暗模式"
         >
-          <i class="fas fa-moon dark:hidden"></i>
-          <i class="fas fa-sun hidden dark:block"></i>
+        <i class="fas fa-moon text-base dark:hidden"></i>
+        <i class="fas fa-sun text-base hidden dark:block"></i>
         </button>
 
         <!-- 语言切换按钮 -->
+        <!-- 语言切换按钮（紧凑样式） -->
         <button
-          id="langToggle"
-          onclick="toggleLanguage()"
-          class="h-8 w-8 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700"
-          aria-label="切换语言"
+        id="langToggle"
+        onclick="toggleLanguage()"
+        class="px-1.5 py-1 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+        aria-label="切换语言"
         >
-          <img
-            id="languageFlag"
-            src="https://flagcdn.com/cn.svg"
-            alt="Language"
-            class="w-5 h-4"
-          />
+        <img
+          id="languageFlag"
+          src="https://flagcdn.com/cn.svg"
+          alt="Language"
+          class="w-5 h-4"
+        />
         </button>
       </div>
     </div>
@@ -350,6 +353,7 @@
       <i class="fas fa-pause mr-1"></i><span>暂停</span>
     </button>
     </div>
+  </div>
     <!-- 删除首页 -->
 
     <!-- 直接进入测试页 -->

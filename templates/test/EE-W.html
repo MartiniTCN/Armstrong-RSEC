@@ -416,10 +416,11 @@
 
 
         <!-- 单选题 -->
-        <div class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 rounded-xl p-6 shadow-md mb-8 transition-colors duration-300">
+        <div class="bg-white dark:bg-[#1f1f1f] text-gray-800 dark:text-gray-100 rounded-xl p-6 shadow-md mb-8 transition-colors duration-300">
           <h2 class="text-xl font-semibold mb-6">
             <i class="fas fa-list-ol mr-2 text-blue-500"></i>单选题（每题2分，共40分）
           </h2>
+          <!-- ✅ 单选题挂载区域：PapaParse 渲染的多选题将插入到这里 -->
           <div class="space-y-6" data-section="single"></div>
         </div>
 
@@ -2001,7 +2002,7 @@ function switchLanguage(lang) {
       const navBottom = navRect.bottom + scrollY;
 
       // ✅ 设置倒计时栏 top = 导航栏底 + 8px 间距
-      bar.style.top = `${navBottom + 8}px`;
+      bar.style.top = `${navBottom + 0}px`;
     }
   }
 

@@ -53,8 +53,9 @@ header .controls button {
   cursor: pointer;
 }
 html.dark header {
-  background-color: #1c1c1c;
+  background-color: #1a1a1a;
   border-bottom: 1px solid #333;
+  color: #ffffff;
 }
 
 /* ✅ 标题样式 */
@@ -114,6 +115,14 @@ html.dark textarea:focus {
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4);
   outline: none;
 }
+html.dark input::placeholder {
+  color: #999;
+}
+html.dark .input-section label,
+html.dark .input-section span,
+html.dark .input-section p {
+  color: #f5f5f5 !important;
+}
 
 /* ✅ 题目卡片样式 */
 .question-card,
@@ -131,6 +140,11 @@ html.dark .essay-card {
   background-color: #1f1f1f;
   color: #f0f0f0;
   border: 1px solid #333;
+}
+html.dark .question-card *,
+html.dark .judge-card *,
+html.dark .essay-card * {
+  color: #f5f5f5 !important;
 }
 
 /* ✅ 成绩区域样式 */
@@ -211,13 +225,18 @@ html.dark .language-switcher {
   box-shadow: 0 2px 10px rgba(0,0,0,0.4);
 }
 
-/* ✅ 浮动计时器按钮样式（建议加类名 .timer-panel） */
+/* ✅ 浮动计时器按钮样式 */
 .timer-panel {
+  max-width: 110px;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background-color: #ffffff;
   border-radius: 12px;
   color: #111;
   font-weight: bold;
-  padding: 0.5rem 0.75rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 html.dark .timer-panel {
@@ -263,62 +282,4 @@ html.dark .timer-panel {
   .essay-card {
     padding: 1rem;
   }
-}
-
-/* ======================== */
-/* ✅ Dark Mode 增强补丁段 */
-/* ======================== */
-
-/* 额外修复顶部背景更暗、文字更亮、表单 label 显示不清晰等问题 */
-html.dark header {
-  background-color: #1a1a1a !important;
-  color: #ffffff;
-}
-
-html.dark .input-section label {
-  color: #eaeaea;
-}
-
-html.dark input::placeholder {
-  color: #999;
-}
-
-/* 统一卡片类内部文字颜色 */
-html.dark .question-card h2,
-html.dark .question-card p,
-html.dark .question-card label,
-html.dark .question-card span {
-  color: #ffffff;
-}
-
-/* ========================= */
-/* ✅ UI 修复补丁 - 2025年4月更新 */
-/* ========================= */
-
-/* 1️⃣ 浮动计时器尺寸优化 */
-.timer-panel {
-  max-width: 110px;
-  font-size: 0.85rem;
-  padding: 0.4rem 0.6rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-html.dark .timer-panel {
-  background-color: #2c2c2c;
-  color: #ffffff;
-}
-
-/* 2️⃣ 暗色模式下信息卡标题颜色加强 */
-html.dark .input-section label,
-html.dark .input-section span,
-html.dark .input-section p {
-  color: #f5f5f5;
-}
-
-/* 3️⃣ 所有题型卡片统一亮色文字 */
-html.dark .question-card *,
-html.dark .judge-card *,
-html.dark .essay-card * {
-  color: #f5f5f5;
 }

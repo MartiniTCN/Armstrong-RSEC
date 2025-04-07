@@ -310,3 +310,13 @@ html.dark .card-darkmode:hover {
 .card {
   @apply bg-white dark:bg-[#1f1f1f] text-gray-800 dark:text-gray-300 rounded-xl p-6 mb-8 shadow-md transition-all duration-300;
 }
+/* ✅ Light 模式下 .card 悬浮效果 */
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* ✅ Dark 模式下 .card 悬浮效果 */
+html.dark .card:hover {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
+}

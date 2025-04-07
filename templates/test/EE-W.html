@@ -272,64 +272,84 @@
         </div>
     </div>
 
-    <!-- ✅ 圆角矩形导航栏 + 倒计时居中 -->
+    <!-- ✅ 导航栏卡片 -->
 <nav class="sticky top-4 mx-auto max-w-7xl bg-white/80 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 z-40 rounded-2xl shadow-md">
-  <!-- ✅ 替换原 <nav> 内部结构 -->
-<div class="flex flex-col items-center justify-center px-4 py-3">
-  <!-- Logo 居中 -->
-  <img
-    src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500"
-    alt="Logo"
-    class="h-12 mb-1"
-  />
+  <div class="flex flex-col px-4 py-2 gap-1">
 
-  <!-- 测试题标题 -->
-  <h1
-    id="pageTitle"
-    class="text-sm font-bold text-gray-800 dark:text-gray-200 tracking-wide"
-  >
-    EE-W 产品培训测试系统
-  </h1>
+    <!-- ✅ 顶部中间：Logo + 标题 -->
+    <div class="flex justify-center items-center gap-2">
+      <!-- Logo 缩小 50% -->
+      <img
+        src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500"
+        alt="Logo"
+        class="h-6 w-auto"
+      />
+      <!-- 竖线分隔 -->
+      <span class="text-gray-400 text-base">｜</span>
+      <!-- 测试标题 -->
+      <h1
+        id="pageTitle"
+        class="text-base font-semibold text-gray-800 dark:text-gray-200 tracking-wide"
+      >
+        EE-W 产品培训测试系统
+      </h1>
+    </div>
 
-  <!-- 下方：用户名 + 模式切换 -->
-  <div class="w-full mt-3 flex justify-between items-center px-2 text-sm text-gray-600 dark:text-gray-300">
-    <span id="loggedInUser">欢迎：张三</span> <!-- ✅ 登录用户显示（可 JS 替换） -->
+    <!-- ✅ 底部：左侧用户名，右侧切换按钮 -->
+    <div class="flex justify-between items-center mt-2 text-sm text-gray-700 dark:text-gray-300">
+      
+      <!-- 左侧：用户名显示（JS 渲染） -->
+      <span id="loggedInUser">欢迎：未知用户</span>
 
-    <div class="flex items-center gap-3">
-      <!-- 明暗模式切换 -->
-      <button id="themeToggle" class="h-8 w-8 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white">
-        <i class="fas fa-moon dark:hidden"></i>
-        <i class="fas fa-sun hidden dark:block"></i>
-      </button>
+      <!-- 右侧：明暗模式 + 语言切换 -->
+      <div class="flex items-center gap-3">
+        <!-- 明暗模式切换按钮 -->
+        <button
+          id="themeToggle"
+          class="h-8 w-8 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700"
+          aria-label="切换明暗模式"
+        >
+          <i class="fas fa-moon dark:hidden"></i>
+          <i class="fas fa-sun hidden dark:block"></i>
+        </button>
 
-      <!-- 语言切换 -->
-      <button id="langToggle" onclick="toggleLanguage()" class="h-8 w-8 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
-        <img id="languageFlag" src="https://flagcdn.com/cn.svg" alt="语言" class="w-5 h-4 mx-auto" />
-      </button>
+        <!-- 语言切换按钮 -->
+        <button
+          id="langToggle"
+          onclick="toggleLanguage()"
+          class="h-8 w-8 rounded bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700"
+          aria-label="切换语言"
+        >
+          <img
+            id="languageFlag"
+            src="https://flagcdn.com/cn.svg"
+            alt="Language"
+            class="w-5 h-4"
+          />
+        </button>
+      </div>
     </div>
   </div>
-</div>
 </nav>
-    	<!-- ✅ 导航栏下方悬浮倒计时卡片 -->
-      <div
-      id="examStatusBar"
-      class="absolute top-[90px] left-1/2 -translate-x-1/2 z-40
-            flex items-center gap-2
-            px-4 py-2
-            bg-red-600 text-white text-sm sm:text-base
-            rounded-xl shadow-md
-            transition-all duration-300"
-      >
-      <i class="fas fa-clock mr-1"></i>
-      <span id="countdown">60:00</span>
-      <button
-        onclick="togglePause()"
-        id="pauseBtn"
-        class="ml-2 bg-white text-red-600 px-3 py-1 rounded-md hover:bg-red-100 transition-all text-xs sm:text-sm"
-      >
-        <i class="fas fa-pause mr-1"></i><span>暂停</span>
-      </button>
-      </div>
+    <!-- 倒计时卡片：固定在导航栏下边缘 -->
+    <div
+    id="examStatusBar"
+    class="absolute z-30 left-1/2 -translate-x-1/2
+          sm:flex hidden
+          mt-[4.25rem]  <!-- ≈ 导航栏高度 + 外距微调 -->
+          px-4 py-2 rounded-xl shadow-md
+          bg-red-600 text-white text-sm sm:text-base"
+    >
+    <i class="fas fa-clock mr-2"></i>
+    <span id="countdown">60:00</span>
+    <button
+      onclick="togglePause()"
+      id="pauseBtn"
+      class="ml-3 bg-white text-red-600 px-3 py-1 rounded-md hover:bg-red-100 transition-all text-xs sm:text-sm"
+    >
+      <i class="fas fa-pause mr-1"></i><span>暂停</span>
+    </button>
+    </div>
     <!-- 删除首页 -->
 
     <!-- 直接进入测试页 -->

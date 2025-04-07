@@ -714,6 +714,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
   const course = urlParams.get("course") || "EE-W";
   loadCSVAndInit(course);
+
   // ✅ 动态渲染登录用户名
   // 假设登录用户名存储在 localStorage 中（例如登录时保存了）
   const username = localStorage.getItem("username") || "未登录";
@@ -827,3 +828,4 @@ window.addEventListener('DOMContentLoaded', () => {
     console.log(`[Click] 主题切换为 ${isDark ? 'light' : 'dark'}`);
   });
 });
+

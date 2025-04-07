@@ -272,8 +272,7 @@
         </div>
     </div>
 
-  <!-- ✅ 导航栏 + 倒计时统一放入一个相对定位容器中 -->
-<div class="relative z-40 max-w-7xl mx-auto">
+  <!-- ✅ 导航栏  -->
 <nav class="sticky top-4 mx-auto max-w-7xl bg-white/80 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 z-40 rounded-2xl shadow-md">
   <div class="flex flex-col px-4 py-2 gap-1">
 
@@ -337,22 +336,18 @@
     <!-- 倒计时卡片：固定在导航栏下边缘 -->
     <div
     id="examStatusBar"
-    class="absolute z-30 left-1/2 -translate-x-1/2
-          sm:flex hidden
-          mt-[4.25rem]  <!-- ≈ 导航栏高度 + 外距微调 -->
-          px-4 py-2 rounded-xl shadow-md
-          bg-red-600 text-white text-sm sm:text-base"
-    >
+    class="fixed left-1/2 -translate-x-1/2 z-30 sm:flex hidden px-4 py-2 bg-red-600 text-white text-sm rounded-xl shadow-md"
+    style="top: 0px;"  <!-- 🛠 初始 top 可以设置为 0 或留空 -->
+  >
     <i class="fas fa-clock mr-2"></i>
     <span id="countdown">60:00</span>
     <button
       onclick="togglePause()"
       id="pauseBtn"
-      class="ml-3 bg-white text-red-600 px-3 py-1 rounded-md hover:bg-red-100 transition-all text-xs sm:text-sm"
+      class="ml-3 bg-white text-red-600 px-3 py-1 rounded-full hover:bg-red-100 text-xs sm:text-sm"
     >
       <i class="fas fa-pause mr-1"></i><span>暂停</span>
     </button>
-    </div>
   </div>
     <!-- 删除首页 -->
 
@@ -1994,6 +1989,30 @@ function switchLanguage(lang) {
     }
   });
 </script>
+
+<script>
+  function positionCountdownBar() {
+    const nav = document.getElementById("mainNavbar");
+    const bar = document.getElementById("examStatusBar");
+
+    if (nav && bar) {
+      const navRect = nav.getBoundingClientRect();
+      const scrollY = window.scrollY || window.pageYOffset;
+
+      // 🧠 计算导航栏底部相对整个页面的实际位置
+      const navBottom = navRect.bottom + scrollY;
+
+      // ✅ 设置倒计时栏 top = 导航栏底 + 8px 间距
+      bar.style.top = `${navBottom + 8}px`;
+    }
+  }
+
+  // ✅ 页面加载完成后定位一次
+  window.addEventListener("DOMContentLoaded", positionCountdownBar);
+  // ✅ 浏览器尺寸变化时重新定位
+  window.addEventListener("resize", positionCountdownBar);
+</script>
+
 </div>
 </body>
 </html>

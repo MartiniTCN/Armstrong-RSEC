@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light"> <!-- ✅ 强制 light 默认 -->
     <title>EE-W 产品培训测试系统</title>
     
 
@@ -274,69 +274,66 @@
     </div>
 
   <!-- ✅ 导航栏  -->
-  <nav id="mainNavbar" class="card sticky top-3 mx-auto max-w-7xl z-40">
-  <div class="flex flex-col px-4 py-2 gap-1">
-
-    <!-- ✅ 顶部中间：Logo + 标题 -->
-    <div class="flex justify-center items-center gap-2">
-      <!-- Logo 缩小 50% -->
-      <img
-        src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500"
-        alt="Logo"
-        class="h-8 w-auto"
-      />
-      <!-- 竖线分隔 -->
-      <span class="text-gray-400 text-base">｜</span>
-      <!-- 测试标题 -->
-      <h1
-        id="pageTitle"
-        class="text-base font-semibold text-gray-800 dark:text-gray-200 tracking-wide"
-      >
-        EE-W 产品培训测试系统
-      </h1>
-    </div>
-
-    <!-- ✅ 底部：左侧用户名，右侧切换按钮 -->
-    <div class="flex justify-between items-center mt-2 text-sm text-gray-700 dark:text-gray-300">
+  <nav id="mainNavbar" class="card sticky top-2 mx-auto max-w-7xl z-40">
+    <div class="flex flex-col px-2 py-1 sm:px-4 sm:py-2 gap-1">
       
-      <!-- 左侧：用户名显示（JS 渲染） -->
-      <span id="loggedInUser" class="font-semibold">欢迎：Armstrong</span>
-
-      <!-- 右侧：明暗模式 + 语言切换 -->
-      <div class="flex items-center gap-3">
-        <!-- 明暗模式切换按钮 -->
-        <!-- ✅ 明暗模式切换按钮（统一高度 + 图标居中） -->
-        <button
-        id="themeToggle"
-        class="h-8 w-8 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
-              flex items-center justify-center text-gray-800 dark:text-white 
-              hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
-        aria-label="切换明暗模式"
-        >
-        <i class="fas fa-moon text-sm dark:hidden"></i>
-        <i class="fas fa-sun text-sm hidden dark:block"></i>
-        </button>
-
-        <!-- ✅ 语言切换按钮（统一尺寸 + 图标居中） -->
-        <button
-        id="langToggle"
-        onclick="toggleLanguage()"
-        class="h-8 w-8 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
-              flex items-center justify-center 
-              hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
-        aria-label="切换语言"
-        >
+      <!-- ✅ 顶部中间：Logo + 标题 -->
+      <div class="flex justify-center items-center gap-2">
+        <!-- Logo 大小在手机上缩小 -->
         <img
-          id="languageFlag"
-          src="https://flagcdn.com/cn.svg"
-          alt="Language"
-          class="w-5 h-4"
+          src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500"
+          alt="Logo"
+          class="h-5 sm:h-8 w-auto"
         />
-        </button>
+        <span class="text-gray-400 text-xs sm:text-base">｜</span>
+        <h1
+          id="pageTitle"
+          class="text-xs sm:text-base font-semibold text-gray-800 dark:text-gray-200 tracking-wide"
+        >
+          EE-W 产品培训测试系统
+        </h1>
+      </div>
+  
+      <!-- ✅ 底部：左侧用户名，右侧按钮 -->
+      <div class="flex justify-between items-center mt-1 sm:mt-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+        
+        <!-- 左侧用户名 -->
+        <span id="loggedInUser" class="font-semibold">欢迎：Armstrong</span>
+  
+        <!-- 右侧按钮区 -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- 明暗按钮 -->
+          <button
+            id="themeToggle"
+            class="h-6 w-6 sm:h-8 sm:w-8 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
+                  flex items-center justify-center text-gray-800 dark:text-white 
+                  hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            aria-label="切换明暗模式"
+          >
+            <i class="fas fa-moon text-xs sm:text-sm dark:hidden"></i>
+            <i class="fas fa-sun text-xs sm:text-sm hidden dark:block"></i>
+          </button>
+  
+          <!-- 语言按钮 -->
+          <button
+            id="langToggle"
+            onclick="toggleLanguage()"
+            class="h-6 w-6 sm:h-8 sm:w-8 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
+                  flex items-center justify-center 
+                  hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            aria-label="切换语言"
+          >
+            <img
+              id="languageFlag"
+              src="https://flagcdn.com/cn.svg"
+              alt="Language"
+              class="w-4 h-3 sm:w-5 sm:h-4"
+            />
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-</nav>
+  </nav>
     <!-- 倒计时卡片：固定在导航栏下边缘 -->
     <!-- ✅ 倒计时卡片结构：fixed + 正确闭合标签 -->
     <div

@@ -282,7 +282,7 @@
       <img
         src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500&rotate=0&blur=0&quality=50"
         alt="Logo"
-        class="h-9 md:h-12 w-auto"
+        class="h-7 md:h-10 w-auto"
       />
 
       <!-- ✅ 标题缩小字体，防止压缩冲突 -->
@@ -295,25 +295,7 @@
     </div>
 
     <!-- ✅ 中间：居中倒计时（防重叠 + 自动缩放） -->
-    <div
-      id="examStatusBar"
-      class="absolute left-1/2 top-1 sm:top-2 -translate-x-1/2
-             flex items-center gap-2
-             px-4 py-1 sm:py-2
-             bg-red-600 text-white text-sm sm:text-base
-             rounded-full shadow-md
-             max-w-[250px] sm:max-w-none z-10"
-    >
-      <i class="fas fa-clock mr-1"></i>
-      <span id="countdown">60:00</span>
-      <button
-        onclick="togglePause()"
-        id="pauseBtn"
-        class="ml-2 bg-white text-red-600 px-2 sm:px-3 py-0.5 sm:py-1 rounded-md hover:bg-red-100 transition-all text-xs sm:text-sm"
-      >
-        <i class="fas fa-pause mr-1"></i><span>暂停</span>
-      </button>
-    </div>
+  
 
     <!-- ✅ 右侧：模式和语言切换 -->
     <div class="flex items-center gap-3">
@@ -343,14 +325,25 @@
     </div>
   </div>
 </nav>
-    	<!-- ✅ 将 examStatusBar 放在这里 -->
-      <div id="examStatusBar" class="flex items-center gap-4 bg-red-600 text-white px-5 py-2 rounded-lg shadow-lg font-semibold">
-        <span class="flex items-center">
-          <i class="fas fa-clock mr-2"></i><span id="countdown">60:00</span>
-        </span>
-        <button onclick="togglePause()" id="pauseBtn" class="bg-white text-red-600 px-3 py-1 rounded-md hover:bg-red-100 transition-all">
-          <i class="fas fa-pause mr-1"></i><span>暂停</span>
-        </button>
+    	<!-- ✅ 导航栏下方悬浮倒计时卡片 -->
+      <div
+      id="examStatusBar"
+      class="absolute top-[90px] left-1/2 -translate-x-1/2 z-40
+            flex items-center gap-2
+            px-4 py-2
+            bg-red-600 text-white text-sm sm:text-base
+            rounded-xl shadow-md
+            transition-all duration-300"
+      >
+      <i class="fas fa-clock mr-1"></i>
+      <span id="countdown">60:00</span>
+      <button
+        onclick="togglePause()"
+        id="pauseBtn"
+        class="ml-2 bg-white text-red-600 px-3 py-1 rounded-md hover:bg-red-100 transition-all text-xs sm:text-sm"
+      >
+        <i class="fas fa-pause mr-1"></i><span>暂停</span>
+      </button>
       </div>
     <!-- 删除首页 -->
 

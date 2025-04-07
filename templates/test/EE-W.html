@@ -1970,9 +1970,21 @@ function switchLanguage(lang) {
     if (savedTheme === 'dark') {
       html.classList.add('dark');
       console.log('[Init] 恢复为 dark 模式');
-    } else {
+    } else if (savedTheme === 'light') {
       html.classList.remove('dark');
-      console.log('[Init] 默认 light 模式');
+      console.log('[Init] 恢复为 light 模式');
+    } else {
+      // 初次访问，根据系统设置
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+        console.log('[Init] 系统为 dark，初次设定为 dark');
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+        console.log('[Init] 系统为 light，初次设定为 light');
+      }
     }
   
     // 添加点击事件

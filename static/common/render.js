@@ -738,8 +738,8 @@ document.addEventListener("DOMContentLoaded", () => {
     card.style.color = '#333'; // light 模式下字体设为深色
   }
 
-
-});
+  }); // forEach 结束
+});   // DOMContentLoaded 的箭头函数闭合
 
 function updateThemeIcon() {
   const icon = document.getElementById("themeIcon");

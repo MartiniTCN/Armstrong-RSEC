@@ -305,3 +305,8 @@ html.dark .card-darkmode {
 html.dark .card-darkmode:hover {
   box-shadow: 0 0 18px rgba(255, 255, 255, 0.08); /* dark 模式下更亮 */
 }
+
+/* style.css */
+.card {
+  @apply bg-white dark:bg-[#1f1f1f] text-gray-800 dark:text-gray-300 rounded-xl p-6 mb-8 shadow-md transition-all duration-300;
+}

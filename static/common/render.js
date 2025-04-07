@@ -727,9 +727,9 @@ document.addEventListener("DOMContentLoaded", () => {
     userDisplay.textContent = `欢迎：${username}`;
   }
 
-  // ✅ 强制设置所有卡片在 dark 模式下的背景色
-const cards = document.querySelectorAll('.card-darkmode'); // 统一类名
-cards.forEach(card => {
+  // ✅ 设置卡片背景色兼容 light 和 dark
+  const cards = document.querySelectorAll('.card-darkmode'); // 统一类名
+  cards.forEach(card => {
   if (isDark) {
     card.style.backgroundColor = '#1f1f1f';
     card.style.color = '#ccc'; // 可选：确保文字颜色亮一点

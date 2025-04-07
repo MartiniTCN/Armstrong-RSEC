@@ -340,3 +340,21 @@ html.dark .card:hover {
     padding: 1rem 1.2rem;                 /* 小屏设备缩小内边距 */
   }
 }
+
+/* 🌞 Light 模式下 label 样式 */
+.card label,
+.card span,
+.card p {
+  color: #1a1a1a;               /* 深灰或接近黑色 */
+  font-weight: 600;             /* 加粗 */
+  font-size: 1rem;              /* 统一为 text-base 大小 */
+}
+
+/* 🌙 Dark 模式下 label 样式 */
+html.dark .card label,
+html.dark .card span,
+html.dark .card p {
+  color: #f5f5f5 !important;    /* 高对比亮白 */
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+}

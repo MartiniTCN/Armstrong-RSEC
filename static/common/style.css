@@ -264,3 +264,29 @@ html.dark .timer-panel {
     padding: 1rem;
   }
 }
+
+/* ======================== */
+/* ✅ Dark Mode 增强补丁段 */
+/* ======================== */
+
+/* 额外修复顶部背景更暗、文字更亮、表单 label 显示不清晰等问题 */
+html.dark header {
+  background-color: #1a1a1a !important;
+  color: #ffffff;
+}
+
+html.dark .input-section label {
+  color: #eaeaea;
+}
+
+html.dark input::placeholder {
+  color: #999;
+}
+
+/* 统一卡片类内部文字颜色 */
+html.dark .question-card h2,
+html.dark .question-card p,
+html.dark .question-card label,
+html.dark .question-card span {
+  color: #ffffff;
+}

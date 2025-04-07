@@ -21,15 +21,6 @@
 
 
 	<!-- ✅ 🆕 立即加上这段，开启 dark 模式支持 -->
-  <script>
-    // 如果本地没有主题设置，默认启用 dark 模式
-    if (!localStorage.theme) {
-      document.documentElement.classList.add('dark');
-      localStorage.theme = 'dark';
-    } else if (localStorage.theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    }
-  </script>
 
 
 
@@ -281,53 +272,77 @@
         </div>
     </div>
 
-    <!-- 导航栏 -->
-    <nav class="sticky top-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur border-b border-gray-200 dark:border-gray-700 z-40">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <!-- 🔧 自适应顶部 Logo + 标题 -->
-            <div class="flex items-center gap-2 px-4 py-2 overflow-hidden">
-              <!-- 左侧 Logo -->
-              <img src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500&rotate=0&blur=0&quality=50" 
-                  alt="Logo" class="h-6 md:h-8 w-auto" />
+    <!-- ✅ 圆角矩形导航栏 + 倒计时居中 -->
+<nav class="sticky top-4 mx-auto max-w-7xl bg-white/80 dark:bg-gray-800/80 backdrop-blur border border-gray-200 dark:border-gray-700 z-40 rounded-2xl shadow-md">
+  <div class="relative flex items-center justify-between px-4 py-3">
 
-              <!-- 右侧标题，自动缩放避免换行 -->
-              <h1 id="pageTitle" class="text-base md:text-xl font-bold text-gray-800 dark:text-gray-200 whitespace-nowrap truncate">
-                ｜ EE-W 产品培训测试系统
-              </h1>
-            </div>
-		
+    <!-- ✅ 左侧：Logo + 标题 -->
+    <div class="flex items-center gap-2 overflow-hidden">
+      <!-- ✅ Logo 放大 50% -->
+      <img
+        src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500&rotate=0&blur=0&quality=50"
+        alt="Logo"
+        class="h-9 md:h-12 w-auto"
+      />
 
-            <!-- ✅ 明暗模式 + 语言切换按钮区域 -->
-            <div class="flex items-center gap-4">
+      <!-- ✅ 标题缩小字体，防止压缩冲突 -->
+      <h1
+        id="pageTitle"
+        class="text-sm md:text-base font-bold text-gray-800 dark:text-gray-200 whitespace-nowrap truncate"
+      >
+        ｜ EE-W 产品培训测试系统
+      </h1>
+    </div>
 
-              <!-- 明暗模式切换按钮（统一圆角+边框+背景） -->
-              <button
-              id="themeToggle"
-              class="h-9 px-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              aria-label="Toggle dark mode"
-              >
-              <!-- 使用 Font Awesome 图标 -->
-              <i class="fas fa-sun dark:hidden"></i>
-              <i class="fas fa-moon hidden dark:block"></i>
-              </button>
+    <!-- ✅ 中间：居中倒计时（防重叠 + 自动缩放） -->
+    <div
+      id="examStatusBar"
+      class="absolute left-1/2 top-1 sm:top-2 -translate-x-1/2
+             flex items-center gap-2
+             px-4 py-1 sm:py-2
+             bg-red-600 text-white text-sm sm:text-base
+             rounded-full shadow-md
+             max-w-[250px] sm:max-w-none z-10"
+    >
+      <i class="fas fa-clock mr-1"></i>
+      <span id="countdown">60:00</span>
+      <button
+        onclick="togglePause()"
+        id="pauseBtn"
+        class="ml-2 bg-white text-red-600 px-2 sm:px-3 py-0.5 sm:py-1 rounded-md hover:bg-red-100 transition-all text-xs sm:text-sm"
+      >
+        <i class="fas fa-pause mr-1"></i><span>暂停</span>
+      </button>
+    </div>
 
-              <!-- 语言切换按钮（统一圆角+边框+背景） -->
-              <button
-              id="langToggle"
-              onclick="toggleLanguage()"
-              class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-              <img
-                id="languageFlag"
-                src="https://flagcdn.com/cn.svg"
-                alt="Language"
-                class="w-5 h-4"
-              />
-              </button>
+    <!-- ✅ 右侧：模式和语言切换 -->
+    <div class="flex items-center gap-3">
+      <!-- 明暗模式按钮 -->
+      <button
+        id="themeToggle"
+        class="h-9 px-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        aria-label="Toggle dark mode"
+      >
+        <i class="fas fa-sun dark:hidden"></i>
+        <i class="fas fa-moon hidden dark:block"></i>
+      </button>
 
-            </div>
-        </div>
-    </nav>
+      <!-- 语言按钮 -->
+      <button
+        id="langToggle"
+        onclick="toggleLanguage()"
+        class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+      >
+        <img
+          id="languageFlag"
+          src="https://flagcdn.com/cn.svg"
+          alt="Language"
+          class="w-5 h-4"
+        />
+      </button>
+    </div>
+  </div>
+</nav>
     	<!-- ✅ 将 examStatusBar 放在这里 -->
       <div id="examStatusBar" class="flex items-center gap-4 bg-red-600 text-white px-5 py-2 rounded-lg shadow-lg font-semibold">
         <span class="flex items-center">
@@ -335,8 +350,8 @@
         </span>
         <button onclick="togglePause()" id="pauseBtn" class="bg-white text-red-600 px-3 py-1 rounded-md hover:bg-red-100 transition-all">
           <i class="fas fa-pause mr-1"></i><span>暂停</span>
-  </button>
-</div>
+        </button>
+      </div>
     <!-- 删除首页 -->
 
     <!-- 直接进入测试页 -->
@@ -647,22 +662,8 @@ function showTestPage() { // ✅ 切换到考试页面，并启动计时器/清�
    }
  }
  
- document.addEventListener('DOMContentLoaded', updateCountdown);
+ // document.addEventListener('DOMContentLoaded', updateCountdown);
  
- // 🌙 主题切换
- function initTheme() {
-   const isDark = localStorage.getItem('theme') === 'dark' ||
-     (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-   document.documentElement.classList.toggle('dark', isDark);
-   document.getElementById('themeToggle').innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
- }
- document.addEventListener('DOMContentLoaded', () => {
-   initTheme();
-   document.getElementById('themeToggle').addEventListener('click', () => {
-     localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'light' : 'dark');
-     initTheme();
-   });
- });
  
  // ✅ 答案收集
 function collectAnswers() {

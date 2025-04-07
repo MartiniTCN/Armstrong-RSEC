@@ -666,40 +666,34 @@ function closeUniversalModal() {
   document.getElementById("universalModal").classList.add("hidden");
 }
 
-
-// ✅  绑定明暗模式切换按钮
 document.addEventListener("DOMContentLoaded", () => {
 
-  // ✅ 1. 初始化主题样式（从 localStorage 读取）
-   const savedTheme = localStorage.getItem("theme") || "dark";
-  document.documentElement.classList.toggle("dark", savedTheme === "dark");
+  updateCountdown(); // 启动倒计时
+  updateLoadingText(); // 更新加载提示文本
+  // ✅ 初始化主题：读取 localStorage 或默认 dark
+  const html = document.documentElement;
+  const savedTheme = localStorage.getItem("theme") || "dark";
+  const isDark = savedTheme === "dark";
+  html.classList.toggle("dark", isDark);
 
-
-  // ✅ 2. 初始化明暗图标
+  // ✅ 图标控制方式：使用 TailwindCSS 的类（非 innerHTML 替换）
   const themeBtn = document.getElementById("themeToggle");
   const sunIcon = themeBtn?.querySelector(".fa-sun");
   const moonIcon = themeBtn?.querySelector(".fa-moon");
 
-  if (savedTheme === "dark") {
-    sunIcon.classList.remove("hidden");
-    moonIcon.classList.add("hidden");
-  } else {
-    sunIcon.classList.add("hidden");
-    moonIcon.classList.remove("hidden");
-  }
+  sunIcon?.classList.toggle("hidden", isDark);   // 🌞 白天图标：深色下隐藏
+  moonIcon?.classList.toggle("hidden", !isDark); // 🌙 夜间图标：浅色下隐藏
 
-  // ✅ 3. 绑定主题切换按钮点击事件
+  // ✅ 点击按钮切换主题 明暗按钮事件
   themeBtn?.addEventListener("click", () => {
-    const html = document.documentElement;
-    const isDark = html.classList.toggle("dark");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
+    const nowDark = html.classList.toggle("dark");
+    localStorage.setItem("theme", nowDark ? "dark" : "light");
 
-    sunIcon?.classList.toggle("hidden", isDark);
-    moonIcon?.classList.toggle("hidden", !isDark);
+    sunIcon?.classList.toggle("hidden", nowDark);
+    moonIcon?.classList.toggle("hidden", !nowDark);
   });
 
-
-  // ✅ 4. 初始化语言图标
+  // ✅ 初始化语言图标（保留）
   const langIcon = document.getElementById("languageFlag");
   const lang = localStorage.getItem("language") || "zh";
   if (langIcon) {
@@ -710,13 +704,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const langBtn = document.getElementById("langToggle");
   if (langBtn) {
     langBtn.addEventListener("click", () => {
-      const newLang = localStorage.getItem("language") === "zh" ? "en" : "zh";
+      const newLang = lang === "zh" ? "en" : "zh";
       localStorage.setItem("language", newLang);
       location.reload();
     });
   }
 
-  // ✅ 6. 加载题库（根据 URL 参数）
+  // ✅ 加载 CSV 题库
   const urlParams = new URLSearchParams(window.location.search);
   const course = urlParams.get("course") || "EE-W";
   loadCSVAndInit(course);
@@ -758,20 +752,7 @@ function updateThemeIcon(isDark) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
 
-  const themeToggle = document.getElementById('themeToggle');
-  if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-      const htmlEl = document.documentElement;
-      const isDark = !htmlEl.classList.contains('dark');
-      htmlEl.classList.toggle('dark', isDark);
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      updateThemeIcon(isDark);
-    });
-  }
-});
 
 // 主题切换函数，绑定到按钮 onclick
 // 切换主题并同步图标

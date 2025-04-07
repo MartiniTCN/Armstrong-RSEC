@@ -1,68 +1,107 @@
 /* 文件路径：/static/common/style.css */
-/* 用于 test.html 的通用样式，支持响应式、深浅色切换、苹果字体、卡片风格 */
+/* 通用页面样式：响应式 + 深浅色切换 + 卡片风格 + 苹果字体 */
 
-/* ✅ 设置全局字体变量（兼容苹果系统） */
+/* ✅ 全局字体设定 */
 :root {
   --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
 }
 
-/* ✅ 全局基础样式 */
+/* ✅ 基础样式（亮色） */
 body {
   font-family: var(--font-main);
   line-height: 1.6;
   background-color: #f8f9fa;
+  color: #111;
   margin: 0;
   padding: 0;
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* ✅ 暗黑模式：统一背景、文字、过渡效果 */
+/* ✅ 暗色主题背景 */
 html.dark body {
-  background-color: #121212; /* 更稳重统一 */
+  background-color: #121212;
   color: #e6e6e6;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ✅ 卡片容器在暗色模式下样式统一化 */
-html.dark .card,
-html.dark .question-card,
-html.dark .judge-card,
-html.dark .essay-card,
-html.dark .input-section,
-html.dark #assessmentSummary {
-  background-color: #1e1e1e;
-  color: #f0f0f0;
-  border: 1px solid #333;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+/* ✅ 页面主容器 */
+.page-container {
+  max-width: 980px;
+  margin: auto;
+  padding: 1.5rem;
 }
 
-/* ✅ 暗色模式下标题与文字统一亮色 */
-html.dark p,
-html.dark h1,
-html.dark h2,
-html.dark label,
-html.dark span {
-  color: #f5f5f5;
+/* ✅ 暗色下页面容器背景 */
+html.dark .page-container {
+  background-color: #121212 !important;
+  color: #e5e5e5;
 }
 
-/* ✅ 输入框通用样式 */
+/* ✅ 顶部区域（Logo + 控制按钮） */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+header img.logo {
+  height: 48px;
+}
+header .controls button {
+  margin-left: 0.5rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+html.dark header {
+  background-color: #1c1c1c;
+  border-bottom: 1px solid #333;
+}
+
+/* ✅ 标题样式 */
+h1 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+}
+h2 {
+  font-size: 1.25rem;
+  margin: 1.5rem 0 1rem;
+  font-weight: bold;
+}
+html.dark h1, html.dark h2 {
+  color: #ffffff;
+}
+
+/* ✅ 表单信息卡片样式 */
+.input-section {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.input-section label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
 .input-section input {
   width: 100%;
-  padding: 0.5rem;
-  margin-top: 0.3rem;
+  padding: 0.6rem;
   margin-bottom: 1rem;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: all 0.2s;
 }
-
-/* ✅ 输入框聚焦状态样式 */
 .input-section input:focus {
   border-color: #4f46e5;
   outline: none;
 }
 
-/* ✅ 暗色模式下输入框样式 */
+/* ✅ 暗色主题下输入信息区域 */
+html.dark .input-section {
+  background-color: #1e1e1e;
+  color: #ddd;
+}
 html.dark input,
 html.dark textarea {
   background-color: #2a2a2a;
@@ -72,74 +111,41 @@ html.dark textarea {
 html.dark input:focus,
 html.dark textarea:focus {
   border-color: #4f46e5;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4);
   outline: none;
 }
 
-/* ✅ 表单控件其他类型（原有） */
-html.dark textarea,
-html.dark input[type="text"],
-html.dark input[type="radio"],
-html.dark input[type="checkbox"] {
-  background-color: #1e1e1e;
-  color: #fff;
-  border: 1px solid #444;
-}
-
-/* ✅ 页面顶部样式 */
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-}
-header img.logo {
-  height: 48px;
-}
-header .controls button {
-  margin-left: 0.5rem;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-html.dark header {
-  background-color: #1c1c1c;
-  border-bottom: 1px solid #333;
-}
-
-/* ✅ 学员信息表单样式 */
-.input-section {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-html.dark .input-section {
-  background-color: #1e1e1e;
-  color: #ddd;
-}
-.input-section label {
-  font-weight: bold;
-}
-
-/* ✅ 所有题目类型卡片统一样式 */
+/* ✅ 题目卡片样式 */
 .question-card,
 .judge-card,
 .essay-card {
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 1rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1.2rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 html.dark .question-card,
 html.dark .judge-card,
 html.dark .essay-card {
   background-color: #1f1f1f;
   color: #f0f0f0;
+  border: 1px solid #333;
 }
 
-/* ✅ 按钮通用样式 */
+/* ✅ 成绩区域样式 */
+#assessmentSummary {
+  font-size: 1.1rem;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+html.dark #assessmentSummary {
+  background-color: #262626;
+}
+
+/* ✅ 通用按钮样式 */
 button {
   font-family: inherit;
   font-size: 1rem;
@@ -154,17 +160,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* ✅ 暗色按钮默认优化 */
-html.dark button {
-  background-color: #333;
-  color: #fff;
-  border: 1px solid #444;
-}
-html.dark button:hover {
-  background-color: #444;
-}
-
-/* ✅ 主按钮（蓝色）样式 */
+/* ✅ 主按钮 */
 button.primary {
   background-color: #2563eb;
   color: white;
@@ -179,7 +175,7 @@ html.dark button.primary:hover {
   background-color: #2563eb;
 }
 
-/* ✅ 次按钮（灰色）样式 */
+/* ✅ 次按钮 */
 button.secondary {
   background-color: #9ca3af;
   color: white;
@@ -194,30 +190,43 @@ html.dark button.secondary:hover {
   background-color: #4b5563;
 }
 
-/* ✅ 成绩区域卡片样式 */
-#assessmentSummary {
-  font-size: 1.2rem;
-  padding: 1.5rem;
+/* ✅ 暗色默认按钮 hover 统一 */
+html.dark button {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #444;
+}
+html.dark button:hover {
+  background-color: #444;
+}
+
+/* ✅ 暗色模式下组件块统一风格 */
+html.dark .dropdown,
+html.dark .modal,
+html.dark .popup,
+html.dark .language-switcher {
+  background-color: #1f1f1f !important;
+  color: #fff;
+  border: 1px solid #333;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+
+/* ✅ 浮动计时器按钮样式（建议加类名 .timer-panel） */
+.timer-panel {
   background-color: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  color: #111;
+  font-weight: bold;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
-html.dark #assessmentSummary {
-  background-color: #262626;
-}
-
-/* ✅ 密码验证弹窗遮罩层样式 */
-#passwordModal {
-  background-color: rgba(0, 0, 0, 0.6);
-}
-#passwordModal input {
-  font-size: 1rem;
-  padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+html.dark .timer-panel {
+  background-color: #2c2c2c;
+  color: #ffffff;
+  border: 1px solid #444;
 }
 
-/* ✅ 页面固定水印样式 */
+/* ✅ 固定水印 */
 #watermark {
   position: fixed;
   top: 2rem;
@@ -241,37 +250,17 @@ html.dark #assessmentSummary {
   pointer-events: none;
 }
 
-/* ✅ 响应式支持：768px 以下屏幕优化 */
+/* ✅ 响应式支持 */
 @media screen and (max-width: 768px) {
   header {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .input-section {
-    padding: 1rem;
-  }
-
+  .input-section,
   .question-card,
   .judge-card,
   .essay-card {
-    padding: 0.8rem;
+    padding: 1rem;
   }
-}
-
-/* ✅ 页面主体容器暗色统一背景 */
-html.dark .page-container {
-  background-color: #121212 !important;
-  color: #e5e5e5;
-}
-
-/* ✅ 弹窗、语言切换菜单、浮动组件的默认背景 */
-html.dark .dropdown,
-html.dark .modal,
-html.dark .popup,
-html.dark .language-switcher {
-  background-color: #1f1f1f !important;
-  color: #fff;
-  border: 1px solid #333;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
 }

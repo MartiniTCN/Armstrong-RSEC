@@ -104,6 +104,7 @@
 </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='common/style.css') }}">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     <style>
 	
@@ -1974,28 +1975,22 @@ function switchLanguage(lang) {
       html.classList.remove('dark');
       console.log('[Init] 恢复为 light 模式');
     } else {
-      // 初次访问，根据系统设置
+      // 首次访问时自动检测系统主题
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (prefersDark) {
-        html.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-        console.log('[Init] 系统为 dark，初次设定为 dark');
-      } else {
-        html.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-        console.log('[Init] 系统为 light，初次设定为 light');
-      }
+      html.classList.toggle('dark', prefersDark);
+      localStorage.setItem('theme', prefersDark ? 'dark' : 'light');
     }
   
-    // 添加点击事件
-    themeToggle.addEventListener('click', () => {
-      const isDark = html.classList.contains('dark');
-      html.classList.toggle('dark');
-      localStorage.setItem('theme', isDark ? 'light' : 'dark');
-      console.log(`[Click] 主题切换为 ${isDark ? 'light' : 'dark'}`);
-    });
+    // ✅ 点击按钮切换明暗模式
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const isDark = html.classList.contains('dark');
+        html.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+      });
+    }
   });
-  </script>
+</script>
 </div>
 </body>
 </html>

@@ -273,7 +273,8 @@
     </div>
 
   <!-- ✅ 导航栏  -->
-<nav id="mainNavbar" class="sticky top-2 mx-auto max-w-7xl bg-white/80 dark:bg-gray-900/80 backdrop-blur border border-gray-200 dark:border-gray-700 z-40 rounded-2xl shadow-md">
+  <nav id="mainNavbar"
+  class="sticky top-2 mx-auto max-w-7xl bg-white/80 !dark:bg-[#2a2a2a] backdrop-blur border border-gray-200 dark:border-gray-700 z-40 rounded-2xl shadow-md">
   <div class="flex flex-col px-4 py-2 gap-1">
 
     <!-- ✅ 顶部中间：Logo + 标题 -->
@@ -282,7 +283,7 @@
       <img
         src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500"
         alt="Logo"
-        class="h-6 w-auto"
+        class="h-8 w-auto"
       />
       <!-- 竖线分隔 -->
       <span class="text-gray-400 text-base">｜</span>
@@ -304,22 +305,25 @@
       <!-- 右侧：明暗模式 + 语言切换 -->
       <div class="flex items-center gap-3">
         <!-- 明暗模式切换按钮 -->
-        <!-- 明暗模式按钮 -->
+        <!-- ✅ 明暗模式切换按钮（统一高度 + 图标居中） -->
         <button
         id="themeToggle"
-        class="px-1.5 py-1 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+        class="h-8 w-8 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
+              flex items-center justify-center text-gray-800 dark:text-white 
+              hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
         aria-label="切换明暗模式"
         >
-        <i class="fas fa-moon text-base dark:hidden"></i>
-        <i class="fas fa-sun text-base hidden dark:block"></i>
+        <i class="fas fa-moon text-sm dark:hidden"></i>
+        <i class="fas fa-sun text-sm hidden dark:block"></i>
         </button>
 
-        <!-- 语言切换按钮 -->
-        <!-- 语言切换按钮（紧凑样式） -->
+        <!-- ✅ 语言切换按钮（统一尺寸 + 图标居中） -->
         <button
         id="langToggle"
         onclick="toggleLanguage()"
-        class="px-1.5 py-1 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+        class="h-8 w-8 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 
+              flex items-center justify-center 
+              hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
         aria-label="切换语言"
         >
         <img
@@ -371,52 +375,61 @@
             </div>
         </div>
 
-        <!-- 学员信息表单 -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm mb-8">
-            <h2 class="text-xl font-semibold mb-6 text-gray-800 dark:text-gray-200">
-                <i class="fas fa-id-card mr-2 text-blue-500"></i>学员信息
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300">
-                        <span class="text-red-500">*</span> 公司名称
-                    </label>
-                    <input type="text" id="company" 
-                        class="input-field-highlight bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full" 
-                        placeholder="请输入公司全称" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300">
-                        <span class="text-red-500">*</span> 学员姓名
-                    </label>
-                    <input type="text" id="name" 
-                        class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full"
-                        placeholder="请输入真实姓名" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300">
-                        <span class="text-red-500">*</span> 手机号码
-                    </label>
-                    <input type="tel" id="phone" 
-                        class="input-field-highlight bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full"
-                        placeholder="11位手机号码" pattern="[0-9]{11}" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300">
-                        <span class="text-red-500">*</span> 邮箱地址
-                    </label>
-                    <input type="email" id="email"
-                        class="input-field-highlight bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 w-full"
-                        placeholder="name@company.com" 
-                        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" 
-                        required>
-                </div>
+        <!-- ✅ 学员信息卡片（优化明暗模式 + 不透明） -->
+        <div class="bg-white !dark:bg-[#1f1f1f] text-gray-800 !dark:text-gray-100 rounded-xl p-6 shadow-md mb-8 transition-colors duration-300">
+          <h2 class="text-xl font-semibold mb-6 text-gray-800 !dark:text-gray-100">
+            <i class="fas fa-id-card mr-2 text-blue-500"></i>学员信息
+          </h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- 公司名称 -->
+            <div>
+              <label class="block text-sm font-bold mb-2 text-gray-700 !dark:text-gray-300">
+                <span class="text-red-500">*</span> 公司名称
+              </label>
+              <input type="text" id="company"
+                class="bg-white !dark:bg-[#2a2a2a] text-gray-900 !dark:text-gray-100 border border-gray-300 !dark:border-gray-600 rounded px-3 py-2 w-full"
+                placeholder="请输入公司全称" required>
             </div>
+
+            <!-- 学员姓名 -->
+            <div>
+              <label class="block text-sm font-bold mb-2 text-gray-700 !dark:text-gray-300">
+                <span class="text-red-500">*</span> 学员姓名
+              </label>
+              <input type="text" id="name"
+                class="bg-white !dark:bg-[#2a2a2a] text-gray-900 !dark:text-gray-100 border border-gray-300 !dark:border-gray-600 rounded px-3 py-2 w-full"
+                placeholder="请输入真实姓名" required>
+            </div>
+
+            <!-- 手机号码 -->
+            <div>
+              <label class="block text-sm font-bold mb-2 text-gray-700 !dark:text-gray-300">
+                <span class="text-red-500">*</span> 手机号码
+              </label>
+              <input type="tel" id="phone"
+                class="bg-white !dark:bg-[#2a2a2a] text-gray-900 !dark:text-gray-100 border border-gray-300 !dark:border-gray-600 rounded px-3 py-2 w-full"
+                placeholder="11位手机号码" pattern="[0-9]{11}" required>
+            </div>
+
+            <!-- 邮箱地址 -->
+            <div>
+              <label class="block text-sm font-bold mb-2 text-gray-700 !dark:text-gray-300">
+                <span class="text-red-500">*</span> 邮箱地址
+              </label>
+              <input type="email" id="email"
+                class="bg-white !dark:bg-[#2a2a2a] text-gray-900 !dark:text-gray-100 border border-gray-300 !dark:border-gray-600 rounded px-3 py-2 w-full"
+                placeholder="name@company.com"
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                required>
+            </div>
+          </div>
         </div>
 
 
         <!-- 单选题 -->
-        <div class="bg-white dark:bg-[#1f1f1f] text-gray-800 dark:text-gray-300 rounded-xl p-6 shadow-md mb-8 transition-colors duration-300">
+        <div class="bg-white !dark:bg-[#1f1f1f] text-gray-800 !dark:text-gray-100 rounded-xl p-6 shadow-md mb-8 transition-colors duration-300">
           <h2 class="text-xl font-semibold mb-6">
             <i class="fas fa-list-ol mr-2 text-blue-500"></i>单选题（每题2分，共40分）
           </h2>
@@ -424,32 +437,31 @@
           <div class="space-y-6" data-section="single"></div>
         </div>
 
-        <!-- 多选题 -->
-        <div class="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-xl p-6 shadow-sm mb-8">
+        <!-- ✅ 多选题卡片 -->
+        <div class="bg-white !dark:bg-[#1f1f1f] text-gray-800 !dark:text-gray-100 rounded-xl p-6 shadow-md mb-8 transition-colors duration-300">
           <h2 class="text-xl font-semibold mb-6">
-                <i class="fas fa-tasks mr-2 text-green-500"></i>多选题（每题1分，共20分）
-            </h2>
-            <!-- ✅ 多选题挂载区域：PapaParse 渲染的多选题将插入到这里 -->
-            <div class="space-y-6" data-section="multi"></div>
+            <i class="fas fa-check-square mr-2 text-purple-500"></i>多选题（每题2分，共40分）
+          </h2>
+          <!-- ✅ PapaParse 渲染的多选题将插入到这里 -->
+          <div class="space-y-6" data-section="multi"></div>
         </div>
 
-        <!-- 判断题 -->
-        <div class="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-xl p-6 shadow-sm mb-8">
+        <!-- ✅ 判断题卡片 -->
+        <div class="bg-white !dark:bg-[#1f1f1f] text-gray-800 !dark:text-gray-100 rounded-xl p-6 shadow-md mb-8 transition-colors duration-300">
           <h2 class="text-xl font-semibold mb-6">
-                <i class="fas fa-check-circle mr-2 text-purple-500"></i>判断题（每题1分，共20分）
-            </h2>
-            <!-- ✅ 判断题挂载区域：用于插入系统生成的判断题卡片（含 √ × 图标） -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" data-section="judge"></div>
-        </div>     
-<!-- ✅ 简答题 -->
-<div class="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-xl p-6 shadow-sm mb-8">
-  <h2 class="text-xl font-semibold mb-6">
-    <i class="fas fa-pen mr-2 text-orange-500"></i>简答题（40分）
-  </h2>
-
-  <!-- ✅ PapaParse 渲染简答题插入区 -->
-  <div class="space-y-6" data-section="essay"></div>
-</div>
+            <i class="fas fa-balance-scale mr-2 text-yellow-500"></i>判断题（每题1分，共20分）
+          </h2>
+          <!-- ✅ PapaParse 渲染的判断题将插入到这里 -->
+          <div class="space-y-6" data-section="judge"></div>
+        </div>    
+        <!-- ✅ 简答题卡片 -->
+        <div class="bg-white !dark:bg-[#1f1f1f] text-gray-800 !dark:text-gray-100 rounded-xl p-6 shadow-md mb-8 transition-colors duration-300">
+          <h2 class="text-xl font-semibold mb-6">
+            <i class="fas fa-keyboard mr-2 text-pink-500"></i>简答题（共1题，10分）
+          </h2>
+          <!-- ✅ PapaParse 渲染的简答题将插入到这里 -->
+          <div class="space-y-6" data-section="essay"></div>
+        </div>
 
         <!-- 提交按钮 -->
  <div class="flex justify-center mt-8">

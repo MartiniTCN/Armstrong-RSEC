@@ -390,7 +390,7 @@ html.dark .card p {
 
 /* ✅ 下半部分内容间距更合理 */
 .course-card .scale-inner {
-  padding: 0 6px; /* 横向留出边距 */
+  padding: 0 1rem; /* 横向留出边距 */
 }
 
 /* ✅ 标签（category）尺寸更小 */
@@ -416,7 +416,7 @@ html.dark .card p {
 
 /* ✅ 下半部分：实际内容区边距控制 */
 .course-card .inner-padding {
-  padding: 0 10px;
+  padding: 0.5rem 0.75rem;  /* 上下 8px，左右 12px */
   padding-top: 2px;
   padding-bottom: 6px;
   display: flex;
@@ -432,4 +432,15 @@ html.dark .card p {
     height: auto;
     aspect-ratio: 3/4;
   }
+}
+/* ✅ 课程卡标签样式调整*/
+.tag-small {
+  font-size: clamp(8px, 1vw, 10px);  /* 🚨 字体变小 */
+  line-height: 1.1;                 /* 🚨 行高也缩一点 */
+  padding: 0.5px 6px;               /* 🚨 标签上下边距减少 */
+  font-weight: 500;                 /* 可选：字体不那么厚重 */
+  border-radius: 9999px;
+  min-width: 1.6rem;                /* 🚨 标签最小宽度减少 */
+  max-width: 100%;
+  display: inline-block;
 }

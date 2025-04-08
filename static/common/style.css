@@ -377,8 +377,9 @@ html.dark .card p {
   max-height: 380px;
   transition: all 0.3s ease;
   display: flex;
-  flex-direction: column;
-  justify-content: stretch;
+  flex-direction: column;  /* 强制竖向排列 */
+  justify-content: space-between; /* 上下间距均匀 */
+
 }
 
 /* ✅ 图片区域固定占据一半，高度统一 */
@@ -425,6 +426,12 @@ html.dark .card p {
   height: 100%;
 }
 
+//* ✅ 课程卡片底部信息区域：时间、学生、评分 - 增加与底部的间距 */
+.course-card .card-footer {
+  margin-bottom: 10px;  /* 增加底部间距 */
+  padding-bottom: 6px;  /* 调整内边距，避免紧贴底部 */
+}
+
 /* ✅ 小屏自适应压缩卡片宽高 */
 @media (max-width: 640px) {
   .course-card {
@@ -433,25 +440,44 @@ html.dark .card p {
     aspect-ratio: 3/4;
   }
 }
-/* ✅ 课程卡标签样式调整*/
-/* ✅ 课程卡片标签：胶囊形状，文字自适应缩放 */
+/*
+.course-card .course-image {
+  width: 100%;                   
+  height: 50%;                  
+  object-fit: cover;               
+  border-radius: 12px 12px 0 0;  
+}
+*/
+
+/* 🌈 课程卡片标签：胶囊形状，文字自适应缩放 */
 .tag-small {
-  font-size: clamp(8px, 2vw, 12px);  /* 自适应缩放文字 */
-  line-height: 1.5;
-  font-weight: 600;
-  padding: 0.4rem 1rem; /* 左右边距调整为标签60%的区域 */
-  border-radius: 9999px; /* 胶囊形状 */
-  display: inline-flex; /* 保证文字居中 */
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
-  min-width: 2.5rem;  /* 标签宽度最小值 */
-  max-width: 100%;    /* 标签宽度可扩展 */
-  background-color: #f3f4f6;  /* 标签背景色 */
-  color: #4b5563;     /* 文字颜色 */
+  display: inline-flex;                /* 以 inline-flex 布局呈现，便于内部文字居中 */
+  align-items: center;                /* 垂直方向居中对齐 */
+  justify-content: center;            /* 水平方向居中对齐 */
+  padding: 0.3rem 1rem;               /* 上下内边距 0.3rem，左右内边距 1rem，控制胶囊大小 */
+  border-radius: 9999px;              /* 极大圆角形成完整胶囊形状 */
+  background-color: #f3f4f6;          /* 浅灰背景色（亮色模式） */
+  min-width: 3rem;                    /* 最小宽度为 3rem，避免标签过小影响视觉 */
+  height: 1.4rem;                     /* 固定标签高度，确保视觉一致性 */
 }
 
-/* ✅ 胶囊标签的深色模式 */
+/* ✅ 标签内部文字：自动缩放、宽度限制、溢出省略 */
+.tag-text {
+  font-size: clamp(7px, 2.5vw, 11px);  /* 字体大小自适应，最小 7px，最大 11px */
+  line-height: 1;                     /* 行高紧凑，不额外撑高胶囊 */
+  font-weight: 500;                   /* 文字中等加粗，提升可读性但不抢眼 */
+  max-width: 60%;                     /* 限制文字宽度不超过胶囊的 60%，保留左右留白 */
+  text-align: center;                 /* 文字居中 */
+  overflow: hidden;                   /* 超出文字隐藏 */
+  text-overflow: ellipsis;           /* 超出显示省略号（...） */
+  white-space: nowrap;               /* 禁止文字换行 */
+  color: #4b5563;                     /* 深灰色文字（亮色模式） */
+}
+
+/* ✅ 深色模式下的标签背景与文字颜色 */
 html.dark .tag-small {
-  background-color: #4b5563;
-  color: #f5f5f5;
+  background-color: #4b5563;          /* 深色模式下胶囊背景为深灰色 */
+}
+html.dark .tag-text {
+  color: #f5f5f5;                     /* 深色模式下文字为浅色，增强对比度 */
 }

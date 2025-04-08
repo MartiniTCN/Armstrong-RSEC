@@ -299,9 +299,11 @@
 
                     <!-- ✅ 上半：标签、标题、简介 -->
                     <div>
-                        <!-- 标签：小字体、紫色背景 -->
-                        <span class="tag-small bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 mb-1">
-                        ${course.category}
+                        <!-- ✅ 胶囊标签：小字体 + 自适应缩放 + 暗色模式兼容 -->
+                        <span class="tag-small mb-1">
+                        <span class="tag-text">
+                            ${course.category}
+                        </span>
                         </span>
 
                         <!-- 标题：加粗，自动换行 -->

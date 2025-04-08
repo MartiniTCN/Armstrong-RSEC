@@ -434,13 +434,24 @@ html.dark .card p {
   }
 }
 /* ✅ 课程卡标签样式调整*/
+/* ✅ 课程卡片标签：胶囊形状，文字自适应缩放 */
 .tag-small {
-  font-size: clamp(8px, 1vw, 10px);  /* 🚨 字体变小 */
-  line-height: 1.1;                 /* 🚨 行高也缩一点 */
-  padding: 0.5px 6px;               /* 🚨 标签上下边距减少 */
-  font-weight: 500;                 /* 可选：字体不那么厚重 */
-  border-radius: 9999px;
-  min-width: 1.6rem;                /* 🚨 标签最小宽度减少 */
-  max-width: 100%;
-  display: inline-block;
+  font-size: clamp(8px, 2vw, 12px);  /* 自适应缩放文字 */
+  line-height: 1.5;
+  font-weight: 600;
+  padding: 0.4rem 1rem; /* 左右边距调整为标签60%的区域 */
+  border-radius: 9999px; /* 胶囊形状 */
+  display: inline-flex; /* 保证文字居中 */
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  min-width: 2.5rem;  /* 标签宽度最小值 */
+  max-width: 100%;    /* 标签宽度可扩展 */
+  background-color: #f3f4f6;  /* 标签背景色 */
+  color: #4b5563;     /* 文字颜色 */
+}
+
+/* ✅ 胶囊标签的深色模式 */
+html.dark .tag-small {
+  background-color: #4b5563;
+  color: #f5f5f5;
 }

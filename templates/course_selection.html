@@ -274,51 +274,65 @@
 
     // Create course card
     function createCourseCard(course) {
-  console.log("📦 渲染课程：", course.title.zh, "➡️ 跳转：", course.link);
+        console.log("📦 渲染课程：", course.title.zh, "➡️ 跳转：", course.link);
 
-  return `
-    <a href="${course.link || '#'}" class="block group">
-      <div class="course-card w-full max-w-[260px] sm:max-w-[280px] mx-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md overflow-hidden flex flex-col">
-        
-        <!-- ✅ 上半：图片区域 -->
-        <div class="h-1/2 bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
-          <img 
-            src="${course.image}" 
-            alt="${course.title[currentLanguage]}" 
-            class="w-full h-full object-contain p-4"
-          />
-        </div>
+        return `
+            <a href="${course.link || '#'}" class="block group">
+            <div class="course-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md overflow-hidden flex flex-col">
+                
+                <!-- ✅ 上半部分：图片区域，占据卡片一半高度 -->
+                <div class="h-1/2 bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+                <img 
+                    src="${course.image}" 
+                    alt="${course.title[currentLanguage]}" 
+                    class="course-image w-full h-full object-contain p-4"
+                />
+                </div>
 
-        <!-- ✅ 下半：文字内容区域 -->
-        <div class="h-1/2 relative overflow-hidden px-4 py-3">
-          <div class="scale-inner absolute inset-0 origin-top-left flex flex-col justify-between transition-transform duration-300">
-            
-            <!-- 顶部文字 -->
-            <div>
-              <span class="inline-block px-2 py-0.5 mb-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 w-fit">${course.category}</span>
-              
-              <h3 class="text-sm font-semibold leading-snug text-gray-900 dark:text-white break-words">${course.title[currentLanguage]}</h3>
-              
-              <p class="text-xs text-gray-600 dark:text-gray-300 mt-1 break-words">${course.description[currentLanguage]}</p>
+                <!-- ✅ 下半部分：文字区域，支持缩放 + 内边距 -->
+                <div class="h-1/2 relative overflow-hidden">
+                <!-- ✅ 缩放容器：保持固定尺寸，内容可缩放 -->
+                <div class="scale-inner absolute inset-0 origin-top-left transition-transform duration-300">
+                    
+                    <!-- ✅ 内部实际内容区域，留出左右边距 -->
+                    <div class="inner-padding flex flex-col justify-between h-full">
+
+                    <!-- ✅ 上半：标签、标题、简介 -->
+                    <div>
+                        <!-- 标签：小字体、紫色背景 -->
+                        <span class="inline-block px-2 py-0.5 mb-1 rounded-full text-[10px] font-medium bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 w-fit">
+                        ${course.category}
+                        </span>
+
+                        <!-- 标题：加粗，自动换行 -->
+                        <h3 class="text-sm font-semibold leading-snug text-gray-900 dark:text-white break-words">
+                        ${course.title[currentLanguage]}
+                        </h3>
+
+                        <!-- 简介：较小字体、自动换行 -->
+                        <p class="text-[0.65rem] text-gray-600 dark:text-gray-300 mt-1 break-words">
+                        ${course.description[currentLanguage]}
+                        </p>
+                    </div>
+
+                    <!-- ✅ 下半：时长 / 人数 / 评分 -->
+                    <div class="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 mt-3">
+                        <div class="flex items-center gap-1">
+                        <i class="fas fa-clock w-3.5 h-3.5"></i><span>${course.duration}</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                        <i class="fas fa-users w-3.5 h-3.5"></i><span>${course.students.toLocaleString()} ${translations[currentLanguage].students}</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                        <i class="fas fa-star w-3.5 h-3.5 text-yellow-400"></i><span>${course.rating}</span>
+                        </div>
+                    </div>
+
+                    </div> <!-- inner-padding end -->
+                </div> <!-- scale-inner end -->
+                </div> <!-- 下半结束 -->
             </div>
-
-            <!-- 底部图标栏 -->
-            <div class="flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 mt-3">
-              <div class="flex items-center gap-1">
-                <i class="fas fa-clock w-3.5 h-3.5"></i><span>${course.duration}</span>
-              </div>
-              <div class="flex items-center gap-1">
-                <i class="fas fa-users w-3.5 h-3.5"></i><span>${course.students.toLocaleString()} ${translations[currentLanguage].students}</span>
-              </div>
-              <div class="flex items-center gap-1">
-                <i class="fas fa-star w-3.5 h-3.5 text-yellow-400"></i><span>${course.rating}</span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </a>
+        </a>
   `;
 }
 

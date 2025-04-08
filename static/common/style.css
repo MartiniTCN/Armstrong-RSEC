@@ -370,3 +370,35 @@ html.dark .card p {
   font-weight: 400 !important;
   font-size: 0.95rem !important;
 }
+
+/* ✅ 课程卡片样式 */
+.course-card {
+  height: 100%;               /* 保证卡片为等高 */
+  aspect-ratio: 1 / 1.2;      /* 强制纵横比 */
+  transition: all 0.3s ease;
+}
+.course-card:hover {
+  transform: scale(1.03) translateY(-4px);
+}
+.course-image {
+  transition: transform 0.3s;
+}
+.course-card:hover .course-image {
+  transform: scale(1.02);
+}
+
+/* ✅ 卡片内部缩放容器 */
+.scale-inner {
+  transform: scale(1);
+  transform-origin: top left;
+  padding-right: 2px;
+}
+
+/* ✅ 响应式卡片缩放：小屏幕自动压缩 */
+@media screen and (max-width: 480px) {
+  .course-card {
+    max-width: 88vw !important;
+    height: auto !important;
+    aspect-ratio: 2/3;
+  }
+}

@@ -450,35 +450,33 @@ html.dark .card p {
 */
 
 /* 🌈 课程卡片标签：胶囊形状，文字自适应缩放 */
-/* ✅ 外层胶囊标签容器 */
+/* ✅ 外层标签容器：控制大小、背景、圆角、布局 */
 .tag-small {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.3rem 1rem;
-  border-radius: 9999px;
-  background-color: #f3f4f6;
-  min-width: 3rem;  /* 标签的最小宽度 */
-  height: 1.4rem;   /* 标签的固定高度 */
+  display: inline-flex;           /* 弹性布局 */
+  align-items: center;           /* 垂直居中 */
+  justify-content: center;       /* 水平居中 */
+  height: 1.2rem;                /* 固定标签高度 */
+  padding: 0 0.75rem;            /* 左右边距控制标签宽度 */
+  border-radius: 9999px;         /* 胶囊形状 */
+  background-color: #f3e8ff;     /* 浅紫色背景 (light 模式) */
 }
 
-/* ✅ 标签内部文字：限制宽度并居中显示 */
+/* ✅ 标签文字本体：控制字体大小、居中显示、宽度限制为标签 60% */
 .tag-text {
-  font-size: clamp(7px, 2.5vw, 11px); /* 自适应缩放文字大小，最小7px，最大11px */
-  line-height: 1;
-  font-weight: 500;
-  max-width: 60%;   /* 文字占标签的最大60% */
+  font-size: clamp(7px, 1.6vw, 10px); /* 自适应小字体 */
+  font-weight: 600;
+  color: #9333ea;               /* 紫色字体 (light 模式) */
+  max-width: 60%;               /* 限制文字宽度不超过胶囊的60% */
   text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis; /* 文字超出部分显示省略号 */
-  white-space: nowrap;    /* 不换行 */
-  color: #4b5563;         /* 文字颜色 */
+  overflow: hidden;             /* 溢出省略 */
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-/* ✅ 深色模式支持 */
+/* ✅ 深色模式样式 */
 html.dark .tag-small {
-  background-color: #4b5563;
+  background-color: #7e22ce;    /* 深紫背景 */
 }
 html.dark .tag-text {
-  color: #f5f5f5;
+  color: #ffffff;               /* 白色字体 */
 }

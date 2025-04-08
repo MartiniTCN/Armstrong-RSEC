@@ -303,44 +303,44 @@
                     <!-- ✅ 内部实际内容区域，留出左右边距 -->
                     <div class="inner-padding flex flex-col justify-between h-full">
 
-                    <!-- ✅ 上半：标签、标题、简介 -->
-                    <div>
-                        <!-- ✅ 胶囊标签：小字体 + 自适应缩放 + 暗色模式兼容 -->
-                        <span class="tag-small mb-1">
-                        <span class="tag-text">
-                            ${course.category}
-                        </span>
-                        </span>
+                        <!-- ✅ 上半：标签、标题、简介 -->
+                        <div>
+                            <!-- ✅ 胶囊标签：小字体 + 自适应缩放 + 暗色模式兼容 -->
+                            <span class="tag-small mb-1">
+                            <span class="tag-text">
+                                ${course.category}
+                            </span>
+                            </span>
 
-                        <!-- 标题：加粗，自动换行 -->
-                        <h3 class="text-sm font-semibold leading-snug text-gray-900 dark:text-white break-words">
-                        ${course.title[currentLanguage]}
-                        </h3>
+                            <!-- 标题：加粗，自动换行 -->
+                            <h3 class="text-sm font-semibold leading-snug text-gray-900 dark:text-white break-words">
+                            ${course.title[currentLanguage]}
+                            </h3>
 
-                        <!-- 简介：较小字体、自动换行 -->
-                        <p class="text-[0.65rem] text-gray-600 dark:text-gray-300 mt-1 break-words">
-                        ${course.description[currentLanguage]}
-                        </p>
-                    </div>
+                            <!-- 简介：较小字体、自动换行 -->
+                            <p class="text-[0.65rem] text-gray-600 dark:text-gray-300 mt-1 break-words">
+                            ${course.description[currentLanguage]}
+                            </p>
+                        </div>
 
-                    <!-- ✅ 下半：时长 / 人数 / 评分 -->
-                    <!-- 底部图标栏（✅ 添加 card-footer 类） -->
-                    <div class="card-footer flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 mt-3">
-                    <div class="flex items-center gap-1">
-                        <i class="fas fa-clock w-3.5 h-3.5"></i><span>${course.duration}</span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <i class="fas fa-users w-3.5 h-3.5"></i><span>${course.students.toLocaleString()} ${translations[currentLanguage].students}</span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <i class="fas fa-star w-3.5 h-3.5 text-yellow-400"></i><span>${course.rating}</span>
-                    </div>
-                    </div>
+                        <!-- ✅ 下半：时长 / 人数 / 评分 -->
+                        <!-- 底部图标栏（✅ 添加 card-footer 类） -->
+                        <div class="card-footer flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 mt-3">
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-clock w-3.5 h-3.5"></i><span>${course.duration}</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-users w-3.5 h-3.5"></i><span>${course.students.toLocaleString()} ${translations[currentLanguage].students}</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <i class="fas fa-star w-3.5 h-3.5 text-yellow-400"></i><span>${course.rating}</span>
+                            </div>
+                        </div>
 
                     </div> <!-- inner-padding end -->
                 </div> <!-- scale-inner end -->
                 </div> <!-- 下半结束 -->
-            </div>
+            </div> <!-- course card 结束 -->
         </a>
   `;
 }

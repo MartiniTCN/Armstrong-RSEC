@@ -419,7 +419,7 @@ html.dark .card p {
 .course-card .inner-padding {
   padding: 0.5rem 0.75rem;  /* 上下 8px，左右 12px */
   padding-top: 2px;
-  padding-bottom: 6px;
+  padding-bottom: 1rem; /* 16px */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -450,34 +450,35 @@ html.dark .card p {
 */
 
 /* 🌈 课程卡片标签：胶囊形状，文字自适应缩放 */
+/* ✅ 外层胶囊标签容器 */
 .tag-small {
-  display: inline-flex;                /* 以 inline-flex 布局呈现，便于内部文字居中 */
-  align-items: center;                /* 垂直方向居中对齐 */
-  justify-content: center;            /* 水平方向居中对齐 */
-  padding: 0.3rem 1rem;               /* 上下内边距 0.3rem，左右内边距 1rem，控制胶囊大小 */
-  border-radius: 9999px;              /* 极大圆角形成完整胶囊形状 */
-  background-color: #f3f4f6;          /* 浅灰背景色（亮色模式） */
-  min-width: 3rem;                    /* 最小宽度为 3rem，避免标签过小影响视觉 */
-  height: 1.4rem;                     /* 固定标签高度，确保视觉一致性 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 1rem;
+  border-radius: 9999px;
+  background-color: #f3f4f6;
+  min-width: 3rem;  /* 标签的最小宽度 */
+  height: 1.4rem;   /* 标签的固定高度 */
 }
 
-/* ✅ 标签内部文字：自动缩放、宽度限制、溢出省略 */
+/* ✅ 标签内部文字：限制宽度并居中显示 */
 .tag-text {
-  font-size: clamp(7px, 2.5vw, 11px);  /* 字体大小自适应，最小 7px，最大 11px */
-  line-height: 1;                     /* 行高紧凑，不额外撑高胶囊 */
-  font-weight: 500;                   /* 文字中等加粗，提升可读性但不抢眼 */
-  max-width: 60%;                     /* 限制文字宽度不超过胶囊的 60%，保留左右留白 */
-  text-align: center;                 /* 文字居中 */
-  overflow: hidden;                   /* 超出文字隐藏 */
-  text-overflow: ellipsis;           /* 超出显示省略号（...） */
-  white-space: nowrap;               /* 禁止文字换行 */
-  color: #4b5563;                     /* 深灰色文字（亮色模式） */
+  font-size: clamp(7px, 2.5vw, 11px); /* 自适应缩放文字大小，最小7px，最大11px */
+  line-height: 1;
+  font-weight: 500;
+  max-width: 60%;   /* 文字占标签的最大60% */
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 文字超出部分显示省略号 */
+  white-space: nowrap;    /* 不换行 */
+  color: #4b5563;         /* 文字颜色 */
 }
 
-/* ✅ 深色模式下的标签背景与文字颜色 */
+/* ✅ 深色模式支持 */
 html.dark .tag-small {
-  background-color: #4b5563;          /* 深色模式下胶囊背景为深灰色 */
+  background-color: #4b5563;
 }
 html.dark .tag-text {
-  color: #f5f5f5;                     /* 深色模式下文字为浅色，增强对比度 */
+  color: #f5f5f5;
 }

@@ -374,7 +374,7 @@ html.dark .card p {
 /* ✅ 课程卡片样式 */
 .course-card {
   height: 100%;               /* 保证卡片为等高 */
-  aspect-ratio: 1 / 1.2;      /* 强制纵横比 */
+  aspect-ratio: 1 / 1.05;      /* 强制纵横比 */
   transition: all 0.3s ease;
 }
 .course-card:hover {

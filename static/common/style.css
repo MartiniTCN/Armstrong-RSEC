@@ -426,10 +426,19 @@ html.dark .card p {
   height: 100%;
 }
 
-//* ✅ 课程卡片底部信息区域：时间、学生、评分 - 增加与底部的间距 */
+/* ✅ 卡片底部信息区域：增加内外间距 */
 .course-card .card-footer {
-  margin-bottom: 10px;  /* 增加底部间距 */
-  padding-bottom: 6px;  /* 调整内边距，避免紧贴底部 */
+  margin-top: auto;                /* 自动推到底部但不贴边 */
+  padding: 0.5rem 0.75rem 0.75rem; /* 上左右下内边距 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;              /* 稍小字体 */
+  color: #6b7280;
+}
+
+html.dark .course-card .card-footer {
+  color: #d1d5db;
 }
 
 /* ✅ 小屏自适应压缩卡片宽高 */
@@ -450,33 +459,33 @@ html.dark .card p {
 */
 
 /* 🌈 课程卡片标签：胶囊形状，文字自适应缩放 */
-/* ✅ 外层标签容器：控制大小、背景、圆角、布局 */
+/* ✅ 外层标签样式：胶囊形状 + 高度固定 */
 .tag-small {
-  display: inline-flex;           /* 弹性布局 */
-  align-items: center;           /* 垂直居中 */
-  justify-content: center;       /* 水平居中 */
-  height: 1.2rem;                /* 固定标签高度 */
-  padding: 0 0.75rem;            /* 左右边距控制标签宽度 */
-  border-radius: 9999px;         /* 胶囊形状 */
-  background-color: #f3e8ff;     /* 浅紫色背景 (light 模式) */
+  display: inline-flex;              /* 弹性布局 */
+  align-items: center;              /* 垂直居中 */
+  justify-content: center;          /* 水平居中 */
+  padding: 0.2rem 0.75rem;          /* 上下 0.2rem，左右 0.75rem */
+  border-radius: 9999px;            /* 胶囊外形 */
+  height: 1.2rem;                   /* 固定高度 */
+  min-width: 2.8rem;                /* 最小宽度 */
+  max-width: 100%;
+  background-color: #ede9fe;        /* 浅紫色背景（浅色模式） */
+  color: #7c3aed;                   /* 紫色文字 */
 }
 
-/* ✅ 标签文字本体：控制字体大小、居中显示、宽度限制为标签 60% */
-.tag-text {
-  font-size: clamp(7px, 1.6vw, 10px); /* 自适应小字体 */
-  font-weight: 600;
-  color: #9333ea;               /* 紫色字体 (light 模式) */
-  max-width: 60%;               /* 限制文字宽度不超过胶囊的60% */
-  text-align: center;
-  overflow: hidden;             /* 溢出省略 */
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-/* ✅ 深色模式样式 */
+/* ✅ 深色模式：标签背景与文字 */
 html.dark .tag-small {
-  background-color: #7e22ce;    /* 深紫背景 */
+  background-color: #7c3aed;        /* 深紫色 */
+  color: #ffffff;                   /* 白色文字 */
 }
-html.dark .tag-text {
-  color: #ffffff;               /* 白色字体 */
+
+/* ✅ 标签内文字：自动缩放，不超出容器 */
+.tag-text {
+  font-size: clamp(8px, 1.8vw, 11px);  /* 随屏幕缩放 */
+  font-weight: 600;
+  max-width: 60%;                    /* 不超过胶囊宽度 60% */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 }

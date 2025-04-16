@@ -63,6 +63,43 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);  /* 添加阴影让提示更有立体感 */
 </style>
 
+<!-- ✅ 模态框样式 -->
+<style>
+  #modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  #modal .bg-white {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+
+  #modalBtn {
+    background-color: #2563eb;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  #modalBtn:hover {
+    background-color: #1d4ed8;
+  }
+</style>
+
 </head>
 <body class="relative text-gray-900 dark:text-gray-100 transition-colors duration-300"
       style="background-image: url('https://i.stardots.io/armstrong/webpage.jpg'); background-size: cover; background-position: center;">
@@ -396,23 +433,25 @@
 
     const result = await res.json();
     const messageDiv = document.getElementById('registerMessage');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalBtn = document.getElementById('modalBtn');
+    // 显示模态框
+    modal.classList.remove('hidden');
 
     if (result.success) {
-      messageDiv.textContent = "✅ 注册成功，请返回登录";
-      messageDiv.className = "text-green-500 text-sm text-center font-semibold mt-2 bg-white/30 dark:bg-gray-700 border border-green-500 rounded-xl px-4 py-2 backdrop-blur";
-      messageDiv.classList.remove("hidden");
-      setTimeout(() => {
-        messageDiv.classList.add("hidden");
-        toggleForm('login'); // 跳回登录
-      }, 2500);
+      modalMessage.textContent = "✅ 注册成功，请返回登录";
+      modalMessage.classList.add('text-green-500');
     } else {
-      messageDiv.textContent = "❌ " + result.message;
-      messageDiv.className = "text-red-500 text-sm text-center font-semibold mt-2 bg-white/30 dark:bg-gray-700 border border-red-500 rounded-xl px-4 py-2 backdrop-blur";
-      messageDiv.classList.remove("hidden");
-      setTimeout(() => {
-        messageDiv.classList.add("hidden");
-      }, 3000);
+      modalMessage.textContent = "❌ " + result.message;
+      modalMessage.classList.add('text-red-500');
     }
+
+    // 点击确认按钮关闭模态框并跳转到登录页
+    modalBtn.addEventListener('click', function() {
+      modal.classList.add('hidden'); // 隐藏模态框
+      toggleForm('login'); // 跳转到登录表单
+    });
+
   } catch (error) {
     console.error("注册失败：", error);
     alert("系统错误，请稍后重试");
@@ -448,6 +487,17 @@
     }
   });
 </script>
+
+<!-- ✅ 注册提示模态框 -->
+<div id="modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 z-50 flex items-center justify-center">
+  <div class="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-xl max-w-sm w-[90%] text-center">
+    <p id="modalMessage" class="text-lg font-semibold mb-4">注册成功，请返回登录。</p>
+    <button id="modalBtn"
+      class="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition focus:outline-none">
+      确认
+    </button>
+  </div>
+</div>
 
 </body>
 </html>

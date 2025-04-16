@@ -171,8 +171,20 @@ def login():
     query_url = f"{SUPABASE_URL}/rest/v1/user_accounts?username=eq.{username}&password=eq.{password}"
     response = requests.get(query_url, headers=headers)
 
+    # ❌ 查询失败 或 没有匹配用户
     if response.status_code != 200 or not response.json():
-        return jsonify({"success": False, "message": "输入的用户名和密码无效，请确认！"}), 401
+        lang = request.cookies.get("lang", "zh")  # 默认中文，可根据实际切换方式调整
+
+        if lang == "en":
+            return jsonify({
+                "success": False,
+                "message": "Invalid username or password.\nIf you forgot your password, please contact RSEC for help!"
+            }), 401
+        else:
+            return jsonify({
+                "success": False,
+                "message": "输入的用户名和密码无效，请确认！\n如果密码遗忘，请联系 RSEC 寻求帮助！"
+            }), 401
 
     # ✅ 匹配成功
     old_user = session.get('username')

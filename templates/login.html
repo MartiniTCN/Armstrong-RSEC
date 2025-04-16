@@ -220,23 +220,6 @@
 
 </section>
 </main>
-<!-- ✅ 优化后的注册提示模态框 -->
-<div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-  <div class="bg-white/80 dark:bg-white/10 backdrop-blur-lg border border-white/30 dark:border-white/10
-              rounded-2xl shadow-xl px-6 py-5 w-fit max-w-[90%] text-center text-gray-900 dark:text-white">
-
-    <!-- ✅ 提示内容，适配深浅色模式 -->
-    <p id="modalMessage" class="text-base font-semibold mb-4 text-black dark:text-white">
-      注册成功，请返回登录。
-    </p>
-
-    <!-- ✅ 确认按钮，居中、胶囊形状 -->
-    <button id="modalBtn"
-      class="block mx-auto px-4 py-1 text-xs text-white rounded-full bg-primary hover:bg-blue-700 transition">
-      确认
-    </button>
-  </div>
-</div>
 
 
 <!-- ✅ 登录 / 注册 切换逻辑 -->
@@ -430,13 +413,14 @@
 
 <!-- ✅ 拦截注册表单提交并使用 AJAX 异步提交 -->
 <script>
-  let userTriggeredRegister = false; // 🔹 全局变量，控制注册是否是用户点击触发
+  let userTriggeredRegister = false; // 仅用户点击注册按钮时为 true
   
+  // ✅ 注册提交逻辑（防止非主动提交）
   document.getElementById('registerForm').addEventListener('submit', async function (e) {
     e.preventDefault();
   
-    // 🛑 如果不是用户点击提交注册按钮，不执行注册逻辑
-    if (!userTriggeredRegister) return;
+    if (!userTriggeredRegister) return; // 🛑 阻止非点击触发
+    userTriggeredRegister = false;      // ✅ 立刻重置标志
   
     const formData = new FormData(this);
     const data = {};
@@ -445,50 +429,46 @@
     try {
       const res = await fetch('/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
   
       const result = await res.json();
-      const messageDiv = document.getElementById('registerMessage');
   
-      // ✅ 清除旧样式
-      messageDiv.classList.remove("text-red-500", "text-green-500");
+      const toast = document.getElementById("toast");
+      const toastMsg = document.getElementById("toastMessage");
+      const confirmBtn = document.getElementById("toastConfirmBtn");
   
       if (result.success) {
-        messageDiv.textContent = "✅ 注册成功，请返回登录";
-        messageDiv.className = "text-green-500 text-sm text-center font-semibold mt-2 bg-white/30 dark:bg-gray-700 border border-green-500 rounded-xl px-4 py-2 backdrop-blur";
-        
-        messageDiv.classList.remove("hidden");
-        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // ✅ 注册成功 - 显示 toast
+        toastMsg.textContent = "✅ 注册成功，请确认";
+        toast.classList.remove("hidden");
   
-        // ✅ 自动跳回登录页
-        setTimeout(() => {
-          messageDiv.classList.add("hidden");
+        // ✅ 用户点击确认后跳转回登录表单
+        confirmBtn.onclick = () => {
+          toast.classList.add("hidden");
           toggleForm('login');
-        }, 2500);
+  
+          // 可选：重置提示内容（保险）
+          toastMsg.textContent = "";
+        };
       } else {
-        messageDiv.textContent = "❌ " + result.message;
-        messageDiv.className = "text-red-500 text-sm text-center font-semibold mt-2 bg-white/30 dark:bg-gray-700 border border-red-500 rounded-xl px-4 py-2 backdrop-blur";
+        // ❌ 注册失败 - 显示 toast 错误提示
+        toastMsg.textContent = "❌ " + result.message;
+        toast.classList.remove("hidden");
   
-        messageDiv.classList.remove("hidden");
-        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  
-        setTimeout(() => {
-          messageDiv.classList.add("hidden");
-        }, 3000);
+        // ✅ 用户点击确认后仅关闭提示
+        confirmBtn.onclick = () => {
+          toast.classList.add("hidden");
+          toastMsg.textContent = "";
+        };
       }
-    } catch (error) {
-      alert("⚠️ 系统错误，请稍后重试！");
-      console.error(error);
+    } catch (err) {
+      alert("⚠️ 系统异常，请稍后重试");
+      console.error(err);
     }
-  
-    // ✅ 提交完成后重置标志
-    userTriggeredRegister = false;
   });
-</script>
+  </script>
 
 <script>
   // ✅ 拦截表单提交并通过 JS 发起异步请求
@@ -520,6 +500,21 @@
 </script>
 
 
+<!-- ✅ 顶部确认 Toast -->
+<div id="toast" class="hidden fixed top-4 left-1/2 transform -translate-x-1/2 z-50
+            bg-white/80 dark:bg-gray-800/90 text-black dark:text-white text-sm px-5 py-3 
+            rounded-xl shadow-xl backdrop-blur-md border border-gray-300 dark:border-white/10 
+            flex items-center gap-4 max-w-[90%]">
+  
+  <!-- 提示文字 -->
+  <span id="toastMessage" class="font-semibold">✅ 注册成功，请确认</span>
+  
+  <!-- 确认按钮 -->
+  <button id="toastConfirmBtn" 
+          class="ml-auto px-4 py-1 text-xs rounded-full bg-primary text-white hover:bg-blue-700 transition">
+    确认
+  </button>
+</div>
 
 </body>
 

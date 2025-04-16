@@ -179,6 +179,10 @@
         <span id="finalRegisterBtnText">注册</span>
       </button>
     </div>
+
+    <!-- 在注册表单下方添加用于显示成功或失败消息的 div -->
+    <div id="registerMessage" class="hidden text-center font-semibold"></div>
+
   </form>
 
 </section>
@@ -383,39 +387,35 @@
   const data = {};
   formData.forEach((value, key) => data[key] = value);
 
-  const res = await fetch('/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  });
+  try {
+    const res = await fetch('/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
 
-  const result = await res.json();
-  const messageDiv = document.getElementById('registerMessage');
+    const result = await res.json();
+    const messageDiv = document.getElementById('registerMessage');
 
-  if (result.success) {
-    messageDiv.textContent = "✅ 注册成功，请返回登录";
-    messageDiv.className = "text-green-500 text-sm text-center font-semibold mt-2 bg-white/30 dark:bg-gray-700 border border-green-500 rounded-xl px-4 py-2 backdrop-blur";
-    
-    messageDiv.classList.remove("hidden");
-    messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-    setTimeout(() => {
-      messageDiv.classList.add("hidden");
-      toggleForm('login'); // 跳回登录
-    }, 2500);
-
-  } else {
-    messageDiv.textContent = "❌ " + result.message;
-    messageDiv.className = "text-red-500 text-sm text-center font-semibold mt-2 bg-white/30 dark:bg-gray-700 border border-red-500 rounded-xl px-4 py-2 backdrop-blur";
-    
-    messageDiv.classList.remove("hidden");
-    messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-    setTimeout(() => {
-      messageDiv.classList.add("hidden");
-    }, 3000);
+    if (result.success) {
+      messageDiv.textContent = "✅ 注册成功，请返回登录";
+      messageDiv.className = "text-green-500 text-sm text-center font-semibold mt-2 bg-white/30 dark:bg-gray-700 border border-green-500 rounded-xl px-4 py-2 backdrop-blur";
+      messageDiv.classList.remove("hidden");
+      setTimeout(() => {
+        messageDiv.classList.add("hidden");
+        toggleForm('login'); // 跳回登录
+      }, 2500);
+    } else {
+      messageDiv.textContent = "❌ " + result.message;
+      messageDiv.className = "text-red-500 text-sm text-center font-semibold mt-2 bg-white/30 dark:bg-gray-700 border border-red-500 rounded-xl px-4 py-2 backdrop-blur";
+      messageDiv.classList.remove("hidden");
+      setTimeout(() => {
+        messageDiv.classList.add("hidden");
+      }, 3000);
+    }
+  } catch (error) {
+    console.error("注册失败：", error);
+    alert("系统错误，请稍后重试");
   }
 });
   </script>

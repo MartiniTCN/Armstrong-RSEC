@@ -358,11 +358,13 @@
 
 <!-- ✅ 页面加载完成后隐藏遮罩 -->
 <script>
-  window.addEventListener('load', function () {
-    const overlay = document.getElementById('loadingOverlay');
-    overlay.style.transition = 'opacity 0.5s';
-    overlay.style.opacity = 0;
-    setTimeout(() => overlay.style.display = 'none', 500);  // 渐隐并隐藏
+  window.addEventListener('DOMContentLoaded', function () {
+    const registerBtn = document.getElementById('registerBtn');
+    if (registerBtn) {
+      registerBtn.addEventListener('click', function() {
+        toggleForm('register');  // 绑定点击事件，切换到注册表单
+      });
+    }
   });
 </script>
 

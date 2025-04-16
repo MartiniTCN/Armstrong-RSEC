@@ -91,7 +91,7 @@
 -->
 <!-- 登录 / 注册 表单卡片 -->
 <main class="min-h-screen flex items-center justify-center p-4 relative z-10">
-  <section class="w-full max-w-md bg-white/30 dark:bg-white/10 backdrop-blur-xl border border-white/30 dark:border-white/10 rounded-2xl shadow-2xl pt-4 pb-8 px-6 sm:pt-4 sm:pb-10 sm:px-7" id="loginCard">
+  <section class="w-full max-w-md bg-white/30 dark:bg-white/10 backdrop-blur-xl border border-white/30 dark:border-white/10 rounded-2xl shadow-2xl pt-4 pb-4 px-6 sm:pt-4 sm:pb-6 sm:px-7" id="loginCard">
   <!-- Logo 与标题 -->
   <div class="text-center mb-4 animate-fade-in">
     <img alt="Armstrong Logo" class="h-12 mx-auto mb-3" src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=500"/>
@@ -116,9 +116,9 @@
       </button>
     </div>
     <!-- ✅ 登录+注册按钮组 + 🇨🇳语言按钮 -->
-    <div class="flex items-center justify-between mt-4 mb-6">
+    <div class="flex items-center justify-between mt-4 mb-4">
       <!-- 左边两个按钮分一行 -->
-      <div class="flex flex-grow gap-2">
+      <div class="flex justify-center gap-4">
         <!-- 登录按钮 -->
         <button type="submit" id="loginBtn"
         class="px-4 py-1 text-xs text-white rounded-full bg-primary hover:bg-blue-700 transition">
@@ -132,21 +132,25 @@
         </button>
       </div>
 
-      <!-- 右边语言按钮（固定宽度） -->
-      <button type="button" onclick="toggleLang()"
-              class="ml-3 w-6 h-4 shrink-0 rounded shadow hover:scale-110 transition-transform">
-        <img id="languageFlag" src="https://flagcdn.com/cn.svg" alt="Language" class="w-full h-full object-cover">
-      </button>
+      <!-- ✅ 语言按钮靠右 -->
+      <div class="mt-4">
+        <button type="button" onclick="toggleLang()"
+          class="w-6 h-4 rounded shadow hover:scale-110 transition-transform">
+          <img id="languageFlag" src="https://flagcdn.com/cn.svg" alt="Language" class="w-full h-full object-cover">
+        </button>
+      </div>
     </div>
   </form>
 
   <!-- ✅ 注册表单（默认隐藏） -->
   <form method="post" action="/register" id="registerForm" class="space-y-3 hidden">
+    <!-- 返回按钮，左上角 -->
     <div class="absolute top-3 left-4">
-      <button type="button" onclick="toggleForm('login')" class="text-sm text-gray-600 dark:text-gray-300 hover:underline">
+      <button type="Back2Login" onclick="toggleForm('login')" class="text-sm text-gray-600 dark:text-gray-300 hover:underline">
         <span id="backToLoginText">← 返回登录</span>
       </button>
     </div>
+  
     <input name="username" placeholder="用户名（字母+数字）" required class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white">
     <input type="password" name="password" placeholder="密码" required class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700">
     <input name="company" placeholder="单位名称" required class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700">
@@ -155,10 +159,15 @@
     <input name="phone" placeholder="电话" required class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700">
     <input name="sales_name" placeholder="Armstrong 销售姓名" required class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700">
     <input name="invite_code" placeholder="邀请码（请联系 RSEC 部门 Martin Peng）" required class="w-full px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700">
-    <div class="flex justify-between items-center mt-4 mb-6">
-      <button type="submit" class="px-6 py-2 text-white rounded-full bg-primary hover:bg-blue-700">注册</button>
+  
+    <!-- 注册按钮，居中 -->
+    <div class="flex justify-center mt-4 mb-6">
+      <button type="submit" class="px-5 py-1.5 text-xs text-white rounded-full bg-primary hover:bg-blue-700 transition">
+        <span id="finalRegisterBtnText">注册</span>
+      </button>
     </div>
   </form>
+
 </section>
 </main>
 
@@ -210,11 +219,13 @@
     document.querySelector('#registerForm input[name="sales_name"]').placeholder = isChinese ? 'Armstrong 销售姓名' : 'Armstrong Sales Name';
     document.querySelector('#registerForm input[name="invite_code"]').placeholder = isChinese ? '邀请码（请联系 RSEC 部门 Martin Peng）' : 'Invite code (Contact Martin Peng - RSEC)';
     document.querySelector('#registerForm button[type="submit"]').textContent = isChinese ? '注册' : 'Register';
-
+    document.querySelector('#registerForm button[type="Back2Login"]').textContent = isChinese ?  "← 返回登录" : "← Back";
+    
     document.getElementById("loginBtnText").textContent = isChinese ? "登录" : "Sign In";
     document.getElementById("registerBtnText").textContent = isChinese ? "注册" : "Sign Up";
     document.getElementById('langFlag').textContent = isChinese ? '🇨🇳' : '🇬🇧';
     document.getElementById("backToLoginText").textContent = isChinese ? "← 返回登录" : "← Back";
+    
   }
 </script>
 

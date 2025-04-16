@@ -423,13 +423,12 @@
     const modalMessage = document.getElementById('modalMessage');
     const modalBtn = document.getElementById('modalBtn');
 
-    // 显示模态框
-    modal.classList.remove('hidden');
     
     // 清除消息样式，避免重复样式
     modalMessage.classList.remove('text-green-500', 'text-red-500');
 
     if (result.success) {
+      modal.classList.remove('hidden'); // ✅ 只有这里才打开 modal
       modalMessage.textContent = "✅ 注册成功，请返回登录";
       modalMessage.classList.add('text-green-500');
     } else {
@@ -479,17 +478,32 @@
   });
 </script>
 
-<!-- ✅ 确保模态框默认是隐藏的 -->
-<div id="modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 z-50 flex items-center justify-center">
-  <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-xl max-w-sm w-[90%] text-center">
-    <p id="modalMessage" class="text-lg font-semibold mb-4">注册成功，请返回登录。</p>
-    <!-- ✅ 确认按钮：居中、胶囊、跟登录按钮完全一致 -->
+<!-- ✅ 优化后的注册提示模态框 -->
+<div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-white/80 dark:bg-white/10 backdrop-blur-lg border border-white/30 dark:border-white/10
+              rounded-2xl shadow-xl px-6 py-5 w-fit max-w-[90%] text-center text-gray-900 dark:text-white">
+
+    <!-- 提示内容，字体黑色、内容居中 -->
+    <p id="modalMessage" class="text-base font-semibold mb-4 text-black">
+      注册成功，请返回登录。
+    </p>
+
+    <!-- ✅ 确认按钮，居中、胶囊形状 -->
     <button id="modalBtn"
       class="block mx-auto px-4 py-1 text-xs text-white rounded-full bg-primary hover:bg-blue-700 transition">
-      <span>确认</span>
+      确认
     </button>
   </div>
 </div>
 
 </body>
+
+<script>
+  // 页面加载后确保 modal 被隐藏（保险）
+  window.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('modal');
+    if (modal) modal.classList.add('hidden');
+  });
+</script>
+
 </html>

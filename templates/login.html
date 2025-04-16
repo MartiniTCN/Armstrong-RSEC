@@ -214,6 +214,13 @@
 <script>
   // ✅ 切换表单（登录与注册）
   function toggleForm(type) {
+    document.getElementById('loginForm').classList.toggle('hidden', type !== 'login');
+    document.getElementById('registerForm').classList.toggle('hidden', type !== 'register');
+    document.getElementById('loginTab').classList.toggle('text-blue-500', type === 'login');
+    document.getElementById('loginTab').classList.toggle('text-gray-400', type !== 'login');
+    document.getElementById('registerTab').classList.toggle('text-blue-500', type === 'register');
+    document.getElementById('registerTab').classList.toggle('text-gray-400', type !== 'register');
+
     console.log('Toggle Form:', type); // 调试：打印表单切换类型
     // 切换表单显示和隐藏
     const loginForm = document.getElementById('loginForm');
@@ -284,14 +291,21 @@
 
   // ✅ 页面加载时同步语言状态
   window.addEventListener('DOMContentLoaded', () => {
-    const storedLang = localStorage.getItem("isChinese");
-    isChinese = storedLang === null ? true : storedLang === "1";
-    toggleLang(); // 调用切换函数
+  const storedLang = localStorage.getItem("isChinese");
+  isChinese = storedLang === null ? true : storedLang === "1";
+  toggleLang(); // 初始化语言
 
-    // 调试：检查元素是否加载
-    console.log(document.getElementById('loginBtnText')); // 检查loginBtnText元素
-    console.log(document.getElementById('registerBtnText')); // 检查registerBtnText元素
-  });
+  // 调试：确保元素加载后再访问
+  const loginBtnText = document.getElementById("loginBtnText");
+  const registerBtnText = document.getElementById("registerBtnText");
+
+  if (loginBtnText) {
+    console.log('Login button text is available');
+  }
+  if (registerBtnText) {
+    console.log('Register button text is available');
+  }
+});
 </script>
 
 <!-- ✅ 登录失败触发抖动 + 清空密码 -->

@@ -323,6 +323,7 @@ def register():
         data = request.get_json()
     else:
         data = request.form
+
     # ✅ 提取字段前先打印日志
     print(f"[注册请求] 来源 IP：{get_client_ip()}，原始数据：{dict(data)}")
 
@@ -352,6 +353,22 @@ def register():
             "success": False,
             "message": f"缺少字段：{', '.join(missing_fields)}"
         })
+
+    import re
+	
+    # ✅ 正则校验用户名、手机号、邮箱格式
+    username_pattern = re.compile(r'^[a-zA-Z0-9]{3,20}$')
+    phone_pattern = re.compile(r'^\d{11}$')  # 可根据需要修改
+    email_pattern = re.compile(r'^[\w\.-]+@[\w\.-]+\.\w+$')
+
+    if not username_pattern.match(username):
+        return jsonify({"success": False, "message": "用户名格式不正确，应为3-20位字母或数字"})
+
+    if not phone_pattern.match(phone):
+        return jsonify({"success": False, "message": "手机号格式错误，请输入11位数字"})
+
+    if not email_pattern.match(email):
+        return jsonify({"success": False, "message": "邮箱格式错误，请检查"})
 
     # ✅ 检查邀请码有效性
     check_resp = requests.get(
@@ -394,14 +411,14 @@ def register():
 
     # ✅ 标记邀请码已用
     update_resp = requests.patch(
-    f"{SUPABASE_URL}/rest/v1/invitation_codes?code=eq.{invite_code}",
-    headers=insert_headers,
-    json={
-        "is_used": True,
-        "used_by": username,
-        "used_at": get_current_time()
-    }
-)
+        f"{SUPABASE_URL}/rest/v1/invitation_codes?code=eq.{invite_code}",
+        headers=insert_headers,
+        json={
+            "is_used": True,
+            "used_by": username,
+            "used_at": get_current_time()
+        }
+    )
 
     if update_resp.status_code not in [200, 204]:
         return jsonify({"success": False, "message": "注册成功但更新邀请码失败"})

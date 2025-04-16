@@ -225,8 +225,8 @@
   <div class="bg-white/80 dark:bg-white/10 backdrop-blur-lg border border-white/30 dark:border-white/10
               rounded-2xl shadow-xl px-6 py-5 w-fit max-w-[90%] text-center text-gray-900 dark:text-white">
 
-    <!-- 提示内容，字体黑色、内容居中 -->
-    <p id="modalMessage" class="text-base font-semibold mb-4 text-white">
+    <!-- ✅ 提示内容，适配深浅色模式 -->
+    <p id="modalMessage" class="text-base font-semibold mb-4 text-black dark:text-white">
       注册成功，请返回登录。
     </p>
 
@@ -488,7 +488,7 @@
     // ✅ 提交完成后重置标志
     userTriggeredRegister = false;
   });
-  </script>
+</script>
 
 <script>
   // ✅ 拦截表单提交并通过 JS 发起异步请求
@@ -526,6 +526,7 @@
 <script>
   // 页面加载后确保 modal 被隐藏（保险）
   window.addEventListener('DOMContentLoaded', () => {
+    userTriggeredRegister = false; // ✅ 页面一加载就清空注册触发标志
     const modal = document.getElementById('modal');
     if (modal) modal.classList.add('hidden');
   });

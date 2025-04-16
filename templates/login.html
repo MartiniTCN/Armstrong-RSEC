@@ -28,6 +28,18 @@
 
   <!-- 引入 Twemoji 库 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/twemoji.min.js"></script>
+
+  <style>
+    .form-input {
+      @apply w-full px-4 py-2 rounded-md backdrop-blur-sm text-white 
+             bg-white/30 dark:bg-gray-800/40
+             placeholder-gray-200 dark:placeholder-gray-400
+             focus:outline-none focus:ring-0 
+             focus:bg-white/30 dark:focus:bg-gray-800/40 
+             focus:border-transparent;
+    }
+  </style>
+
   <style>
     #cnFlag, #ukFlag {
         font-size: 30px;
@@ -120,9 +132,7 @@
   <!-- ✅ 登录表单 -->
 <form method="post" action="/login" id="loginForm" class="space-y-5">
   <input type="text" name="username" placeholder="用户名" required
-  class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
-         border border-white/10 text-white placeholder-white/60 focus:outline-none transition
-         focus:outline-none focus:ring-0" 
+  class="form-input"
          />
   
   <div class="relative">
@@ -178,9 +188,7 @@
     </div>
   
       <input name="username" placeholder="用户名（字母+数字）" required
-        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
-              border border-white/10 text-white placeholder-white/60 focus:outline-none transition
-              focus:outline-none focus:ring-0" 
+        class="form-input"
               />
         <div class="relative">
       <input type="password" id="regPassword" name="password" placeholder="密码" required
@@ -194,34 +202,22 @@
           </button>
         </div>
       <input name="company" placeholder="单位名称" required
-        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
-              border border-white/10 text-white placeholder-white/60 focus:outline-none transition
-              focus:outline-none focus:ring-0" 
+        class="form-input"
               />
       <input name="city" placeholder="城市" required
-        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
-              border border-white/10 text-white placeholder-white/60 focus:outline-none transition
-              focus:outline-none focus:ring-0" 
+        class="form-input"
               />
       <input name="email" placeholder="邮箱" required
-        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
-              border border-white/10 text-white placeholder-white/60 focus:outline-none transition
-              focus:outline-none focus:ring-0" 
+        class="form-input"
               />
       <input name="phone" placeholder="电话" required
-        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
-              border border-white/10 text-white placeholder-white/60 focus:outline-none transition
-              focus:outline-none focus:ring-0" 
+        class="form-input"
               />
       <input name="sales_name" placeholder="Armstrong 销售姓名" required
-        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
-              border border-white/10 text-white placeholder-white/60 focus:outline-none transition
-              focus:outline-none focus:ring-0" 
+        class="form-input"
               />
       <input name="invite_code" placeholder="邀请码（请联系 RSEC 部门）" required
-        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
-              border border-white/10 text-white placeholder-white/60 focus:outline-none transition
-              focus:outline-none focus:ring-0" 
+        class="form-input"
               />
   
     <!-- 注册按钮，居中 -->

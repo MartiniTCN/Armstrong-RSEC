@@ -115,7 +115,7 @@
         <i id="passwordIcon" class="fas fa-eye-slash"></i>
       </button>
     </div>
-    <!-- ✅ 登录+注册按钮组 + 🇨🇳语言按钮 -->
+    <!-- ✅ 登录+注册按钮组 +  -->
       <div class="flex flex-col items-center mt-4 mb-4">
       <!-- 左边两个按钮分一行 -->
       <div class="flex justify-center gap-4">
@@ -133,9 +133,9 @@
         </div>
       </div>
   </form>
-  <!-- ✅ 圆形语言按钮贴近右下角 -->
+  <!-- ✅ 🇨🇳语言按钮 圆形语言按钮贴近右下角 -->
   <button type="button" onclick="toggleLang()"
-  class="absolute bottom-3 right-4 w-6 h-6 rounded-full overflow-hidden shadow hover:scale-110 transition-transform z-20">
+  class="absolute bottom-3 right-4 w-4 h-4 rounded-full overflow-hidden shadow hover:scale-110 transition-transform z-20">
   <img id="languageFlag" src="https://flagcdn.com/cn.svg" alt="Language"
     class="w-full h-full object-cover rounded-full">
   </button>
@@ -206,34 +206,49 @@
 <script>
   let isChinese = true;
 
-  function toggleLang() {
-    isChinese = !isChinese;
-    document.getElementById('titleText').textContent = isChinese ? '产品学习与评测系统' : 'Learning & Evaluation System';
-    document.getElementById('subtitleText').textContent = isChinese ? '有目标地学习 有洞察地评估' : 'Learn with purpose. Evaluate with insight.';
+function toggleLang() {
+  isChinese = !isChinese;
 
-    // 登录表单字段占位
-    document.querySelector('#loginForm input[name="username"]').placeholder = isChinese ? '用户名' : 'Username';
-    document.querySelector('#loginForm input[name="password"]').placeholder = isChinese ? '密码' : 'Password';
-    //document.querySelector('#loginForm button[type="submit"]').textContent = isChinese ? '登录' : 'Login';
+  // 标题与副标题
+  document.getElementById('titleText').textContent = isChinese ? '产品学习与评测系统' : 'Learning & Evaluation System';
+  document.getElementById('subtitleText').textContent = isChinese ? '有目标地学习 有洞察地评估' : 'Learn with purpose. Evaluate with insight.';
 
-    // 注册表单字段占位
-    document.querySelector('#registerForm input[name="username"]').placeholder = isChinese ? '用户名（字母+数字）' : 'Username (letters + digits)';
-    document.querySelector('#registerForm input[name="password"]').placeholder = isChinese ? '密码' : 'Password';
-    document.querySelector('#registerForm input[name="company"]').placeholder = isChinese ? '单位名称' : 'Company';
-    document.querySelector('#registerForm input[name="city"]').placeholder = isChinese ? '城市' : 'City';
-    document.querySelector('#registerForm input[name="email"]').placeholder = isChinese ? '邮箱' : 'Email';
-    document.querySelector('#registerForm input[name="phone"]').placeholder = isChinese ? '电话' : 'Phone';
-    document.querySelector('#registerForm input[name="sales_name"]').placeholder = isChinese ? 'Armstrong 销售姓名' : 'Armstrong Sales Name';
-    document.querySelector('#registerForm input[name="invite_code"]').placeholder = isChinese ? '邀请码（请联系 RSEC 部门）' : 'Invite code (Contact China RSEC)';
-    document.querySelector('#registerForm button[type="submit"]').textContent = isChinese ? '注册' : 'Register';
-    document.querySelector('#registerForm button[type="Back2Login"]').textContent = isChinese ?  "← 返回登录" : "← Back";
-    
-    document.getElementById("loginBtnText").textContent = isChinese ? "登录" : "Sign In";
-    document.getElementById("registerBtnText").textContent = isChinese ? "注册" : "Sign Up";
-    document.getElementById('langFlag').textContent = isChinese ? '🇨🇳' : '🇬🇧';
-    document.getElementById("backToLoginText").textContent = isChinese ? "← 返回登录" : "← Back";
-    
-  }
+  // 登录表单
+  document.querySelector('#loginForm input[name="username"]').placeholder = isChinese ? '用户名' : 'Username';
+  document.querySelector('#loginForm input[name="password"]').placeholder = isChinese ? '密码' : 'Password';
+  document.getElementById("loginBtnText").textContent = isChinese ? "登录" : "Sign In";
+  document.getElementById("registerBtnText").textContent = isChinese ? "注册" : "Sign Up";
+
+  // 注册表单
+  document.querySelector('#registerForm input[name="username"]').placeholder = isChinese ? '用户名（字母+数字）' : 'Username (letters + digits)';
+  document.querySelector('#registerForm input[name="password"]').placeholder = isChinese ? '密码' : 'Password';
+  document.querySelector('#registerForm input[name="company"]').placeholder = isChinese ? '单位名称' : 'Company';
+  document.querySelector('#registerForm input[name="city"]').placeholder = isChinese ? '城市' : 'City';
+  document.querySelector('#registerForm input[name="email"]').placeholder = isChinese ? '邮箱' : 'Email';
+  document.querySelector('#registerForm input[name="phone"]').placeholder = isChinese ? '电话' : 'Phone';
+  document.querySelector('#registerForm input[name="sales_name"]').placeholder = isChinese ? 'Armstrong 销售姓名' : 'Armstrong Sales Name';
+  document.querySelector('#registerForm input[name="invite_code"]').placeholder = isChinese ? '邀请码（请联系 RSEC 部门）' : 'Invite code (Contact China RSEC)';
+  document.querySelector('#registerForm button[type="submit"]').textContent = isChinese ? '注册' : 'Register';
+  document.querySelector('#registerForm button[type="Back2Login"]').textContent = isChinese ? "← 返回登录" : "← Back";
+  document.getElementById("backToLoginText").textContent = isChinese ? "← 返回登录" : "← Back";
+
+  // 图标 & 备用文字
+  const langFlag = document.getElementById("languageFlag");
+  langFlag.src = isChinese ? 'https://flagcdn.com/cn.svg' : 'https://flagcdn.com/us.svg';
+  langFlag.onerror = function () {
+    langFlag.textContent = isChinese ? '🇨🇳' : '🇬🇧';
+  };
+
+  // 本地存储语言状态
+  localStorage.setItem("isChinese", isChinese ? "1" : "0");
+}
+
+// ✅ 初始化语言状态（根据 localStorage）
+window.addEventListener("DOMContentLoaded", () => {
+  const storedLang = localStorage.getItem("isChinese");
+  isChinese = storedLang === null ? true : storedLang === "1";
+  toggleLang();
+});
 </script>
 
 <!-- ✅ 登录失败触发抖动 + 清空密码 -->

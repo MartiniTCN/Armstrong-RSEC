@@ -189,30 +189,32 @@
 <script>
   // ✅ 切换表单（登录与注册）
   function toggleForm(type) {
-  // 获取元素并检查它们是否存在
   const loginForm = document.getElementById('loginForm');
   const registerForm = document.getElementById('registerForm');
-  const loginTab = document.getElementById('loginTab');
-  const registerTab = document.getElementById('registerTab');
 
-  // 确保元素存在
-  if (loginForm && registerForm && loginTab && registerTab) {
-    // 切换表单显示和隐藏
-    loginForm.classList.toggle('hidden', type !== 'login');
-    registerForm.classList.toggle('hidden', type !== 'register');
-
-    // 切换 Tab 样式
-    loginTab.classList.toggle('text-blue-500', type === 'login');
-    loginTab.classList.toggle('text-gray-400', type !== 'login');
-    registerTab.classList.toggle('text-blue-500', type === 'register');
-    registerTab.classList.toggle('text-gray-400', type !== 'register');
-  } else {
-    console.error("Missing elements for toggleForm.");
+  if (!loginForm || !registerForm) {
+    console.error("Missing loginForm or registerForm in toggleForm.");
+    return;
   }
 
-  // 调试：打印表单切换类型
+  // 显示或隐藏表单
+  loginForm.classList.toggle('hidden', type !== 'login');
+  registerForm.classList.toggle('hidden', type !== 'register');
+
   console.log('Toggle Form:', type);
 }
+
+  // ✅ 页面加载时根据 URL 参数决定初始表单
+  window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const formType = urlParams.get('form') || 'login'; // 默认显示登录表单
+
+    if (formType === 'register') {
+      toggleForm('register');
+    } else {
+      toggleForm('login');
+    }
+  });
 </script>
 
 <!-- ✅ 中英文切换脚本 -->

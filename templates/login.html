@@ -212,13 +212,26 @@
 
 <!-- ✅ 登录 / 注册 切换逻辑 -->
 <script>
+  // ✅ 切换表单（登录与注册）
   function toggleForm(type) {
-    document.getElementById('loginForm').classList.toggle('hidden', type !== 'login');
-    document.getElementById('registerForm').classList.toggle('hidden', type !== 'register');
-    document.getElementById('loginTab').classList.toggle('text-blue-500', type === 'login');
-    document.getElementById('loginTab').classList.toggle('text-gray-400', type !== 'login');
-    document.getElementById('registerTab').classList.toggle('text-blue-500', type === 'register');
-    document.getElementById('registerTab').classList.toggle('text-gray-400', type !== 'register');
+    console.log('Toggle Form:', type); // 调试：打印表单切换类型
+    // 切换表单显示和隐藏
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    
+    // 切换表单显示
+    loginForm.classList.toggle('hidden', type !== 'login');
+    registerForm.classList.toggle('hidden', type !== 'register');
+    
+    // 切换按钮样式
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+
+    // 切换 Tab 样式
+    loginTab.classList.toggle('text-blue-500', type === 'login');
+    loginTab.classList.toggle('text-gray-400', type !== 'login');
+    registerTab.classList.toggle('text-blue-500', type === 'register');
+    registerTab.classList.toggle('text-gray-400', type !== 'register');
   }
 </script>
 
@@ -226,6 +239,7 @@
 <script>
   let isChinese = true;
 
+  // ✅ 切换语言
   function toggleLang() {
     isChinese = !isChinese;
 
@@ -266,14 +280,18 @@
 
     // 保存语言设置到 localStorage
     localStorage.setItem("isChinese", isChinese ? "1" : "0");
-}
+  }
 
-// ✅ 页面加载时同步语言状态
-window.addEventListener('DOMContentLoaded', () => {
+  // ✅ 页面加载时同步语言状态
+  window.addEventListener('DOMContentLoaded', () => {
     const storedLang = localStorage.getItem("isChinese");
     isChinese = storedLang === null ? true : storedLang === "1";
     toggleLang(); // 调用切换函数
-});
+
+    // 调试：检查元素是否加载
+    console.log(document.getElementById('loginBtnText')); // 检查loginBtnText元素
+    console.log(document.getElementById('registerBtnText')); // 检查registerBtnText元素
+  });
 </script>
 
 <!-- ✅ 登录失败触发抖动 + 清空密码 -->

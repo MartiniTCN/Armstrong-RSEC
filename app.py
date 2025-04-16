@@ -352,14 +352,14 @@ def register():
         return jsonify({
             "success": False,
             "message": f"缺少字段：{', '.join(missing_fields)}"
-        })
+        }), 400  # 返回400状态码表示请求有误
 
     import re
 	
     # ✅ 正则校验用户名、手机号、邮箱格式
     username_pattern = re.compile(r'^[a-zA-Z0-9]{3,20}$')
     phone_pattern = re.compile(r'^\d{11}$')  # 可根据需要修改
-    email_pattern = re.compile(r'^[\w\.-]+@[\w\.-]+\.\w+$')
+    email_pattern = re.compile(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
 
     if not username_pattern.match(username):
         return jsonify({"success": False, "message": "用户名格式不正确，应为3-20位字母或数字"})

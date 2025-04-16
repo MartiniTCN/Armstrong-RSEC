@@ -214,32 +214,30 @@
 <script>
   // ✅ 切换表单（登录与注册）
   function toggleForm(type) {
-    document.getElementById('loginForm').classList.toggle('hidden', type !== 'login');
-    document.getElementById('registerForm').classList.toggle('hidden', type !== 'register');
-    document.getElementById('loginTab').classList.toggle('text-blue-500', type === 'login');
-    document.getElementById('loginTab').classList.toggle('text-gray-400', type !== 'login');
-    document.getElementById('registerTab').classList.toggle('text-blue-500', type === 'register');
-    document.getElementById('registerTab').classList.toggle('text-gray-400', type !== 'register');
+  // 获取元素并检查它们是否存在
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const loginTab = document.getElementById('loginTab');
+  const registerTab = document.getElementById('registerTab');
 
-    console.log('Toggle Form:', type); // 调试：打印表单切换类型
+  // 确保元素存在
+  if (loginForm && registerForm && loginTab && registerTab) {
     // 切换表单显示和隐藏
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-    
-    // 切换表单显示
     loginForm.classList.toggle('hidden', type !== 'login');
     registerForm.classList.toggle('hidden', type !== 'register');
-    
-    // 切换按钮样式
-    const loginTab = document.getElementById('loginTab');
-    const registerTab = document.getElementById('registerTab');
 
     // 切换 Tab 样式
     loginTab.classList.toggle('text-blue-500', type === 'login');
     loginTab.classList.toggle('text-gray-400', type !== 'login');
     registerTab.classList.toggle('text-blue-500', type === 'register');
     registerTab.classList.toggle('text-gray-400', type !== 'register');
+  } else {
+    console.error("Missing elements for toggleForm.");
   }
+
+  // 调试：打印表单切换类型
+  console.log('Toggle Form:', type);
+}
 </script>
 
 <!-- ✅ 中英文切换脚本 -->
@@ -248,46 +246,75 @@
 
   // ✅ 切换语言
   function toggleLang() {
-    isChinese = !isChinese;
+  // 切换语言
+  isChinese = !isChinese;
 
-    // 更新标题与副标题
-    document.getElementById('titleText').textContent = isChinese ? '产品学习与评测系统' : 'Learning & Evaluation System';
-    document.getElementById('subtitleText').textContent = isChinese ? '有目标地学习 有洞察地评估' : 'Learn with purpose. Evaluate with insight.';
-
-    // 登录表单占位符
-    document.querySelector('#loginForm input[name="username"]').placeholder = isChinese ? '用户名' : 'Username';
-    document.querySelector('#loginForm input[name="password"]').placeholder = isChinese ? '密码' : 'Password';
-
-    // 注册表单占位符
-    document.querySelector('#registerForm input[name="username"]').placeholder = isChinese ? '用户名（字母+数字）' : 'Username (letters + digits)';
-    document.querySelector('#registerForm input[name="password"]').placeholder = isChinese ? '密码' : 'Password';
-    document.querySelector('#registerForm input[name="company"]').placeholder = isChinese ? '单位名称' : 'Company';
-    document.querySelector('#registerForm input[name="city"]').placeholder = isChinese ? '城市' : 'City';
-    document.querySelector('#registerForm input[name="email"]').placeholder = isChinese ? '邮箱' : 'Email';
-    document.querySelector('#registerForm input[name="phone"]').placeholder = isChinese ? '电话' : 'Phone';
-    document.querySelector('#registerForm input[name="sales_name"]').placeholder = isChinese ? 'Armstrong 销售姓名' : 'Armstrong Sales Name';
-    document.querySelector('#registerForm input[name="invite_code"]').placeholder = isChinese ? '邀请码（请联系 RSEC 部门）' : 'Invite code (Contact China RSEC)';
-    document.querySelector('#registerForm button[type="submit"]').textContent = isChinese ? '注册' : 'Register';
-    document.querySelector('#registerForm button[type="Back2Login"]').textContent = isChinese ? "← 返回登录" : "← Back";
-    
-    document.getElementById("loginBtnText").textContent = isChinese ? "登录" : "Sign In";
-    document.getElementById("registerBtnText").textContent = isChinese ? "注册" : "Sign Up";
-
-    // 更新语言图标：切换语言时更新图标
-    const langFlag = document.getElementById("languageFlag");
-    langFlag.src = isChinese ? 'https://flagcdn.com/cn.svg' : 'https://flagcdn.com/us.svg';
-
-    // 更新语言按钮文字（备用）
-    langFlag.onerror = function () {
-        langFlag.textContent = isChinese ? '🇨🇳' : '🇬🇧';
-    };
-
-    // 更新返回登录按钮文本
-    document.getElementById("backToLoginText").textContent = isChinese ? "← 返回登录" : "← Back";
-
-    // 保存语言设置到 localStorage
-    localStorage.setItem("isChinese", isChinese ? "1" : "0");
+  // 更新标题与副标题
+  const titleText = document.getElementById('titleText');
+  const subtitleText = document.getElementById('subtitleText');
+  
+  if (titleText && subtitleText) {
+    titleText.textContent = isChinese ? '产品学习与评测系统' : 'Learning & Evaluation System';
+    subtitleText.textContent = isChinese ? '有目标地学习 有洞察地评估' : 'Learn with purpose. Evaluate with insight.';
   }
+
+  // 更新表单占位符
+  const loginUsername = document.querySelector('#loginForm input[name="username"]');
+  const loginPassword = document.querySelector('#loginForm input[name="password"]');
+  const registerUsername = document.querySelector('#registerForm input[name="username"]');
+  const registerPassword = document.querySelector('#registerForm input[name="password"]');
+  const registerCompany = document.querySelector('#registerForm input[name="company"]');
+  const registerCity = document.querySelector('#registerForm input[name="city"]');
+  const registerEmail = document.querySelector('#registerForm input[name="email"]');
+  const registerPhone = document.querySelector('#registerForm input[name="phone"]');
+  const registerSalesName = document.querySelector('#registerForm input[name="sales_name"]');
+  const registerInviteCode = document.querySelector('#registerForm input[name="invite_code"]');
+  const registerSubmitBtn = document.querySelector('#registerForm button[type="submit"]');
+  const backToLoginText = document.getElementById("backToLoginText");
+
+  if (loginUsername && loginPassword) {
+    loginUsername.placeholder = isChinese ? '用户名' : 'Username';
+    loginPassword.placeholder = isChinese ? '密码' : 'Password';
+  }
+
+  if (registerUsername && registerPassword && registerCompany && registerCity && registerEmail && registerPhone && registerSalesName && registerInviteCode && registerSubmitBtn && backToLoginText) {
+    registerUsername.placeholder = isChinese ? '用户名（字母+数字）' : 'Username (letters + digits)';
+    registerPassword.placeholder = isChinese ? '密码' : 'Password';
+    registerCompany.placeholder = isChinese ? '单位名称' : 'Company';
+    registerCity.placeholder = isChinese ? '城市' : 'City';
+    registerEmail.placeholder = isChinese ? '邮箱' : 'Email';
+    registerPhone.placeholder = isChinese ? '电话' : 'Phone';
+    registerSalesName.placeholder = isChinese ? 'Armstrong 销售姓名' : 'Armstrong Sales Name';
+    registerInviteCode.placeholder = isChinese ? '邀请码（请联系 RSEC 部门）' : 'Invite code (Contact China RSEC)';
+    registerSubmitBtn.textContent = isChinese ? '注册' : 'Register';
+    backToLoginText.textContent = isChinese ? "← 返回登录" : "← Back";
+  }
+
+  // 更新语言图标：切换语言时更新图标
+  const langFlag = document.getElementById("languageFlag");
+  if (langFlag) {
+    langFlag.src = isChinese ? 'https://flagcdn.com/cn.svg' : 'https://flagcdn.com/us.svg';
+    langFlag.alt = isChinese ? '中文' : 'English';
+  }
+
+  // 更新语言按钮文字（备用）
+  if (langFlag && langFlag.onerror) {
+    langFlag.onerror = function () {
+      langFlag.textContent = isChinese ? '🇨🇳' : '🇬🇧';
+    };
+  }
+
+  // 更新返回登录按钮文本
+  const loginBtnText = document.getElementById("loginBtnText");
+  const registerBtnText = document.getElementById("registerBtnText");
+  if (loginBtnText && registerBtnText) {
+    loginBtnText.textContent = isChinese ? "登录" : "Sign In";
+    registerBtnText.textContent = isChinese ? "注册" : "Sign Up";
+  }
+
+  // 保存语言设置到 localStorage
+  localStorage.setItem("isChinese", isChinese ? "1" : "0");
+}
 
   // ✅ 页面加载时同步语言状态
   window.addEventListener('DOMContentLoaded', () => {
@@ -301,10 +328,15 @@
 
   if (loginBtnText) {
     console.log('Login button text is available');
-  }
+  } else {
+      console.error('Login button text element is missing');
+    }
+
   if (registerBtnText) {
     console.log('Register button text is available');
-  }
+  } else {
+      console.error('Register button text element is missing');
+    }
 });
 </script>
 
@@ -327,7 +359,10 @@
 <!-- ✅ 页面加载完成后隐藏遮罩 -->
 <script>
   window.addEventListener('load', function () {
-    document.getElementById('loadingOverlay').style.display = 'none';
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.style.transition = 'opacity 0.5s';
+    overlay.style.opacity = 0;
+    setTimeout(() => overlay.style.display = 'none', 500);  // 渐隐并隐藏
   });
 </script>
 

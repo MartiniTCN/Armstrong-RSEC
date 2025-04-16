@@ -85,19 +85,6 @@
     max-width: 400px;
     text-align: center;
   }
-
-  #modalBtn {
-    background-color: #2563eb;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-
-  #modalBtn:hover {
-    background-color: #1d4ed8;
-  }
 </style>
 
 </head>
@@ -451,14 +438,10 @@
     }
 
     // 点击确认按钮关闭模态框并跳转到登录页
-    // 只绑定一次事件
-    if (!modalBtn.hasEventListener) {
-      modalBtn.addEventListener('click', function() {
-        modal.classList.add('hidden'); // 隐藏模态框
-        toggleForm('login'); // 跳转到登录表单
-      });
-      modalBtn.hasEventListener = true; // 标记已绑定事件
-    }
+    modalBtn.addEventListener('click', function() {
+      modal.classList.add('hidden'); // 隐藏模态框
+      toggleForm('login'); // 跳转到登录表单
+    });
 
   } catch (error) {
     console.error("注册失败：", error);
@@ -496,18 +479,14 @@
   });
 </script>
 
-<!-- ✅ 注册提示模态框：风格与主登录卡一致 -->
-<div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-  <div class="bg-white/90 dark:bg-white/10 backdrop-blur-md border border-white/30 dark:border-white/10 
-              rounded-2xl shadow-xl px-6 py-5 w-[90%] max-w-xs text-center text-gray-900 dark:text-white">
-
-    <!-- 提示内容 -->
-    <p id="modalMessage" class="text-base sm:text-lg font-semibold mb-4">注册成功，请返回登录。</p>
-
-    <!-- 确认按钮（圆角胶囊、统一样式） -->
+<!-- ✅ 确保模态框默认是隐藏的 -->
+<div id="modal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 z-50 flex items-center justify-center">
+  <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-xl max-w-sm w-[90%] text-center">
+    <p id="modalMessage" class="text-lg font-semibold mb-4">注册成功，请返回登录。</p>
+    <!-- ✅ 确认按钮：居中、胶囊、跟登录按钮完全一致 -->
     <button id="modalBtn"
-      class="px-5 py-1.5 text-sm text-white bg-primary hover:bg-blue-700 transition rounded-full focus:outline-none">
-      确认
+      class="block mx-auto px-4 py-1 text-xs text-white rounded-full bg-primary hover:bg-blue-700 transition">
+      <span>确认</span>
     </button>
   </div>
 </div>

@@ -151,27 +151,45 @@ def course_page(course_id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        session.clear()  # ✅ 每次打开登录页时清除旧会话
+        session.clear()
         return render_template('login.html')
-    
-    # ✅ POST 请求，表示提交登录
-    if request.method == 'POST':
-        debug_request()
-        return handle_login()
-    username = request.form.get('username')
-    password = request.form.get('password')  # 这里只是接收，无验证逻辑
 
-    # ✅ 检查是否已有其他账号在登录，如果有，先将旧账号状态更新为“已登出”
+    # ✅ 解析前端提交的用户名和密码
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    # ✅ 查询 Supabase 中是否存在该用户（确保环境变量配置正确）
+    SUPABASE_URL = os.environ.get("SUPABASE_URL")
+    SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
+
+    headers = {
+        "apikey": SUPABASE_API_KEY,
+        "Authorization": f"Bearer {SUPABASE_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    # ⚠️ 密码为明文匹配，建议上线前进行哈希处理
+    query_url = f"{SUPABASE_URL}/rest/v1/user_accounts?username=eq.{username}&password=eq.{password}"
+
+    response = requests.get(query_url, headers=headers)
+
+    # ❌ 查询失败 或 没有匹配用户
+    if response.status_code != 200 or not response.json():
+        return render_template('login.html', error="输入的用户名和密码无效，请确认！")
+
+    # ✅ 匹配成功，执行登录逻辑
+    # 检查是否已有其他用户在线
     old_user = session.get('username')
     if old_user:
-        logout_user(old_user)  # 🔁 更新 Supabase 中旧账号的状态
+        logout_user(old_user)
         session.clear()
 
-    # ✅ 登录成功逻辑
+    # ✅ 登录记录和会话初始化
     ip = get_client_ip()
     now = get_current_time()
     session['username'] = username
     session['last_active'] = datetime.now().isoformat()
+
     insert_login_log({
         "username": username,
         "ip": ip,

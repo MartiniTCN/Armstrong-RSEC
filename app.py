@@ -151,14 +151,14 @@ def course_page(course_id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        session.clear()  # 清除旧会话
+        session.clear()
         return render_template('login.html')
 
     # ✅ 解析前端提交的用户名和密码
     username = request.form.get('username')
     password = request.form.get('password')
 
-    # ✅ 查询 Supabase 中是否存在该用户（确保环境变量配置正确）
+    # ✅ 查询 Supabase
     SUPABASE_URL = os.environ.get("SUPABASE_URL")
     SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
 
@@ -168,25 +168,18 @@ def login():
         "Content-Type": "application/json"
     }
 
-    # ⚠️ 密码为明文匹配，建议上线前进行哈希处理
     query_url = f"{SUPABASE_URL}/rest/v1/user_accounts?username=eq.{username}&password=eq.{password}"
-
     response = requests.get(query_url, headers=headers)
 
-    # ❌ 查询失败 或 没有匹配用户
     if response.status_code != 200 or not response.json():
-        # 返回登录页并显示错误提示
-        error_message = "输入的用户名和密码无效，请确认！"
-        return render_template('login.html', error=error_message)
+        return jsonify({"success": False, "message": "输入的用户名和密码无效，请确认！"}), 401
 
-    # ✅ 匹配成功，执行登录逻辑
-    # 检查是否已有其他用户在线
+    # ✅ 匹配成功
     old_user = session.get('username')
     if old_user:
         logout_user(old_user)
         session.clear()
 
-    # ✅ 登录记录和会话初始化
     ip = get_client_ip()
     now = get_current_time()
     session['username'] = username
@@ -200,7 +193,7 @@ def login():
         "status": "登录中"
     })
 
-    return redirect(url_for('course_select'))
+    return jsonify({"success": True})
 
 @app.route('/course')
 def course_select():

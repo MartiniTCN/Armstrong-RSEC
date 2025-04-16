@@ -47,20 +47,6 @@
     @keyframes fadeIn {
       to { opacity: 1; }
     }
-    .watermark-tile {
-      position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 0; pointer-events: none;
-      overflow: hidden;
-    }
-    .watermark-instance {
-      position: absolute;
-      width: 180px; height: 180px;
-      background-image: url('https://i.stardots.io/armstrong/%E6%B0%B4%E5%8D%B0%E5%9B%BE%E7%89%87%20-%20%E9%87%91%E8%89%B2_%E5%89%AF%E6%9C%AC.png?width=500');
-      background-repeat: no-repeat;
-      background-size: contain;
-      opacity: 0.3; transform: rotate(-30deg);
-    }
   </style>
 
 
@@ -198,17 +184,6 @@
 </section>
 </main>
 
-<!-- ✅ 自动生成水印 -->
-<script>
-  const watermarkContainer = document.getElementById('watermarkContainer');
-  for (let i = 0; i < 50; i++) {
-    const wm = document.createElement('div');
-    wm.className = 'watermark-instance';
-    wm.style.top = Math.random() * window.innerHeight + 'px';
-    wm.style.left = Math.random() * window.innerWidth + 'px';
-    watermarkContainer.appendChild(wm);
-  }
-</script>
 
 <!-- ✅ 登录 / 注册 切换逻辑 -->
 <script>

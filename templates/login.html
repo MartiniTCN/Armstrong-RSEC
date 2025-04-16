@@ -120,18 +120,18 @@
   <!-- ✅ 登录表单 -->
 <form method="post" action="/login" id="loginForm" class="space-y-5">
   <input type="text" name="username" placeholder="用户名" required
-    class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
+  class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
+         border border-white/10 text-white placeholder-white/60 focus:outline-none transition" />
   
   <div class="relative">
     <input type="password" id="password" name="password" placeholder="密码" required
-      class="w-full px-4 py-2 pr-10 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
-
-    <!-- 👁️ 切换按钮 -->
-    <button type="button" onclick="togglePassword()"
-      class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-300 hover:text-blue-600 focus:outline-none">
-      <i id="passwordIcon" class="fas fa-eye-slash"></i>
-    </button>
-  </div>
+        class="w-full px-4 py-2 pr-10 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
+              border border-white/10 text-white placeholder-white/60 focus:outline-none transition" />
+        <button type="button" onclick="togglePassword()"
+            class="absolute right-2 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white focus:outline-none">
+            <i id="passwordIcon" class="fas fa-eye-slash"></i>
+          </button>
+    </div>      
 
   <!-- ✅ 登录失败错误提示 -->
   {% if error %}
@@ -174,27 +174,35 @@
     </div>
   
       <input name="username" placeholder="用户名（字母+数字）" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
+        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
+              border border-white/10 text-white placeholder-white/60 focus:outline-none transition" />
         <div class="relative">
-          <input type="password" id="regPassword" name="password" placeholder="密码" required
-            class="w-full px-4 py-2 pr-10 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
+      <input type="password" id="regPassword" name="password" placeholder="密码" required
+        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
+              border border-white/10 text-white placeholder-white/60 focus:outline-none transition" />
           <button type="button" onclick="togglePassword('regPassword', 'regPwdIcon')"
             class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-300 hover:text-blue-600 focus:outline-none">
             <i id="regPwdIcon" class="fas fa-eye-slash"></i>
           </button>
         </div>
       <input name="company" placeholder="单位名称" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
+        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
+              border border-white/10 text-white placeholder-white/60 focus:outline-none transition" />
       <input name="city" placeholder="城市" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
+        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
+              border border-white/10 text-white placeholder-white/60 focus:outline-none transition" />
       <input name="email" placeholder="邮箱" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
+        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
+              border border-white/10 text-white placeholder-white/60 focus:outline-none transition" />
       <input name="phone" placeholder="电话" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
+        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
+              border border-white/10 text-white placeholder-white/60 focus:outline-none transition" />
       <input name="sales_name" placeholder="Armstrong 销售姓名" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
+        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
+              border border-white/10 text-white placeholder-white/60 focus:outline-none transition" />
       <input name="invite_code" placeholder="邀请码（请联系 RSEC 部门）" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
+        class="w-full px-4 py-2 rounded-md bg-white/10 dark:bg-gray-800/30 backdrop-blur-md
+              border border-white/10 text-white placeholder-white/60 focus:outline-none transition" />
   
     <!-- 注册按钮，居中 -->
     <div class="flex justify-center mt-4 mb-6">
@@ -211,6 +219,23 @@
 
 </section>
 </main>
+<!-- ✅ 优化后的注册提示模态框 -->
+<div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-white/80 dark:bg-white/10 backdrop-blur-lg border border-white/30 dark:border-white/10
+              rounded-2xl shadow-xl px-6 py-5 w-fit max-w-[90%] text-center text-gray-900 dark:text-white">
+
+    <!-- 提示内容，字体黑色、内容居中 -->
+    <p id="modalMessage" class="text-base font-semibold mb-4 text-white">
+      注册成功，请返回登录。
+    </p>
+
+    <!-- ✅ 确认按钮，居中、胶囊形状 -->
+    <button id="modalBtn"
+      class="block mx-auto px-4 py-1 text-xs text-white rounded-full bg-primary hover:bg-blue-700 transition">
+      确认
+    </button>
+  </div>
+</div>
 
 
 <!-- ✅ 登录 / 注册 切换逻辑 -->
@@ -405,52 +430,46 @@
 <!-- ✅ 拦截注册表单提交并使用 AJAX 异步提交 -->
 <script>
   document.getElementById('registerForm').addEventListener('submit', async function (e) {
-  e.preventDefault(); // 阻止默认提交行为
-
-  const formData = new FormData(this);
-  const data = {};
-  formData.forEach((value, key) => data[key] = value);
-
-  try {
-    const res = await fetch('/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-
-    const result = await res.json();
-    const modal = document.getElementById('modal');
-    const modalMessage = document.getElementById('modalMessage');
-    const modalBtn = document.getElementById('modalBtn');
-
-    
-    // 清除消息样式，避免重复样式
-    modalMessage.classList.remove('text-green-500', 'text-red-500');
-
-    if (result.success) {
-      modalMessage.textContent = "✅ 注册成功，请返回登录";
-      modalMessage.classList.add('text-green-500');
-      modalMessage.classList.add('text-white');
-      modal.classList.remove('hidden'); // ✅ 只在这里显示！
-    } else {
-      modalMessage.textContent = "❌ " + result.message;
-      modalMessage.classList.remove('text-black');
-      modalMessage.classList.add('text-red-500');
-
-      modal.classList.remove('hidden'); // ✅ 只在这里显示！
+    e.preventDefault();
+  
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach((value, key) => data[key] = value);
+  
+    try {
+      const res = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+  
+      const result = await res.json();
+      const modal = document.getElementById('modal');
+      const modalMessage = document.getElementById('modalMessage');
+      const modalBtn = document.getElementById('modalBtn');
+  
+      modal.classList.remove('hidden');
+      if (result.success) {
+        modalMessage.textContent = "✅ 注册成功，请返回登录。";
+        modalMessage.classList.remove("text-red-500");
+        modalMessage.classList.add("text-black");
+        modalBtn.onclick = () => {
+          modal.classList.add('hidden');
+          toggleForm('login');
+        };
+      } else {
+        modalMessage.textContent = "❌ " + result.message;
+        modalMessage.classList.remove("text-black");
+        modalMessage.classList.add("text-red-500");
+        modalBtn.onclick = () => {
+          modal.classList.add('hidden');
+        };
+      }
+  
+    } catch (error) {
+      alert("系统错误，请稍后重试");
     }
-
-    // 点击确认按钮关闭模态框并跳转到登录页
-    modalBtn.addEventListener('click', function() {
-      modal.classList.add('hidden'); // 隐藏模态框
-      toggleForm('login'); // 跳转到登录表单
-    });
-
-  } catch (error) {
-    console.error("注册失败：", error);
-    alert("系统错误，请稍后重试");
-  }
-});
+  });
   </script>
 
 <script>
@@ -482,23 +501,7 @@
   });
 </script>
 
-<!-- ✅ 优化后的注册提示模态框 -->
-<div id="modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-  <div class="bg-white/80 dark:bg-white/10 backdrop-blur-lg border border-white/30 dark:border-white/10
-              rounded-2xl shadow-xl px-6 py-5 w-fit max-w-[90%] text-center text-gray-900 dark:text-white">
 
-    <!-- 提示内容，字体黑色、内容居中 -->
-    <p id="modalMessage" class="text-base font-semibold mb-4 text-white">
-      注册成功，请返回登录。
-    </p>
-
-    <!-- ✅ 确认按钮，居中、胶囊形状 -->
-    <button id="modalBtn"
-      class="block mx-auto px-4 py-1 text-xs text-white rounded-full bg-primary hover:bg-blue-700 transition">
-      确认
-    </button>
-  </div>
-</div>
 
 </body>
 

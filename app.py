@@ -151,7 +151,7 @@ def course_page(course_id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        session.clear()
+        session.clear()  # 清除旧会话
         return render_template('login.html')
 
     # ✅ 解析前端提交的用户名和密码
@@ -175,7 +175,9 @@ def login():
 
     # ❌ 查询失败 或 没有匹配用户
     if response.status_code != 200 or not response.json():
-        return render_template('login.html', error="输入的用户名和密码无效，请确认！")
+        # 返回登录页并显示错误提示
+        error_message = "输入的用户名和密码无效，请确认！"
+        return render_template('login.html', error=error_message)
 
     # ✅ 匹配成功，执行登录逻辑
     # 检查是否已有其他用户在线

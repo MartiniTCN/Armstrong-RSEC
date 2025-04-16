@@ -108,37 +108,45 @@
 
 
   <!-- ✅ 登录表单 -->
-  <form method="post" action="/login" id="loginForm" class="space-y-5">
-      <input type="text" name="username" placeholder="用户名" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
-      <div class="relative">
-        <input type="password" id="password" name="password" placeholder="密码" required
-          class="w-full px-4 py-2 pr-10 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
-      
-      <!-- 👁️ 切换按钮 -->
-      <button type="button" onclick="togglePassword()"
-              class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-300 hover:text-blue-600 focus:outline-none">
-        <i id="passwordIcon" class="fas fa-eye-slash"></i>
-      </button>
+<form method="post" action="/login" id="loginForm" class="space-y-5">
+  <input type="text" name="username" placeholder="用户名" required
+    class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
+  
+  <div class="relative">
+    <input type="password" id="password" name="password" placeholder="密码" required
+      class="w-full px-4 py-2 pr-10 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
+
+    <!-- 👁️ 切换按钮 -->
+    <button type="button" onclick="togglePassword()"
+      class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-300 hover:text-blue-600 focus:outline-none">
+      <i id="passwordIcon" class="fas fa-eye-slash"></i>
+    </button>
+  </div>
+
+  <!-- ✅ 登录失败错误提示 -->
+  {% if error %}
+    <div class="text-sm text-red-500 text-center font-semibold -mt-2">
+      {{ error }}
     </div>
-    <!-- ✅ 登录+注册按钮组 +  -->
-      <div class="flex flex-col items-center mt-4 mb-4">
-      <!-- 左边两个按钮分一行 -->
-      <div class="flex justify-center gap-4">
-        <!-- 登录按钮 -->
-        <button type="submit" id="loginBtn"
+  {% endif %}
+
+  <!-- ✅ 登录+注册按钮组 -->
+  <div class="flex flex-col items-center mt-4 mb-4">
+    <div class="flex justify-center gap-4">
+      <!-- 登录按钮 -->
+      <button type="submit" id="loginBtn"
         class="px-4 py-1 text-xs text-white rounded-full bg-primary hover:bg-blue-700 transition">
         <span id="loginBtnText">登录</span>
-        </button>
+      </button>
 
-        <!-- 注册按钮 -->
-        <button type="button" onclick="toggleForm('register')"
+      <!-- 注册按钮 -->
+      <button type="button" onclick="toggleForm('register')"
         class="px-4 py-1 text-xs rounded-full bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600 transition">
         <span id="registerBtnText">注册</span>
-        </button>
-        </div>
-      </div>
-  </form>
+      </button>
+    </div>
+  </div>
+</form>
   <!-- ✅ 🇨🇳语言按钮 圆形语言按钮贴近右下角 -->
   <button type="button" onclick="toggleLang()"
   class="absolute bottom-3 right-4 w-4 h-4 rounded-full overflow-hidden shadow hover:scale-110 transition-transform z-20">
@@ -347,6 +355,35 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
   </script>
+
+<script>
+  // ✅ 拦截表单提交并通过 JS 发起异步请求
+  document.getElementById('loginForm').addEventListener('submit', async function (event) {
+    event.preventDefault();  // 阻止默认提交行为
+
+    const formData = new FormData(this);  // 收集表单数据
+
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // ✅ 登录成功：跳转到课程页
+        window.location.href = "/course_selection";
+      } else {
+        // ❌ 登录失败：弹出提示框
+        alert(data.message || "用户名或密码无效，请确认！");
+      }
+    } catch (error) {
+      console.error("登录异常：", error);
+      alert("系统错误，请稍后重试");
+    }
+  });
+</script>
 
 </body>
 </html>

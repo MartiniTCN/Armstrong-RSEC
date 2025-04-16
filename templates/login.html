@@ -428,12 +428,16 @@
     modalMessage.classList.remove('text-green-500', 'text-red-500');
 
     if (result.success) {
-      modal.classList.remove('hidden'); // ✅ 只有这里才打开 modal
       modalMessage.textContent = "✅ 注册成功，请返回登录";
       modalMessage.classList.add('text-green-500');
+      modalMessage.classList.add('text-white');
+      modal.classList.remove('hidden'); // ✅ 只在这里显示！
     } else {
       modalMessage.textContent = "❌ " + result.message;
+      modalMessage.classList.remove('text-black');
       modalMessage.classList.add('text-red-500');
+
+      modal.classList.remove('hidden'); // ✅ 只在这里显示！
     }
 
     // 点击确认按钮关闭模态框并跳转到登录页
@@ -484,7 +488,7 @@
               rounded-2xl shadow-xl px-6 py-5 w-fit max-w-[90%] text-center text-gray-900 dark:text-white">
 
     <!-- 提示内容，字体黑色、内容居中 -->
-    <p id="modalMessage" class="text-base font-semibold mb-4 text-black">
+    <p id="modalMessage" class="text-base font-semibold mb-4 text-white">
       注册成功，请返回登录。
     </p>
 
@@ -504,6 +508,11 @@
     const modal = document.getElementById('modal');
     if (modal) modal.classList.add('hidden');
   });
+  const msg = document.getElementById('registerMessage');
+    if (msg) {
+      msg.classList.add('hidden');
+      msg.textContent = ''; // ✅ 彻底清空之前的“注册成功”文字
+    }
 </script>
 
 </html>

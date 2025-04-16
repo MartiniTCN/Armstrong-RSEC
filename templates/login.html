@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN" class="scroll-smooth dark">
 <head>
+  <link rel="icon" href="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=64" type="image/png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>解决方案探索与考试系统</title>
@@ -206,7 +207,7 @@
   
     <!-- 注册按钮，居中 -->
     <div class="flex justify-center mt-4 mb-6">
-        <button type="submit"
+        <button type="submit" onclick="userTriggeredRegister = true"
           class="px-5 py-1.5 text-xs text-white rounded-full bg-primary hover:bg-blue-700 transition">
         <span id="finalRegisterBtnText">注册</span>
       </button>
@@ -429,8 +430,13 @@
 
 <!-- ✅ 拦截注册表单提交并使用 AJAX 异步提交 -->
 <script>
+  let userTriggeredRegister = false; // 🔹 全局变量，控制注册是否是用户点击触发
+  
   document.getElementById('registerForm').addEventListener('submit', async function (e) {
     e.preventDefault();
+  
+    // 🛑 如果不是用户点击提交注册按钮，不执行注册逻辑
+    if (!userTriggeredRegister) return;
   
     const formData = new FormData(this);
     const data = {};
@@ -439,36 +445,48 @@
     try {
       const res = await fetch('/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
       });
   
       const result = await res.json();
-      const modal = document.getElementById('modal');
-      const modalMessage = document.getElementById('modalMessage');
-      const modalBtn = document.getElementById('modalBtn');
+      const messageDiv = document.getElementById('registerMessage');
   
-      modal.classList.remove('hidden');
+      // ✅ 清除旧样式
+      messageDiv.classList.remove("text-red-500", "text-green-500");
+  
       if (result.success) {
-        modalMessage.textContent = "✅ 注册成功，请返回登录。";
-        modalMessage.classList.remove("text-red-500");
-        modalMessage.classList.add("text-black");
-        modalBtn.onclick = () => {
-          modal.classList.add('hidden');
-          toggleForm('login');
-        };
-      } else {
-        modalMessage.textContent = "❌ " + result.message;
-        modalMessage.classList.remove("text-black");
-        modalMessage.classList.add("text-red-500");
-        modalBtn.onclick = () => {
-          modal.classList.add('hidden');
-        };
-      }
+        messageDiv.textContent = "✅ 注册成功，请返回登录";
+        messageDiv.className = "text-green-500 text-sm text-center font-semibold mt-2 bg-white/30 dark:bg-gray-700 border border-green-500 rounded-xl px-4 py-2 backdrop-blur";
+        
+        messageDiv.classList.remove("hidden");
+        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
   
+        // ✅ 自动跳回登录页
+        setTimeout(() => {
+          messageDiv.classList.add("hidden");
+          toggleForm('login');
+        }, 2500);
+      } else {
+        messageDiv.textContent = "❌ " + result.message;
+        messageDiv.className = "text-red-500 text-sm text-center font-semibold mt-2 bg-white/30 dark:bg-gray-700 border border-red-500 rounded-xl px-4 py-2 backdrop-blur";
+  
+        messageDiv.classList.remove("hidden");
+        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  
+        setTimeout(() => {
+          messageDiv.classList.add("hidden");
+        }, 3000);
+      }
     } catch (error) {
-      alert("系统错误，请稍后重试");
+      alert("⚠️ 系统错误，请稍后重试！");
+      console.error(error);
     }
+  
+    // ✅ 提交完成后重置标志
+    userTriggeredRegister = false;
   });
   </script>
 

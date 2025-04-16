@@ -165,20 +165,26 @@
   
       <input name="username" placeholder="用户名（字母+数字）" required
         class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
-      <input type="password" name="password" placeholder="密码" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600" />
+        <div class="relative">
+          <input type="password" id="regPassword" name="password" placeholder="密码" required
+            class="w-full px-4 py-2 pr-10 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
+          <button type="button" onclick="togglePassword('regPassword', 'regPwdIcon')"
+            class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-300 hover:text-blue-600 focus:outline-none">
+            <i id="regPwdIcon" class="fas fa-eye-slash"></i>
+          </button>
+        </div>
       <input name="company" placeholder="单位名称" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600" />
+        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
       <input name="city" placeholder="城市" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600" />
+        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
       <input name="email" placeholder="邮箱" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600" />
+        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
       <input name="phone" placeholder="电话" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600" />
+        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
       <input name="sales_name" placeholder="Armstrong 销售姓名" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600" />
+        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
       <input name="invite_code" placeholder="邀请码（请联系 RSEC 部门）" required
-        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600" />
+        class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
   
     <!-- 注册按钮，居中 -->
     <div class="flex justify-center mt-4 mb-6">
@@ -294,10 +300,12 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script>
-  function togglePassword() {
-    const input = document.getElementById("password");
-    const icon = document.getElementById("passwordIcon");
+  function togglePassword(inputId = "password", iconId = "passwordIcon") {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
     
+    if (!input || !icon) return;
+
     if (input.type === "password") {
       input.type = "text";
       icon.classList.remove("fa-eye-slash");
@@ -308,7 +316,7 @@ window.addEventListener('DOMContentLoaded', () => {
       icon.classList.add("fa-eye-slash");
     }
   }
-  </script>
+</script>
 
 <!-- ✅ 拦截注册表单提交并使用 AJAX 异步提交 -->
 <script>
@@ -376,7 +384,7 @@ window.addEventListener('DOMContentLoaded', () => {
         window.location.href = "/course";
       } else {
         // ❌ 登录失败：弹出提示框
-        alert(data.message || "用户名或密码无效，请确认！");
+        alert((data.message || "用户名或密码无效，请确认！").replace(/\\n/g, "\n"));
       }
     } catch (error) {
       console.error("登录异常：", error);

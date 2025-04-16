@@ -105,7 +105,7 @@
   <form method="post" action="/login" id="loginForm" class="space-y-5">
       <input type="text" name="username" placeholder="用户名" required
         class="w-full px-4 py-2 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
-    <div class="relative">
+      <div class="relative">
         <input type="password" id="password" name="password" placeholder="密码" required
           class="w-full px-4 py-2 pr-10 rounded-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" />
       
@@ -130,18 +130,15 @@
         class="px-4 py-1 text-xs rounded-full bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600 transition">
         <span id="registerBtnText">注册</span>
         </button>
+        </div>
       </div>
-
-      <!-- ✅ 语言按钮靠右 -->
-      <div class="mt-4">
-        <button type="button" onclick="toggleLang()"
-            class="w-6 h-6 rounded-full overflow-hidden shadow hover:scale-110 transition-transform">
-            <img id="languageFlag" src="https://flagcdn.com/cn.svg" alt="Language"
-              class="w-full h-full object-cover rounded-full" />
-        </button>
-      </div>
-    </div>
   </form>
+  <!-- ✅ 圆形语言按钮贴近右下角 -->
+  <button type="button" onclick="toggleLang()"
+  class="absolute bottom-3 right-4 w-6 h-6 rounded-full overflow-hidden shadow hover:scale-110 transition-transform z-20">
+  <img id="languageFlag" src="https://flagcdn.com/cn.svg" alt="Language"
+    class="w-full h-full object-cover rounded-full">
+  </button>
 
   <!-- ✅ 注册表单（默认隐藏） -->
   <form method="post" action="/register" id="registerForm" class="space-y-3 hidden">
@@ -171,7 +168,8 @@
   
     <!-- 注册按钮，居中 -->
     <div class="flex justify-center mt-4 mb-6">
-      <button type="submit" class="px-5 py-1.5 text-xs text-white rounded-full bg-primary hover:bg-blue-700 transition">
+        <button type="submit"
+          class="px-5 py-1.5 text-xs text-white rounded-full bg-primary hover:bg-blue-700 transition">
         <span id="finalRegisterBtnText">注册</span>
       </button>
     </div>

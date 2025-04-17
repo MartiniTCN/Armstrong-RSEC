@@ -1,15 +1,13 @@
-# ✅ 加载 .env 文件中的本地环境变量（仅本地调试用）
-from dotenv import load_dotenv
 import os
 
-# ✅ 仅在本地环境时加载 .env 文件（Render 不加载）
+# ✅ Render 环境不加载 dotenv
 if os.environ.get("RENDER") != "true":
     try:
-        from dotenv import load_dotenv
-        load_dotenv()
+        import dotenv
+        dotenv.load_dotenv()
         print("✅ 本地调试模式，已加载 .env")
     except ImportError:
-        print("⚠️ 未安装 dotenv，跳过本地环境加载")
+        print("⚠️ 未安装 python-dotenv，跳过 .env 加载")
 
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import pytz

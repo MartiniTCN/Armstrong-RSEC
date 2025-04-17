@@ -1,3 +1,7 @@
+# ✅ 加载 .env 文件中的本地环境变量（仅本地调试用）
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import pytz
 from datetime import datetime, timedelta
@@ -161,6 +165,10 @@ def login():
     # ✅ 查询 Supabase
     SUPABASE_URL = os.environ.get("SUPABASE_URL")
     SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
+    # ✅ 打印环境变量信息（本地调试专用）
+    print("🔍 SUPABASE_URL:", SUPABASE_URL)
+    print("🔍 SUPABASE_API_KEY:", "存在" if SUPABASE_API_KEY else "缺失")
+    print("🔍 尝试登录账号:", username)
 
     headers = {
         "apikey": SUPABASE_API_KEY,
@@ -467,5 +475,6 @@ def health_check():
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
-    print(f"✅ Running Flask on http://0.0.0.0:{port}")
-    app.run(host='0.0.0.0', port=port)
+    is_debug = os.environ.get("FLASK_DEBUG", "1") == "1"
+    print(f"✅ Running Flask on http://127.0.0.1:{port} (debug={is_debug})")
+    app.run(host='127.0.0.1', port=port, debug=is_debug)

@@ -516,5 +516,28 @@
     window.addEventListener('resize', scaleCourseTextAreas);
   </script>
 
+
+<script>
+    // ✅ 判断是否为本地开发环境
+    const isLocalhost = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    
+    // ✅ 非本地环境则启用调试防护
+    if (!isLocalhost) {
+      // 禁用右键菜单
+      document.addEventListener('contextmenu', event => event.preventDefault());
+    
+      // 禁用 F12、Ctrl+Shift+I / J / C、Ctrl+U 等组合键
+      document.addEventListener('keydown', event => {
+        if (
+          event.key === 'F12' ||
+          (event.ctrlKey && event.shiftKey && ['I', 'J', 'C'].includes(event.key.toUpperCase())) ||
+          (event.ctrlKey && event.key.toUpperCase() === 'U')
+        ) {
+          event.preventDefault();
+        }
+      });
+    }
+    </script>
+
 </body>
 </html>

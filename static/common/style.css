@@ -458,34 +458,25 @@ html.dark .course-card .card-footer {
 }
 */
 
-/* 🌈 课程卡片标签：胶囊形状，文字自适应缩放 */
-/* ✅ 外层标签样式：胶囊形状 + 高度固定 */
-.tag-small {
-  display: inline-flex;              /* 弹性布局 */
-  align-items: center;              /* 垂直居中 */
-  justify-content: center;          /* 水平居中 */
-  padding: 0.2rem 0.75rem;          /* 上下 0.2rem，左右 0.75rem */
-  border-radius: 9999px;            /* 胶囊外形 */
-  height: 1.2rem;                   /* 固定高度 */
-  min-width: 2.8rem;                /* 最小宽度 */
-  max-width: 100%;
-  background-color: #ede9fe;        /* 浅紫色背景（浅色模式） */
-  color: #7c3aed;                   /* 紫色文字 */
+
+
+
+#validationAlert {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background-color: #4F81BD;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 1000;
 }
 
-/* ✅ 深色模式：标签背景与文字 */
-html.dark .tag-small {
-  background-color: #7c3aed;        /* 深紫色 */
-  color: #ffffff;                   /* 白色文字 */
-}
-
-/* ✅ 标签内文字：自动缩放，不超出容器 */
-.tag-text {
-  font-size: clamp(8px, 1.8vw, 11px);  /* 随屏幕缩放 */
-  font-weight: 600;
-  max-width: 60%;                    /* 不超过胶囊宽度 60% */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
+#validationAlert.show {
+  opacity: 1;
 }

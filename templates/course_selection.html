@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth dark">
+<html lang="zh-CN" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +16,7 @@
         };
     </script>
 
+    <link rel="stylesheet" href="style.css"> <!-- 自定义样式 -->
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -40,72 +41,121 @@
             transform: scale(1.02);
         }
     </style>
-</head>
-<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-    <!-- Navigation Bar -->
-    <div class="sticky top-0 z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 py-4">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-3 w-full sm:w-auto">
-                    <img 
-                        src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=200" 
-                        alt="Armstrong Logo"
-                        class="h-8 object-contain"
-                    />
-                    
-                    <!-- 竖线分隔符 -->
-                    <span class="text-gray-400 text-xl">|</span>
-                    
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-book-open w-6 h-6 text-purple-600 dark:text-purple-400"></i>
-                        <h1 class="text-xl font-semibold text-gray-900 dark:text-white" id="pageTitle">产品课程</h1>
-                    </div>
-                </div>
-                
-                <!-- 搜索框和控制按钮部分 -->
-                <div class="flex items-center gap-3 w-full sm:w-auto">
-                    <div class="relative flex-1 sm:flex-none sm:min-w-[300px]">
-                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                        <input
-                            type="text"
-                            id="searchInput"
-                            placeholder="搜索课程..."
-                            class="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        />
-                    </div>
-                    <select
-                        id="categorySelect"
-                        class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    >
-                        <option value="">所有类别</option>
-                    </select>
-                    <button
-                        id="themeToggle"
-                        class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                        aria-label="Toggle dark mode"
-                    >
-                        <i class="fas fa-sun dark:hidden"></i>
-                        <i class="fas fa-moon hidden dark:block"></i>
-                    </button>
-                    <button
-                        id="languageToggle"
-                        class="p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                    >
-                        <img
-                            id="languageFlag"
-                            src="https://flagcdn.com/cn.svg"
-                            alt="Language"
-                            class="w-5 h-4"
-                        />
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Main Content -->
+<style>
+    /* 背景图片样式 */
+    .course-page-background {
+      background-image: url('https://i.stardots.io/armstrong/webpage.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh; /* 确保背景图覆盖整个页面 */
+    }
+  </style>
+
+<style>
+    /* 胶囊标签样式：明亮 + 暗色模式兼容 */
+    .tag-capsule {
+    display: inline-block;
+    padding: 2px 6px;  /* 缩小内边距 */
+    font-size: 10px;    /* 缩小字体 */
+    font-weight: 600;   /* 加粗文字 */
+    border-radius: 9999px; /* 胶囊外形 */
+    line-height: 1;
+    white-space: nowrap;
+    background-color: #e5d0ff; /* 更柔和的浅紫色背景 */
+    color: #6a0dad;            /* 更接近紫色的深紫色文字 */
+    }
+
+    /* 🌙 Dark 模式：深紫色背景，浅紫色文字 */
+    .dark .tag-capsule {
+    background-color: #6a0dad; /* 深紫色背景 */
+    color: #e5d0ff;            /* 浅紫色文字 */
+    }
+  </style>
+
+</head>
+<body class="course-page-background">
+    <script>
+        const currentUsername = "{{ username }}";  // 从 Flask 中传递过来的变量
+      </script>
+
+<!-- ✅ 导航栏区域 -->
+<div class="sticky top-0 z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 py-3 sm:py-4">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+  
+        <!-- ✅ 左侧区域：Logo + 标题 + 分类 + 搜索框（统一靠左排列） -->
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <!-- Logo + 标题 -->
+          <div class="flex items-center gap-2">
+            <img src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=200"
+              alt="Armstrong Logo" class="h-8 object-contain" />
+            <span class="text-gray-400 text-lg sm:text-xl">|</span>
+            <div class="flex items-center gap-1">
+              <i class="fas fa-book-open w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400"></i>
+              <h1 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white" id="pageTitle">产品课程</h1>
+            </div>
+          </div>
+  
+          <!-- 分类下拉框 -->
+          <select
+            id="categorySelect"
+            class="max-w-[100px] px-3 py-1.5 h-7 sm:h-7 text-xs sm:text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            style="font-size: 0.65rem !important; font-weight: 600 !important; text-align: center !important;">
+            <option value="">所有类别</option>
+          </select>
+  
+          <!-- 搜索框 + 按钮 -->
+          <div class="relative flex items-center">
+            <button id="searchButton"
+              class="w-5 h-5 flex justify-center items-center text-gray-500 dark:text-gray-300 focus:outline-none">
+              <i class="fas fa-search"></i>
+            </button>
+            <input type="text" id="searchInput" placeholder="搜索课程..."
+              class="hidden max-w-[100px] pl-3 pr-4 py-1.5 h-7 sm:h-7 text-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+          </div>
+        </div>
+  
+        <!-- ✅ 右侧区域：明暗按钮、语言按钮、用户名 + 退出 -->
+        <div class="flex items-center gap-2 sm:gap-3 text-sm text-gray-700 dark:text-gray-300 font-semibold">
+          <!-- 🌙 明暗模式 -->
+          <button id="themeToggle"
+            class="w-5 h-5 flex items-center justify-center rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-md hover:scale-110 transition-transform"
+            aria-label="切换明暗模式">
+            <i class="fas fa-sun dark:hidden text-[11px] leading-none"></i>
+            <i class="fas fa-moon hidden dark:block text-[11px] leading-none"></i>
+          </button>
+  
+          <!-- 🌐 语言切换 -->
+          <button id="languageToggle" onclick="toggleLang()"
+            class="w-5 h-5 flex items-center justify-center rounded-full overflow-hidden bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-inner hover:scale-110 transition-transform"
+            aria-label="切换语言">
+            <img id="languageFlag" src="https://flagcdn.com/cn.svg" alt="Language" class="w-full h-full object-cover" />
+          </button>
+  
+          <!-- 用户名 + 退出 -->
+          <span id="userName">{{ username }}</span>
+          <button onclick="handleLogout()" class="text-blue-600 hover:underline text-sm" id="logoutBtn">｜ 退出</button>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+
+<script>
+    // 显示/隐藏搜索框
+    document.getElementById("searchButton").addEventListener("click", function() {
+        const searchInput = document.getElementById("searchInput");
+        searchInput.classList.toggle("hidden");  // 切换显示与隐藏
+        searchInput.focus();  // 聚焦到输入框
+    });
+</script>
+
+
+    <!-- Main Content 可以调整卡片布局-->
     <main class="max-w-7xl mx-auto px-4 py-8">
-        <div id="courseGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div id="courseGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6"> 
             <!-- Courses will be dynamically inserted here -->
         </div>
         <div id="noResults" class="hidden text-center py-12">
@@ -127,7 +177,7 @@
                     en: "Designed for high-efficiency chiller plants, enabling smart collaboration among chillers to unleash peak performance."
                 },
                 link: "/course/EE-W" , // ✅ 指向你定义的路由
-                duration: "8 weeks",
+                duration: "2 weeks",
                 students: 1234,
                 rating: 4.8,
                 image: "https://i.stardots.io/armstrong/EE-W.png",
@@ -143,7 +193,7 @@
                     zh: "一体化智控核心，定义空气源冷水机组的新标准。",
                     en: "The integrated brain for air-cooled chillers—simplifying control, maximizing efficiency."
                 },
-                duration: "12 weeks",
+                duration: "1 week",
                 students: 856,
                 rating: 4.7,
                 image: "https://i.stardots.io/armstrong/SE-A.png",
@@ -159,7 +209,7 @@
                     zh: "聚焦冷却塔与冷却泵的优化控制，打造智能散热新体验。",
                     en: "Focused on optimizing cooling towers and pumps for intelligent heat rejection."
                 },
-                duration: "6 weeks",
+                duration: "2 weeks",
                 students: 945,
                 rating: 4.9,
                 image: "https://i.stardots.io/armstrong/SE-T%20(ITC9521).png",
@@ -175,7 +225,7 @@
                     zh: "多泵智控核心，系统更稳更省。",
                     en: "The smart core for multi-pump control—stable, efficient, effortless."
                 },
-                duration: "10 weeks",
+                duration: "1 week",
                 students: 678,
                 rating: 4.6,
                 image: "https://i.stardots.io/armstrong/SE-F%20(IPS).png",
@@ -191,7 +241,7 @@
                     zh: "不只是水泵，更是自我调节的智慧引擎。安装即运行，节能高效。",
                     en: "More than a pump – a self-optimizing intelligent engine. quick to install, smart to run, built for energy savings in intelligent buildings."
                 },
-                duration: "10 weeks",
+                duration: "2 weeks",
                 students: 1567,
                 rating: 4.9,
                 image: "https://i.stardots.io/armstrong/DE%20PUMPS.png",
@@ -201,13 +251,13 @@
                 id: 6,
                 title: {
                     zh: "iFMS 智能流体管理系统",
-                    en: "iFMS - Smart"
+                    en: "iFMS - Smart Fluid Management System"
                 },
                 description: {
                     zh: "一体化流线，将复杂工程课程化，一站式交付高效可靠的智能机房系统。",
                     en: "From pump to system, simplifies complex projects into packaged solutions for fast, efficient, and reliable delivery."
                 },
-                duration: "14 weeks",
+                duration: "2 weeks",
                 students: 2341,
                 rating: 4.8,
                 image: "https://i.stardots.io/armstrong/iFMS.png",
@@ -223,7 +273,7 @@
                     zh: "智能增压，节能静音，占地更小，适配多种供水场景。",
                     en: "Smart boosting with energy savings, quiet operation, and compact footprint for versatile water supply needs."
                 },
-                duration: "8 weeks",
+                duration: "1 week",
                 students: 1123,
                 rating: 4.7,
                 image: "https://i.stardots.io/armstrong/Booster.png",
@@ -239,7 +289,7 @@
                     zh: "以超致密满和高效换热，释放每一寸机房空间，适用于对节能和体积要求极高的楼宇项目",
                     en: "Ultra-compact and energy-efficient heat transfer that frees up valuable mechanical room space—perfect for energy-conscious buildings."
                 },
-                duration: "9 weeks",
+                duration: "1 week",
                 students: 892,
                 rating: 4.8,
                 image: "https://i.stardots.io/armstrong/PFX.png",
@@ -271,7 +321,8 @@
         let currentLanguage = 'zh';
         // let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-        let isDarkMode = true; // ✅ 强制默认暗色模式
+        //let isDarkMode = true; // ✅ 强制默认暗色模式
+        let isDarkMode = false;  // ✅ 默认亮色
 
         // Initialize dark mode
         function initTheme() {
@@ -279,69 +330,65 @@
         }
 
     // Create course card
-    function createCourseCard(course) {
-        console.log("📦 渲染课程：", course.title.zh, "➡️ 跳转：", course.link);
+    // 在创建课程卡片的函数内渲染标签
+function createCourseCard(course) {
+  console.log("📦 渲染课程：", course.title.zh, "➡️ 跳转：", course.link);
 
-        return `
-            <a href="${course.link || '#'}" class="block group">
-            <div class="course-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md overflow-hidden flex flex-col">
+  return `
+    <a href="${course.link || '#'}" class="block group">
+      <div class="course-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md overflow-hidden flex flex-col">
+          
+          <!-- ✅ 上半部分：图片区域 -->
+          <div class="h-1/2 bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+            <img 
+                src="${course.image}" 
+                alt="${course.title[currentLanguage]}" 
+                class="course-image w-full h-full object-contain p-4"
+            />
+          </div>
+
+          <!-- ✅ 下半部分：文字区域 -->
+          <div class="h-1/2 relative overflow-hidden">
+            <!-- ✅ 缩放容器：保持固定尺寸 -->
+            <div class="scale-inner absolute inset-0 origin-top-left transition-transform duration-300 px-4">
                 
-                <!-- ✅ 上半部分：图片区域，占据卡片一半高度 -->
-                <div class="h-1/2 bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
-                <img 
-                    src="${course.image}" 
-                    alt="${course.title[currentLanguage]}" 
-                    class="course-image w-full h-full object-contain p-4"
-                />
+              <!-- ✅ 内部实际内容区域 -->
+              <div class="inner-padding flex flex-col justify-between h-full">
+                <div>
+                  <!-- ✅ 标签：小字体 + 胶囊形状 + 自适应缩放 -->
+                  <span class="tag-capsule mb-1">
+                    ${course.category}
+                  </span>
+
+                  <!-- 标题：加粗，自动换行 -->
+                  <h3 class="text-sm font-semibold leading-snug text-gray-900 dark:text-white break-words">
+                    ${course.title[currentLanguage]}
+                  </h3>
+
+                  <!-- 简介：较小字体、自动换行 -->
+                  <p class="text-[0.65rem] text-gray-600 dark:text-gray-300 mt-1 break-words">
+                    ${course.description[currentLanguage]}
+                  </p>
                 </div>
 
-                <!-- ✅ 下半部分：文字区域，支持缩放 + 内边距 -->
-                <div class="h-1/2 relative overflow-hidden">
-                <!-- ✅ 缩放容器：保持固定尺寸，内容可缩放 -->
-                <div class="scale-inner absolute inset-0 origin-top-left transition-transform duration-300 px-4">
-                    
-                    <!-- ✅ 内部实际内容区域，留出左右边距 -->
-                    <div class="inner-padding flex flex-col justify-between h-full">
+                <!-- ✅ 底部信息（时长、人数、评分） -->
+                <div class="card-footer flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 mt-4 pb-3">
+                  <div class="flex items-center gap-1">
+                    <i class="fas fa-clock w-3.5 h-3.5"></i><span>${course.duration}</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <i class="fas fa-users w-3.5 h-3.5"></i><span>${course.students.toLocaleString()} students</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <i class="fas fa-star w-3.5 h-3.5 text-yellow-400"></i><span>${course.rating}</span>
+                  </div>
+                </div>
 
-                        <!-- ✅ 上半：标签、标题、简介 -->
-                        <div>
-                            <!-- ✅ 胶囊标签：小字体 + 自适应缩放 + 暗色模式兼容 -->
-                            <span class="tag-small mb-1">
-                            <span class="tag-text">
-                                ${course.category}
-                            </span>
-                            </span>
-
-                            <!-- 标题：加粗，自动换行 -->
-                            <h3 class="text-sm font-semibold leading-snug text-gray-900 dark:text-white break-words">
-                            ${course.title[currentLanguage]}
-                            </h3>
-
-                            <!-- 简介：较小字体、自动换行 -->
-                            <p class="text-[0.65rem] text-gray-600 dark:text-gray-300 mt-1 break-words">
-                            ${course.description[currentLanguage]}
-                            </p>
-                        </div>
-
-                        <!-- ✅ 下半：时长 / 人数 / 评分 -->
-                        <!-- 底部图标栏（✅ 添加 card-footer 类） -->
-                        <div class="card-footer flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 mt-3">
-                            <div class="flex items-center gap-1">
-                                <i class="fas fa-clock w-3.5 h-3.5"></i><span>${course.duration}</span>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <i class="fas fa-users w-3.5 h-3.5"></i><span>${course.students.toLocaleString()} ${translations[currentLanguage].students}</span>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <i class="fas fa-star w-3.5 h-3.5 text-yellow-400"></i><span>${course.rating}</span>
-                            </div>
-                        </div>
-
-                    </div> <!-- inner-padding end -->
-                </div> <!-- scale-inner end -->
-                </div> <!-- 下半结束 -->
-            </div> <!-- course card 结束 -->
-        </a>
+              </div> <!-- inner-padding end -->
+            </div> <!-- scale-inner end -->
+          </div> <!-- 下半部分结束 -->
+      </div> <!-- course card end -->
+    </a>
   `;
 }
 
@@ -389,6 +436,12 @@
             initCategories();
             updateCourseGrid();
             scaleCourseTextAreas(); // 语言切换后重新计算缩放
+
+            // ✅ 更新“退出按钮”文字
+            const logoutBtn = document.getElementById("logoutBtn");
+            if (logoutBtn) {
+                logoutBtn.textContent = currentLanguage === 'en' ? "｜ Logout" : "｜ 退出";
+            }
         }
 
         // Event listeners
@@ -538,6 +591,22 @@
       });
     }
     </script>
+
+<!-- 🟨 页面底部添加脚本（在 </body> 之前） -->
+<script>
+    // 根据语言切换更新按钮文字
+    window.addEventListener('DOMContentLoaded', () => {
+      const logoutBtn = document.getElementById("logoutBtn");
+      if (logoutBtn) {
+        logoutBtn.textContent = isChinese ? "退出" : "Logout";
+      }
+    });
+  
+    // 处理登出
+    function handleLogout() {
+      window.location.href = "/logout";
+    }
+  </script>
 
 </body>
 </html>

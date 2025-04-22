@@ -523,7 +523,7 @@ def health_check():
     return 'OK', 200
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
-    is_debug = os.environ.get("FLASK_DEBUG", "1") == "1"
-    print(f"✅ Running Flask on http://127.0.0.1:{port} (debug={is_debug})")
-    app.run(host='127.0.0.1', port=port, debug=is_debug)
+    port = int(os.environ.get("PORT", 10000))  # Render 会自动注入 PORT
+    is_debug = os.environ.get("FLASK_DEBUG", "0") == "1"  # 默认关闭 Debug
+    print(f"✅ Running Flask on http://0.0.0.0:{port} (debug={is_debug})")
+    app.run(host='0.0.0.0', port=port, debug=is_debug)

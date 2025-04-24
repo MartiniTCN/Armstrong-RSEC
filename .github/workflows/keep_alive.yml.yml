@@ -1,0 +1,25 @@
+name: ⏰ Keep Render Awake
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'  # 每 15 分钟一次（根据需要调整）
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔁 Ping Render with Retry
+        run: |
+          echo "🌐 正在尝试唤醒 Render 应用..."
+          for i in {1..5}; do
+            echo "⏳ 第 $i 次尝试请求..."
+            if curl -sSf https://armstrong-rsec.onrender.com/health; then
+              echo "✅ Render 正常响应！"
+              exit 0
+            else
+              echo "⚠️ 请求失败（第 $i 次），3 秒后重试..."
+              sleep 3
+            fi
+          done
+          echo "❌ 所有尝试失败，Render 可能处于休眠状态或地址错误"
+          exit 1

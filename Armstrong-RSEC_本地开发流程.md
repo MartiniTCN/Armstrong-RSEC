@@ -7,6 +7,7 @@
 ```bash
 cd Armstrong-RSEC                # 进入项目文件夹
 source venv/bin/activate         # 启动虚拟环境
+pip install python-dateutil      # 安装 python-dateutil 模块
 python app.py                    # 启动本地 Flask 服务
 ```
 

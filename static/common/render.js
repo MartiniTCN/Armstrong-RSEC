@@ -1,6 +1,17 @@
 // 文件路径：/static/common/render.js
 // 说明：统一测试页面渲染与评估脚本，支持加载 CSV、评分、语言切换、邮件发送
 
+// ✅ render.js 中定义的函数（不需要 <script> 包裹）
+function handleLogout() {
+  window.location.href = "/logout";
+}
+
+// ✅ 优化：仅首次加载时设置中文
+if (!localStorage.getItem("language")) {
+  localStorage.setItem("language", "zh");
+}
+let currentLanguage = localStorage.getItem("language") || "zh";
+
  // 🌈 基础样式统一定义，便于明暗主题切换 + 后期维护
 const textClass = "text-gray-800 dark:text-gray-100";
 const inputClass = "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded";
@@ -10,6 +21,7 @@ const modalClass = "fixed z-50 inset-0 overflow-y-auto bg-gray-800 bg-opacity-50
 
 let parsedQuestions = [];
 let correctAnswers = { single: [], multiple: [], judge: [], essay: [] };
+
 
 // ✅ 工具函数：创建并显示统一风格的模态弹窗
 // ✅ 工具函数：创建并显示统一风格的模态弹窗（支持输入框、确认/关闭按钮）
@@ -65,64 +77,192 @@ function createModal(id, title, message, onConfirm = null, showClose = true, sho
 }
 
 function updateLanguageUI(lang) {
-  // ✅ 页面标题
-  document.getElementById('pageTitle').innerText =
-    lang === 'en' ? '| EE-W Product Test System' : '｜ EE-W 产品培训测试系统';
+  // ✅ 卡片标题替换（用 data-title-zh / data-title-en）
+  document.querySelectorAll("h2").forEach(h2 => {
+    const zh = h2.dataset.titleZh;
+    const en = h2.dataset.titleEn;
+    if (zh && en) {
+      const icon = h2.querySelector("i")?.outerHTML || "";
+      h2.innerHTML = `${icon}${lang === 'zh' ? zh : en}`;
+    }
+  });
+  // ✅ 更新所有学员信息表单标签
+  document.querySelectorAll("label[data-zh][data-en] .lang-label").forEach(el => {
+    const parent = el.closest("label");
+    if (parent) {
+      el.textContent = currentLanguage === "zh"
+        ? parent.getAttribute("data-zh")
+        : parent.getAttribute("data-en");
+    }
+  });
 
-  // ✅ 返回课程
-  document.querySelector('a[href="/course"]').innerHTML =
-    lang === 'en'
-      ? '<i class="fas fa-arrow-left mr-2"></i>Back to course list'
-      : '<i class="fas fa-arrow-left mr-2"></i>返回课程选择页';
+  // ✅ 更新所有 input placeholder
+  document.querySelectorAll("input[data-placeholder-zh][data-placeholder-en]").forEach(input => {
+    input.placeholder = currentLanguage === "zh"
+      ? input.getAttribute("data-placeholder-zh")
+      : input.getAttribute("data-placeholder-en");
+  });
 
-  // ✅ 倒计时提示
-  document.querySelector('#examStatusBar button span').innerText =
-    isPaused ? (lang === 'en' ? 'Resume' : '继续') : (lang === 'en' ? 'Pause' : '暂停');
+  // ✅ 导航栏标题
+  const pageTitle = document.getElementById("pageTitle");
+  if (pageTitle) {
+    const zh = pageTitle.getAttribute("data-title-zh");
+    const en = pageTitle.getAttribute("data-title-en");
+    pageTitle.textContent = lang === "zh" ? zh : en;
+  }
 
-  // ✅ 学员信息标题
-  document.querySelector('h2 i.fa-id-card').parentElement.innerHTML =
-    lang === 'en'
-      ? '<i class="fas fa-id-card mr-2 text-blue-500"></i>Student Information'
-      : '<i class="fas fa-id-card mr-2 text-blue-500"></i>学员信息';
+  // ✅ 登录信息（保留图标）
+  const userGreeting = document.getElementById("userGreeting");
+  if (userGreeting) {
+    const username = userGreeting.dataset.username || "";
+    const greeting = lang === "zh" ? `${username}` : `${username}`;
 
-  // ✅ 表单字段（公司/姓名/电话/邮箱等）后续可继续添加
-  document.querySelector('label[for="company"]').innerHTML =
-    lang === 'en' ? '<span class="text-red-500">*</span> Company Name' : '<span class="text-red-500">*</span> 公司名称';
+    userGreeting.innerHTML = `
+      <i class="fas fa-graduation-cap mr-2 text-[12px]"></i>
+      <span class="font-semibold">${greeting}</span>
+    `;
+  }
+
+  // ✅ 退出按钮
+  const logoutText = document.getElementById("logoutText");
+  if (logoutText) {
+    logoutText.textContent = lang === "zh" ? "退出" : "Logout";
+    logoutText.className = "text-blue-500 cursor-pointer hover:underline";
+  }
+
+  // ✅ 返回课程按钮
+  const backToCourse = document.querySelector('a[href="/course"]');
+  if (backToCourse) {
+    backToCourse.innerHTML =
+      lang === 'en'
+        ? '<i class="fas fa-arrow-left mr-2"></i>Back to course list'
+        : '<i class="fas fa-arrow-left mr-2"></i>返回课程选择页';
+  }
+
+  // ✅ 倒计时状态按钮
+  const statusBtnSpan = document.querySelector('#examStatusBar button span');
+  if (statusBtnSpan) {
+    statusBtnSpan.innerText =
+      isPaused
+        ? (lang === 'en' ? 'Resume' : '继续')
+        : (lang === 'en' ? 'Pause' : '暂停');
+  }
+
+  // ✅ 表单字段 label 更新（加判空处理）
+  const labelCompany = document.querySelector('label[for="company"]');
+  if (labelCompany)
+    labelCompany.innerHTML = lang === 'en'
+      ? '<span class="text-red-500">*</span> Company Name'
+      : '<span class="text-red-500">*</span> 公司名称';
+
+  const labelName = document.querySelector('label[for="name"]');
+  if (labelName)
+    labelName.innerHTML = lang === 'en'
+      ? '<span class="text-red-500">*</span> Full Name'
+      : '<span class="text-red-500">*</span> 学员姓名';
+
+  const labelPhone = document.querySelector('label[for="phone"]');
+  if (labelPhone)
+    labelPhone.innerHTML = lang === 'en'
+      ? '<span class="text-red-500">*</span> Phone Number'
+      : '<span class="text-red-500">*</span> 手机号码';
+
+  const labelEmail = document.querySelector('label[for="email"]');
+  if (labelEmail)
+    labelEmail.innerHTML = lang === 'en' ? 'Email Address' : '邮箱地址';
+
+    // ✅ 更新题干（class="question-text"）
+    document.querySelectorAll(".question-text").forEach(p => {
+      const zh = p.getAttribute("data-zh");
+      const en = p.getAttribute("data-en");
+      if (zh && en) {
+        const indexMatch = p.textContent.trim().match(/^\d+/); // 提取题号
+        const prefix = indexMatch ? `${indexMatch[0]}. ` : "";
+        p.textContent = prefix + (lang === "zh" ? zh : en);
+      }
+    });
+  
+    // ✅ 更新选项内容（class="option-text"）
+    document.querySelectorAll(".option-text").forEach(span => {
+      const zh = span.getAttribute("data-zh");
+      const en = span.getAttribute("data-en");
+      if (zh && en) {
+        const prefixMatch = span.textContent.trim().match(/^[A-D]\./); // 选项字母 A. B. 等
+        const prefix = prefixMatch ? `${prefixMatch[0]} ` : "";
+        span.textContent = prefix + (lang === "zh" ? zh : en);
+      }
+    });
+
+    // ✅ 更新 textarea placeholder（简答题）
+    document.querySelectorAll("textarea[data-placeholder-zh][data-placeholder-en]").forEach(textarea => {
+      textarea.placeholder = lang === "zh"
+        ? textarea.getAttribute("data-placeholder-zh")
+        : textarea.getAttribute("data-placeholder-en");
+    });
+
 }
 
-// 🌐 当前语言变量（你已有 currentLanguage 的话可省略）
-let currentLanguage = localStorage.getItem("language") || "zh";
+function updateQuestionTextLanguage(lang) {
+  document.querySelectorAll('.question-text').forEach(el => {
+    const zh = el.getAttribute('data-zh');
+    const en = el.getAttribute('data-en');
+    el.innerHTML = `${el.innerHTML.split('. ')[0]}. ${lang === 'zh' ? zh : en}`;
+  });
+}
 
-// ✅ 切换语言并刷新页面（或重载内容）
+// ✅ 语言切换函数：自动弹出模态提示框，不用 alert
 function toggleLanguage() {
-  // ✅ 1. 切换语言变量
+  // 1. 切换语言状态
   currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
   localStorage.setItem("language", currentLanguage);
 
-  // ✅ 2. 立即更新图标
+  // 2. 更新语言图标
   const flag = document.getElementById("languageFlag");
   if (flag) {
     flag.src = `https://flagcdn.com/${currentLanguage === 'en' ? 'cn' : 'us'}.svg`;
     flag.alt = currentLanguage === 'en' ? "中文" : "English";
   }
 
-  // ✅ 3. 设置状态标记（后续渲染用）
-  localStorage.setItem("showLoadingOnce", "true");
-  localStorage.setItem("isSwitchingLanguage", "true");
+  // 3. 创建并显示提示弹窗（蓝底白字，自动消失）
+  const msg = document.createElement("div");
+  msg.id = "langSwitchToast";
+  msg.className = `
+    fixed top-1/2 left-1/2 
+    transform -translate-x-1/2 -translate-y-1/2 
+    bg-blue-600 text-white text-xs sm:text-sm px-4 py-2 
+    rounded-xl shadow-md z-[9999] text-center max-w-xs 
+    animate-fade-in-scale
+  `;
+  msg.innerText = currentLanguage === "zh"
+    ? "🌐 语言切换中，请稍候... Language is switching..."
+    : "🌐 Language is switching... 请稍候...";
 
-  // ✅ 4. 弹出“语言切换中”模态框
-  createModal(
-    "switchLangModal",
-    currentLanguage === "zh" ? "切换语言中" : "Switching Language",
-    currentLanguage === "zh"
-      ? "语言切换中，请稍候…"
-      : "Switching language, please wait...",
-    null,
-    false
-  );
+  document.getElementById("langSwitchToast")?.remove();
+  document.body.appendChild(msg);
 
-  // ✅ 5. 刷新页面
-  setTimeout(() => location.reload(), 300);
+  // ✅ 淡出 + 移除
+  setTimeout(() => {
+    msg.classList.remove("animate-fade-in-scale");
+    msg.classList.add("animate-fade-out-scale");
+
+    setTimeout(() => msg.remove(), 300); // wait for fade-out
+  }, 1200); // 保持显示时间
+
+  // 4. 更新导航栏、表单、按钮等静态文字
+  updateLanguageUI(currentLanguage);
+  updateQuestionTextLanguage(currentLanguage); // ✅ 添加这行
+
+  // 5. 重新渲染题目（保持原有答题）
+  //renderQuestions(parsedQuestions);
+
+  // 6. 更新加载提示文字（如果有）
+  updateLoadingText();
+
+  // 7. 如果在评测页，重新渲染结果内容
+  if (typeof renderAssessmentResult === "function" && document.getElementById("resultTableBody")) {
+    renderAssessmentResult();
+  }
+  
 }
 
 // ✅ 更新语言按钮图标
@@ -144,13 +284,37 @@ function switchLanguage(lang) {
   currentLanguage = lang;
   console.log(`🌐 已切换语言为：${lang}`);
   alert(`🌐 已切换为 ${lang === 'zh' ? '中文' : 'English'} 模式`);
-  renderQuestions(parsedQuestions);
+  //renderQuestions(parsedQuestions);
 }
 // ✅ 支持的中英文提示（全局）
 const loadingMessages = {
   zh: "测试题加载中，请稍后…",
   en: "Loading questions, please wait..."
 };
+
+function showLoadingMessage() {
+  // 若已存在则不重复添加
+  if (document.getElementById("questionLoadingMessage")) return;
+
+  const msg = document.createElement("div");
+  msg.id = "questionLoadingMessage";
+  msg.className = `
+    fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+    bg-blue-600 text-white text-sm sm:text-base px-6 py-3 rounded-xl shadow-lg
+    z-[9999] text-center animate-fade-in-scale max-w-sm
+  `;
+  msg.innerHTML = `
+    <div>📘 题目加载中...</div>
+    <div class="text-xs sm:text-sm opacity-80 mt-1">Question is loading...</div>
+  `;
+  document.body.appendChild(msg);
+}
+
+function hideLoadingMessage() {
+  const msg = document.getElementById("questionLoadingMessage");
+  if (msg) msg.remove();
+}
+
 
 // ✅ 根据语言更新加载提示
 function updateLoadingText() {
@@ -161,46 +325,18 @@ function updateLoadingText() {
   }
 }
 
-// ✅ 加载 CSV 文件并初始化题目与答案
-function loadCSVAndInit(courseName) {
-  const csvPath = `/static/csv/${courseName}.csv`;
-
-  // ✅ 获取当前语言（默认中文）
-  const lang = localStorage.getItem("language") || "zh";
-
-  // ✅ 多语言提示内容
-  const messages = {
-    zh: "测试题加载中，请稍后…",
-    en: "Loading questions, please wait..."
-  };
-
-  // ✅ 显示加载弹窗（无关闭按钮）
-  createModal("loadingModal", lang === "zh" ? "提示" : "Notice", messages[lang], null, false);
-
-  // ✅ 使用 PapaParse 加载 CSV 文件
-  Papa.parse(csvPath, {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-
-    complete: function (results) {
-      // ✅ 解析成功后初始化题目
-      parsedQuestions = results.data;
-      initCorrectAnswers(parsedQuestions);
-      renderQuestions(parsedQuestions);
-
-      // ✅ 加载完毕后移除模态弹窗
-      closeModal("loadingModal");
-    },
-
-    error: function (err) {
-      // ❌ 错误时弹出错误提示弹窗
-      closeModal("loadingModal");
-      createModal("errorModal", lang === "zh" ? "加载失败" : "Load Failed", "❌ 加载题库失败，请检查 CSV 路径是否正确！");
-      console.error("📛 PapaParse 加载错误：", err);
-    }
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active-page');
   });
+  document.getElementById(pageId).classList.add('active-page');
+  window.scrollTo(0, 0);
+  if (pageId === 'homePage' || pageId === 'completePage') {
+    isPaused = true;
+    document.getElementById('testPage').classList.add('blur-overlay');
+  }
 }
+
 
 
 // ✅ 工具函数：关闭指定 ID 的模态框
@@ -209,7 +345,8 @@ function closeModal(id) {
   if (modal) modal.remove();
 }
 
-  
+
+
 
 // ✅ 弹出“确认提交答卷”的模态框
 function confirmSubmitTest() {
@@ -226,23 +363,585 @@ function confirmSubmitTest() {
   });
 }
 
-// ✅ 提取正确答案
-function initCorrectAnswers(data) {
-  correctAnswers = { single: [], multiple: [], judge: [], essay: [] };
-  data.forEach(row => {
-    const type = row.type?.toLowerCase();
-    const answer = row.answer?.trim();
+// ✅ 公共函数：获取输入值
+function getInputValue(name) {
+  const el = document.querySelector(`[name="${name}"]`);
+  return el ? el.value.trim() : "";
+}
+
+function getFallbackValue(id) {
+  const el = document.getElementById(id);
+  return el ? (el.value?.trim?.() || el.textContent?.trim?.() || "") : "";
+}
+
+// ✅ 提交答卷，只跳转，不执行评测、不导出、不发送邮件
+function submitTest() {
+  // ✅ 采集学员信息
+  const userInfo = {
+    company: getFallbackValue("company"),
+    name: getFallbackValue("name"),
+    phone: getFallbackValue("phone"),
+    email: getFallbackValue("email")
+  };
+
+  // ✅ 收集答题内容
+  const answers = collectAnswers(); // { singleChoice, multipleChoice, judgment, essay }
+
+  // ✅ 构造完整数据结构
+  const finalData = {
+    userInfo,
+    ...answers
+  };
+
+  // ✅ 存入 sessionStorage（完成页和评测使用）
+  sessionStorage.setItem("collectedAnswers", JSON.stringify(finalData));
+
+  // ✅ 补充：将题库结构写入标准缓存，供完成页使用
+  const course = getCurrentCourseFromURL();
+  const parsedKey = `parsedQuestions_${course}`;
+  const stored = sessionStorage.getItem(parsedKey);
+  if (stored) {
+    sessionStorage.setItem("parsedQuestions", stored);
+  }
+
+  // ✅ 页面切换到完成页
+  showPage("completePage");
+
+  // ✅ 渲染完成页内容
+  renderAnswersOnCompletePage(finalData);
+}
+
+// ✅ 渲染完成页上用户提交的答案（不包含正确答案与得分）
+function renderAnswersOnCompletePage(answers) {
+  const now = new Date().toLocaleString('zh-CN', { hour12: false });
+
+  // ✅ 读取渲染顺序（必须与评分一致）
+  const parsedQuestions = JSON.parse(sessionStorage.getItem("parsedQuestions") || "[]");
+
+  // ✅ 强制排序：单选 → 多选 → 判断 → 简答
+  const grouped = { single: [], multiple: [], judge: [], essay: [] };
+  parsedQuestions.forEach(q => {
+    const type = q?.type?.toLowerCase();
+    if (grouped[type]) grouped[type].push(q);
+  });
+  const sortedQuestions = [
+    ...grouped.single,
+    ...grouped.multiple,
+    ...grouped.judge,
+    ...grouped.essay
+  ];
+
+  // ✅ 渲染学员信息
+  document.getElementById("resultCompany").textContent = answers.userInfo.company;
+  document.getElementById("resultName").textContent = answers.userInfo.name;
+  document.getElementById("resultEmail").textContent = answers.userInfo.email;
+  document.getElementById("resultPhone").textContent = answers.userInfo.phone;
+  document.getElementById("resultTime").textContent = now;
+
+  // ✅ 清空旧表格
+  const tbody = document.getElementById("resultTableBody");
+  tbody.innerHTML = "";
+
+  const createRow = (type, num, yourAnswer) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td class="border p-2">${type}</td>
+      <td class="border p-2">${num}</td>
+      <td class="border p-2">${yourAnswer}</td>
+      <td class="border p-2 text-gray-400 italic">-</td>
+      <td class="border p-2 text-gray-400 italic">-</td>
+    `;
+    tbody.appendChild(row);
+  };
+
+  // ✅ 索引标记器
+  const index = { single: 1, multiple: 1, judge: 1, essay: 1 };
+
+  sortedQuestions.forEach((q, i) => {
+    if (!q || !q.type) {
+      console.warn(`⚠️ 第 ${i + 1} 题无效，跳过：`, q);
+      return;
+    }
+  
+    const type = q.type.toLowerCase();
+    const id = q.id;
+    let userAnswer = "未答";
+    let label = "";
+  
     if (type === "single") {
-      correctAnswers.single.push(answer);
+      userAnswer = answers.singleChoice?.[id] || "未答";
+      label = "单选题";
+      createRow(label, index.single++, userAnswer);
+  
     } else if (type === "multiple") {
-      const arr = answer.split(',').map(a => a.trim()).sort();
-      correctAnswers.multiple.push(arr);
+      const val = answers.multipleChoice?.[id] || [];
+      userAnswer = val.length > 0 ? val.join(", ") : "未答";
+      label = "多选题";
+      createRow(label, index.multiple++, userAnswer);
+  
     } else if (type === "judge") {
-      correctAnswers.judge.push(answer);
+      const val = answers.judgment?.[id];
+      const normalized = val?.toLowerCase()?.trim();
+      userAnswer = normalized === "true" ? "✔ 正确"
+                  : normalized === "false" ? "✘ 错误"
+                  : "未答";
+      label = "判断题";
+      createRow(label, index.judge++, userAnswer);
+  
     } else if (type === "essay") {
-      correctAnswers.essay.push(answer);
+      const val = answers.essay?.[id];
+      if (!val || typeof val !== "string" || val.trim() === "") {
+        userAnswer = "未答";
+      } else {
+        userAnswer = val.length > 50 ? val.slice(0, 50) + "..." : val;
+      }
+      label = "简答题";
+      createRow(label, index.essay++, userAnswer);
     }
   });
+}
+
+// ✅ 收集评测结果并展示在完成页（含评分与等级判定）
+function evaluateAnswers(userAnswers, correctAnswers) {
+  let totalScore = 0;
+  const resultRows = [];
+
+  const typeMap = {
+    singlechoice: "单选题",
+    multiplechoice: "多选题",
+    judgement: "判断题",
+    essay: "简答题"
+  };
+
+  const scoreMap = {
+    singlechoice: 2,
+    multiplechoice: 1,
+    judgement: 1,
+    essay: 10
+  };
+
+  for (const type in correctAnswers) {
+    const userGroup = userAnswers[type] || {};
+    const correctGroup = correctAnswers[type] || {};
+
+    for (const qid in correctGroup) {
+      const correct = correctGroup[qid];
+      const user = userGroup[qid] ?? "";
+      let score = 0;
+
+      if (type === "multiplechoice") {
+        const correctSet = new Set(correct.split(",").map(s => s.trim()));
+        const userSet = new Set((user || "").split(",").map(s => s.trim()));
+        const isCorrect = correctSet.size === userSet.size && [...correctSet].every(x => userSet.has(x));
+        score = isCorrect ? scoreMap[type] : 0;
+      } else if (type === "essay") {
+        const keywords = correct.split(/[，,。.\s]+/).filter(Boolean); // 用标点或空格分词
+        const matchCount = keywords.filter(k => user.includes(k)).length;
+        score = Math.round((matchCount / keywords.length) * scoreMap[type]);
+      } else {
+        score = (user.trim() === correct.trim()) ? scoreMap[type] : 0;
+      }
+
+      totalScore += score;
+
+      resultRows.push({
+        type: typeMap[type],
+        id: qid,
+        user: user || "未答",
+        correct: correct,
+        score: score
+      });
+    }
+  }
+
+  return { totalScore, resultRows };
+}
+
+// ✅ 点击“开始评测”按钮时的入口
+function onStartEvaluationClick() {
+  if (confirm("您确定开始进行评测吗？\n\n一旦开始，将无法返回测试页，并会导出 PDF、推送结果到 Armstrong RSEC。")) {
+    // 用户点击“是”，继续弹出动态验证码
+    promptPasswordAndSend();
+  } else {
+    // 用户点击“否”，什么也不做
+    return;
+  }
+}
+
+// ✅ 动态验证码验证 + 分支处理
+function promptPasswordAndSend() {
+  const code = prompt("请输入动态口令（如由 RSEC 部门提供）：");
+
+  if (!code) return alert("未输入验证码，操作已取消。");
+
+  if (code === "RSEC") {
+    // ✅ 验证成功，执行全部逻辑
+    const answers = collectAnswers();
+    renderAssessmentResult(answers); // 渲染完成页
+    exportPDF(answers);              // 导出 PDF
+    sendEmailResult(answers);        // 发送邮件
+    evaluationStarted = true;
+  } else {
+    // ❌ 验证失败，只导出 PDF 并提醒
+    const answers = collectAnswers();
+    evaluationStarted = true;
+    renderAssessmentResult(answers);
+    exportPDF(answers);
+    alert("动态验证码错误，仅导出 PDF，未发送邮件，请联系管理员。");
+  }
+}
+
+// ✅ 更新题目进度（单选、多选、判断、简答）
+function updateProgressFromDOM() {
+  const data = {
+    single: { total: 0, done: 0 },
+    multi: { total: 0, done: 0 },
+    judge: { total: 0, done: 0 },
+    essay: { total: 0, done: 0 }
+  };
+
+  // 单选题
+  document.querySelectorAll(".question-card[data-type='single']").forEach(card => {
+    data.single.total++;
+    const id = card.getAttribute("data-id");
+    const selected = card.querySelector("input[type='radio']:checked");
+    if (id && selected) data.single.done++;
+  });
+
+  // 多选题（注意 key 是 multi，不是 multiple）
+  document.querySelectorAll(".question-card[data-type='multiple']").forEach(card => {
+    data.multi.total++;
+    const id = card.getAttribute("data-id");
+    const selected = card.querySelectorAll("input[type='checkbox']:checked");
+    if (id && selected.length > 0) data.multi.done++;
+  });
+
+  // 判断题
+  document.querySelectorAll(".question-card[data-type='judge']").forEach(card => {
+    data.judge.total++;
+    const id = card.getAttribute("data-id");
+    const selected = card.querySelector("input[type='radio']:checked");
+    if (id && selected) data.judge.done++;
+  });
+
+  // 简答题
+  document.querySelectorAll(".essay-card[data-id]").forEach(card => {
+    data.essay.total++;
+    const textarea = card.querySelector("textarea");
+    if (textarea && textarea.value.trim() !== "") {
+      data.essay.done++;
+    }
+  });
+
+  // ✅ 更新页面进度提示（兼容 key 映射）
+  Object.entries(data).forEach(([type, val]) => {
+    const el = document.getElementById(`status-${type}`);
+    if (el) {
+      el.textContent = `${val.done} / ${val.total}`;
+      el.classList.remove('text-green-600', 'text-red-500');
+      el.classList.add(val.done === val.total ? 'text-green-600' : 'text-red-500');
+    }
+  });
+}
+
+// 假设用户信息存储在表单中
+function getUserInfo() {
+  return {
+    company: document.getElementById("company").value,
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    phone: document.getElementById("phone").value
+  };
+}
+
+// ✅ 答案收集
+function collectAnswers() {
+  const answers = {
+    singleChoice: {},
+    multipleChoice: {},
+    judgment: {},
+    essay: {},
+    userInfo: {
+      company: document.getElementById("company")?.value?.trim() || "",
+      name: document.getElementById("name")?.value?.trim() || "",
+      phone: document.getElementById("phone")?.value?.trim() || "",
+      email: document.getElementById("email")?.value?.trim() || ""
+    }
+  };
+
+  // ✅ 单选题
+  document.querySelectorAll(".question-card[data-type='single']").forEach(card => {
+    const id = card.getAttribute("data-id")?.trim();
+    const input = card.querySelector("input[type='radio']:checked");
+    if (id && input) {
+      answers.singleChoice[id] = input.value;
+    } else {
+      //console.warn(`⚠️ 单选题未作答或缺少 ID：`, card);
+    }
+  });
+
+  // ✅ 多选题
+  document.querySelectorAll(".question-card[data-type='multiple']").forEach(card => {
+    const id = card.getAttribute("data-id")?.trim();
+    const checked = [...card.querySelectorAll("input[type='checkbox']:checked")];
+    if (id && checked.length > 0) {
+      answers.multipleChoice[id] = checked.map(cb => cb.value);
+    } else {
+      //console.warn(`⚠️ 多选题未作答或缺少 ID：`, card);
+    }
+  });
+
+  // ✅ 判断题
+  document.querySelectorAll(".question-card[data-type='judge']").forEach(card => {
+    const id = card.getAttribute("data-id")?.trim();
+    const input = card.querySelector("input[type='radio']:checked");
+    if (id && input) {
+      answers.judgment[id] = input.value;
+    } else {
+      //console.warn(`⚠️ 判断题未作答或缺少 ID：`, card);
+    }
+  });
+
+  // ✅ 简答题
+  document.querySelectorAll(".essay-card[data-id]").forEach(card => {
+    const id = card.getAttribute("data-id")?.trim();
+    const textarea = card.querySelector("textarea");
+    if (id && textarea) {
+      answers.essay[id] = textarea.value.trim();
+    } else {
+      //console.warn(`⚠️ 简答题未作答或缺少 ID：`, card);
+    }
+  });
+
+  // ✅ 存入全局
+  window.collectedAnswers = answers;
+  //console.log("✅ 已收集答题结果：", answers); // Martin 暂时隐藏答题收集结果的 console 提示
+  return answers;
+
+  // ✅ 新增：每次收集后更新进度
+  updateQuestionProgress(answers);
+}
+
+ 
+function renderAssessmentResult() {
+  const tableBody = document.getElementById("resultTableBody");
+  if (!tableBody) {
+    console.error("❌ 找不到表格容器 resultTableBody！");
+    return;
+  }
+
+  // ✅ 保底 parsedQuestions（刷新后从 sessionStorage 读取）
+  if (!Array.isArray(window.parsedQuestions)) {
+    try {
+      window.parsedQuestions = JSON.parse(sessionStorage.getItem("parsedQuestions") || "[]");
+    } catch {
+      window.parsedQuestions = [];
+    }
+  }
+
+  if (!Array.isArray(window.parsedQuestions) || window.parsedQuestions.length === 0) {
+    console.error("❌ parsedQuestions 无效！");
+    return;
+  }
+
+  const allData = window.collectedAnswers || JSON.parse(sessionStorage.getItem("collectedAnswers") || "{}");
+  const answers = {
+    singleChoice: allData.singleChoice || {},
+    multipleChoice: allData.multipleChoice || {},
+    judgment: allData.judgment || {},
+    essay: allData.essay || {}
+  };
+  const userInfo = allData.userInfo || {};
+
+  // ✅ 渲染学员信息
+  document.getElementById("resultCompany").textContent = userInfo.company || "-";
+  document.getElementById("resultName").textContent = userInfo.name || "-";
+  document.getElementById("resultPhone").textContent = userInfo.phone || "-";
+  document.getElementById("resultEmail").textContent = userInfo.email || "-";
+  document.getElementById("resultTime").textContent = new Date().toLocaleString();
+
+  // ✅ 清空表格
+  tableBody.innerHTML = "";
+  const indexMap = { single: 1, multiple: 1, judge: 1, essay: 1 };
+  let totalScore = 0;
+  let fullScore = 0;
+
+  // ✅ 按题型重新分组（保证完成页顺序为：单选→多选→判断→简答）
+  const grouped = { single: [], multiple: [], judge: [], essay: [] };
+  window.parsedQuestions.forEach(q => {
+    const t = q?.type?.toLowerCase();
+    if (grouped[t]) grouped[t].push(q);
+  });
+
+  // ✅ 统一渲染逻辑
+  ["single", "multiple", "judge", "essay"].forEach(type => {
+    grouped[type].forEach((q, i) => {
+      const id = q.id;
+      const label = currentLanguage === "zh"
+        ? (type === "single" ? "单选题" : type === "multiple" ? "多选题" : type === "judge" ? "判断题" : "简答题")
+        : (type === "single" ? "Single" : type === "multiple" ? "Multiple" : type === "judge" ? "True/False" : "Essay");
+
+      const displayLabel = `${label} ${indexMap[type]++}`;
+      let userAnswer = "未答";
+      let correctAnswer = q.answer;
+      let score = 0;
+      let scoreFull =
+        type === "single" ? 2 :
+        type === "multiple" ? 1 :
+        type === "judge" ? 1 :
+        type === "essay" ? 20 : 0;
+
+      if (type === "single") {
+        const ua = answers.singleChoice[id];
+        userAnswer = ua || "未答";
+        if (ua === correctAnswer) score = scoreFull;
+
+      } else if (type === "multiple") {
+        const ua = answers.multipleChoice[id] || [];
+        const correct = correctAnswer.split("").map(s => s.trim()).sort();
+        const selected = [...ua].map(s => s.trim()).sort();
+        userAnswer = selected.length > 0 ? selected.join(", ") : "未答";
+        if (selected.join("") === correct.join("")) score = scoreFull;
+
+      } else if (type === "judge") {
+        const ua = answers.judgment[id];
+        const normalized = ua?.toLowerCase()?.trim();
+        const correctNorm = q.answer?.toLowerCase()?.trim();
+      
+        const isTrue = val => val === "true" || val === "✔ 正确" || val === "正确";
+        const isFalse = val => val === "false" || val === "✘ 错误" || val === "错误";
+      
+        userAnswer = isTrue(normalized) ? "✔ 正确"
+                    : isFalse(normalized) ? "✘ 错误"
+                    : "未答";
+      
+        correctAnswer = isTrue(correctNorm) ? "正确"
+                       : isFalse(correctNorm) ? "错误"
+                       : correctNorm || "-";
+      
+        if ((isTrue(correctNorm) && isTrue(normalized)) ||
+            (isFalse(correctNorm) && isFalse(normalized))) {
+          score = scoreFull;
+        }
+      } else if (type === "essay") {
+        const ua = answers.essay[id];
+        const standard = q.answer || "-";  // answer 字段为英文标准答案
+        if (typeof ua === "string" && ua.trim()) {
+          userAnswer = ua.trim().length > 50 ? ua.trim().slice(0, 50) + "..." : ua.trim();
+        } else {
+          userAnswer = "未答";
+        }
+        correctAnswer = standard;
+        score = "-";      // ✅ 不计分
+        scoreFull = "-";  // ✅ 不显示总分
+      }
+
+      // ✅ 仅对可计算的题型进行得分统计（排除简答题）
+      if (typeof score === 'number' && typeof scoreFull === 'number') {
+        totalScore += score;
+        fullScore += scoreFull;
+      }
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td class="border p-2 text-center">${displayLabel}</td>
+        <td class="border p-2 text-center">${id}</td>
+        <td class="border p-2 text-center">${userAnswer}</td>
+        <td class="border p-2 text-center">${correctAnswer}</td>
+        <td class="border p-2 text-center">${score} / ${scoreFull}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  });
+
+  // ✅ 渲染得分与等级
+  // ✅ 渲染得分与等级
+    const safeTotal = Number.isFinite(totalScore) ? totalScore : 0;
+    const safeFull = Number.isFinite(fullScore) ? fullScore : 0;
+
+    // ✅ 计算所有题型的满分（含简答题）
+    const allFullScore =
+    grouped.single.length * 2 +
+    grouped.multiple.length * 1 +
+    grouped.judge.length * 1 +
+    grouped.essay.length * 20;
+
+    // ✅ 渲染总得分（实际得分 / 所有题目的总分）并备注不含简答题得分
+    document.getElementById("resultScore").innerHTML = `
+    <span class="text-base text-green-600 dark:text-green-400 font-bold">
+      ${safeTotal} / ${allFullScore}
+    </span>
+    <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">(不含简答题得分)</span>
+    `;
+
+    // ✅ 渲染等级评定（统一字体大小）
+    document.getElementById("resultLevel").innerHTML = totalScore >= fullScore * 0.6
+      ? (currentLanguage === "zh"
+          ? `<span class="text-base">✅ 合格</span>`
+          : `<span class="text-base">✅ Pass</span>`)
+      : (currentLanguage === "zh"
+          ? `<span class="text-sm">⚠️ 建议重考</span>`
+          : `<span class="text-sm">⚠️ Retake Suggested</span>`);
+}
+
+// ✅ 提取正确答案
+function initCorrectAnswers(data) {
+  correctAnswersMap = {}; // 🌐 全局标准答案字典
+
+  data.forEach((row, idx) => {
+    // ✅ 防御性判断：必须包含 type 和 answer 字段，且不能为纯空格
+    if (!row || typeof row !== "object") {
+      //console.warn(`❌ 无法识别为有效题目对象，第 ${idx + 1} 行：`, row);
+      return;
+    }
+    
+    if (!row.type) {
+      console.warn(`⚠️ 缺少 type 字段，第 ${idx + 1} 行：`, row);
+      return;
+    }
+    
+    if (!row.answer || row.answer.trim() === "") {
+      console.warn(`⚠️ 缺少答案字段，第 ${idx + 1} 行：`, row);
+      return;
+    }
+
+    const type = row.type.trim().toLowerCase();           // 标准化题型
+    const id = row.id?.trim() || `q_${type}_${idx}`;      // 题目 ID
+    let answer = row.answer.trim();                       // 原始答案
+
+    // ✅ 多选题：统一格式为 A,B,C...
+    if (type === "multiple") {
+      answer = answer
+        .split(",")
+        .map(a => a.trim().toUpperCase())
+        .sort()
+        .join(",");
+    }
+
+    // ✅ 判断题：支持中英文、符号等表达形式
+    if (type === "judge") {
+      const normalized = answer.toLowerCase().replace(/\s/g, "");
+      if (["true", "yes", "✔", "√", "正确"].includes(normalized)) {
+        answer = "true";
+      } else if (["false", "no", "✘", "×", "错误"].includes(normalized)) {
+        answer = "false";
+      } else {
+        console.warn(`❗️判断题答案格式异常 [index=${idx}]：`, {
+          id: row?.id,
+          question: row?.question_zh || row?.question_en,
+          rawAnswer: row.answer
+        });
+        answer = "false"; // 默认容错处理
+      }
+    }
+
+    // ✅ 添加至标准答案映射
+    correctAnswersMap[id] = answer;
+  });
+
+  // ✅ 打印初始化完成信息
+  console.log("✅ 初始化标准答案完成，共计：", Object.keys(correctAnswersMap).length, "题");
+  //console.table(correctAnswersMap);
 }
 
 // ✅ 加载 CSV 文件并渲染题目（语言切换）
@@ -256,35 +955,229 @@ function loadCSVAndRender(csvPath, lang = "zh") {
   });
 }
 
-// ✅ 渲染题目结构（根据当前语言）
+// ✅ 恢复答题状态（从 sessionStorage 中读取）
+
+
+// ✅ 恢复用户填写信息（公司、姓名、电话、邮箱）
+function restoreUserInfo() {
+  const stored = sessionStorage.getItem("userInfo");
+  if (!stored) {
+    console.warn("⚠️ 无法恢复用户信息：没有找到缓存");
+    return;
+  }
+
+  try {
+    const info = JSON.parse(stored);
+    if (info.company) document.getElementById("company").value = info.company;
+    if (info.name) document.getElementById("name").value = info.name;
+    if (info.phone) document.getElementById("phone").value = info.phone;
+    if (info.email) document.getElementById("email").value = info.email;
+    console.log("✅ 已恢复用户信息", info);
+  } catch (e) {
+    console.error("❌ 恢复用户信息失败：", e);
+  }
+}
+
+let questionAlreadyLoaded = false; // ✅ 防止重复加载题库
+
+function loadCSVAndInit(courseName) {
+  if (!courseName || typeof courseName !== 'string') {
+    alert("⚠️ 无法识别课程名，请检查 HTML 文件名是否正确！");
+    return;
+  }
+  if (questionAlreadyLoaded) return;
+  questionAlreadyLoaded = true;
+
+  const csvPath = `/static/csv/${courseName}.csv`;
+  const lang = localStorage.getItem("language") || "zh";
+
+  const shuffledKey = `shuffledQuestions_${courseName}`;
+  const parsedKey = `parsedQuestions_${courseName}`;
+
+  showLoadingMessage();
+
+  Papa.parse(csvPath, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function (results) {
+      results.data = results.data.map(row => {
+        const fixed = {};
+        Object.keys(row).forEach(k => fixed[k.trim()] = row[k]);
+        return fixed;
+      });
+
+      const parsed = results.data.filter(row =>
+        row && (row.question_zh || row.question_en) && row.type?.trim()
+      );
+
+      let shuffled;
+      const cached = localStorage.getItem(shuffledKey);
+      if (cached) {
+        try {
+          shuffled = JSON.parse(cached);
+          console.log(`📌 使用 localStorage 中保存的顺序（${courseName}）`);
+        } catch {
+          shuffled = shuffleArray(parsed);
+          localStorage.setItem(shuffledKey, JSON.stringify(shuffled));
+        }
+      } else {
+        shuffled = shuffleArray(parsed);
+        localStorage.setItem(shuffledKey, JSON.stringify(shuffled));
+      }
+
+      sessionStorage.setItem(parsedKey, JSON.stringify(shuffled));
+      sessionStorage.setItem("parsedQuestions", JSON.stringify(shuffled)); // 保持兼容
+      parsedQuestions = shuffled;
+      window.parsedQuestions = shuffled;
+
+      initCorrectAnswers(shuffled);
+      renderQuestions(shuffled);
+      restoreUserInfo();
+      hideLoadingMessage();
+    },
+    error: function (err) {
+      hideLoadingMessage();
+      createModal("errorModal", lang === "zh" ? "加载失败" : "Load Failed", "❌ 加载题库失败！");
+      console.error("📛 PapaParse 加载错误：", err);
+    }
+  });
+}
+
+// ✅ 最终优化版本：题目渲染函数（支持跳过无效题、类型校验、渲染缺失追踪）
 function renderQuestions(data) {
-  // ✅ 获取各题型的挂载容器
+  // ✅ 第一步：确认 data 是有效数组
+  if (!Array.isArray(data)) {
+    console.error("❌ 渲染失败：输入数据无效", data);
+    return;
+  }
+
+  // ✅ 定义题型对应容器映射
   const sectionMap = {
     single: document.querySelector("[data-section='single']"),
     multiple: document.querySelector("[data-section='multi']"),
     judge: document.querySelector("[data-section='judge']"),
-    essay: document.querySelector("[data-section='essay']"), // 简答题
+    essay: document.querySelector("[data-section='essay']")
   };
 
-  // ✅ 校验容器是否存在，避免挂载失败
+  // ✅ 初始化容器内容
   for (const [type, container] of Object.entries(sectionMap)) {
     if (!container) {
-      alert(`❌ 页面缺少 ${type} 类型题目的容器，无法渲染该类型题目！`);
-      console.error(`找不到 data-section='${type}' 的容器`);
-      return;
+      console.warn(`⚠️ 缺少 ${type} 类型的容器 <div data-section="${type}">，将跳过该类型题目渲染`);
+      continue;
     }
-    container.innerHTML = ""; // 每次渲染前清空容器
+    container.innerHTML = "";
   }
 
-  console.log("准备渲染题目", data);
+  const index = { single: 1, multiple: 1, judge: 1, essay: 1 };
+  const renderedIds = new Set();
 
-  // ✅ 各题型的题号索引计数器
+  // ✅ 开始渲染题目
+  data.forEach((row, i) => {
+    const lineNum = i + 2;
+
+    if (!row || typeof row !== "object") {
+      const debugFields = ["type", "id", "question_zh", "question_en", "answer"];
+      const fieldStates = debugFields.map(f => `${f}: ${row?.[f] ?? "[undefined]"}`).join(" | ");
+      console.warn(`⚠️ 第 ${lineNum} 行跳过：行数据为空或格式错误\n📌 字段状态：${fieldStates}`);
+      return;
+    }
+
+    // ✅ 字段状态输出调试
+    const requiredFields = ["type", "id", "question_zh", "question_en", "answer"];
+    const details = requiredFields.map(f => `${f}: ${row[f] ?? "[缺失]"}`).join(" | ");
+    //console.warn(`🔍 第 ${lineNum} 行字段状态：${details}`);
+
+    const type = row.type?.toLowerCase?.().trim();
+    if (!type || !(type in index)) {
+      console.warn(`⚠️ 第 ${lineNum} 行跳过：题型无效或 index 中无对应类型 \"${row.type}\"`, row);
+      return;
+    }
+
+    const qZh = row.question_zh?.trim?.() || "";
+    const qEn = row.question_en?.trim?.() || "";
+    const questionText = currentLanguage === "zh" ? qZh : qEn;
+    if (!questionText) {
+      console.warn(`⚠️ 第 ${lineNum} 行跳过：无题干（question_zh / question_en）`, row);
+      return;
+    }
+
+    const id = row.id || `q_${type}_${index[type] || 0}`;
+    let html = "";
+
+    try {
+      if (type === "single") {
+        html = renderSingle(index.single++, row);
+      } else if (type === "multiple") {
+        html = renderMultiple(index.multiple++, row);
+      } else if (type === "judge") {
+        html = renderJudge(index.judge++, row);
+      } else if (type === "essay") {
+        html = renderEssay(index.essay++, row);
+      }
+
+      if (html && sectionMap[type]) {
+        sectionMap[type].innerHTML += html;
+        renderedIds.add(`${type}-${row.id}`);
+      } else {
+        console.warn(`⚠️ 第 ${lineNum} 行未能渲染至页面（容器缺失或 HTML 为空）`, row);
+      }
+    } catch (err) {
+      console.error(`❌ 渲染失败：第 ${lineNum} 行（${type}-${id}）`, err, row);
+    }
+  });
+
+  // ✅ 检查是否有未渲染的题目
+  const expectedIds = data
+    .filter(q => q && typeof q === "object" && q.type && q.id)
+    .map(q => `${q.type}-${q.id}`);
+
+  const missed = expectedIds.filter(id => !renderedIds.has(id));
+  if (missed.length > 0) {
+    console.warn(`📉 共 ${missed.length} 题未被渲染：`, missed);
+  }
+
+  console.log(`✅ 成功渲染题目数：${renderedIds.size}`);
+
+  window.parsedQuestions = data;
+}
+
+
+
+// ✅ 使用 Fisher–Yates 随机算法打乱数组
+// ✅ 安全打乱函数：不会修改原数组，返回打乱后的新数组
+function shuffleArray(array) {
+  const copy = array.slice(); // 拷贝一份，避免原数组被污染
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+// ✅ 随机种子生成（每次进入页面都会变）
+function randomSeed() {
+  return (Date.now() + Math.random()) % 1;
+}
+
+function renderQuestionsFromArray(questions) {
+  const sectionMap = {
+    single: document.querySelector("[data-section='single']"),
+    multiple: document.querySelector("[data-section='multi']"),
+    judge: document.querySelector("[data-section='judge']"),
+    essay: document.querySelector("[data-section='essay']")
+  };
+
+  // 清空容器
+  for (const container of Object.values(sectionMap)) {
+    container.innerHTML = "";
+  }
+
   let index = { single: 1, multiple: 1, judge: 1, essay: 1 };
 
-  // ✅ 遍历每道题，根据类型渲染不同内容
-  data.forEach(row => {
-    const type = row.type?.toLowerCase(); // 获取题目类型（如：single, multiple, essay）
-    const question = currentLanguage === 'zh' ? row.question_zh : row.question_en; // 根据语言切换获取题干
+  questions.forEach(row => {
+    const type = row.type?.toLowerCase();
+    const question = currentLanguage === 'zh' ? row.question_zh : row.question_en;
     const options = ['A', 'B', 'C', 'D'].map(opt =>
       currentLanguage === 'zh' ? row[opt] : row[`${opt}_EN`]
     );
@@ -292,161 +1185,210 @@ function renderQuestions(data) {
     let html = "";
 
     if (type === 'single') {
-      html = renderSingle(index.single++, question, options);
+      html = renderSingle(index.single++, question, options, row.id);
     } else if (type === 'multiple') {
-      html = renderMultiple(index.multiple++, question, options);
+      html = renderMultiple(index.multiple++, question, options, row.id);
     } else if (type === 'judge') {
-      html = renderJudge(index.judge++, question);
+      html = renderJudge(index.judge++, question, row.id);
     } else if (type === 'essay') {
-      // ✅ 简答题额外提取 image_url 字段（如无则为 ""）
-      const imageUrl = row.image_url || "";
-      html = renderEssay(index.essay++, question, row.image_url || "", row.id || ""); // 💡 加入图片链接参数
+      html = renderEssay(index.essay++, question, row.image_url || "", row.id || "");
     }
 
-    // ✅ 渲染内容插入对应容器
     if (html && sectionMap[type]) {
       sectionMap[type].innerHTML += html;
     }
   });
 }
 
+function checkMissingFields(row, lineNum, fields) {
+  const missing = [];
+  const check = (f) => typeof row[f] !== "string" || row[f].trim() === "";
+
+  if (check("type")) missing.push("type");
+  if (check("id")) missing.push("id");
+  if (check("answer")) missing.push("answer");
+  if (check("question_zh") && check("question_en")) missing.push("question_zh / question_en");
+
+  if (row.type?.toLowerCase?.() === "single" || row.type?.toLowerCase?.() === "multiple") {
+    ["A", "B", "C", "D"].forEach(opt => {
+      if (check(opt)) missing.push(opt);
+    });
+  }
+
+  if (missing.length > 0) {
+    try {
+      const fieldValues = fields.map(f => {
+        const val = row[f];
+        const safe = typeof val === "string" ? val.trim() : String(val);
+        return `${f}: "${safe}"`;
+      }).join(" | ");
+
+      console.warn(
+        `%c⚠️ 第 ${lineNum} 行缺失字段：${missing.join(", ")}`,
+        "color:orange;font-weight:bold;"
+      );
+      console.log(`📌 字段内容：${fieldValues}`);
+    } catch (e) {
+      console.error(`❌ 第 ${lineNum} 行缺失字段打印失败：`, e);
+    }
+  }
+
+  return missing;
+}
+
 // ✅ 渲染各类题型 HTML
-function renderSingle(index, question, options) {
-  return `
-  <div class="question-card mb-6 ${cardClass}">
-      <!-- 题目题干 -->
-      <p class="font-bold mb-2 ${textClass}">${index}. ${question}</p>
+function renderSingle(index, row) {
+  if (!row || (!row.question_zh && !row.question_en)) return "";
 
-    <!-- ✅ 网格容器：小屏1列，大屏2列 -->
+  const zh = row.question_zh?.trim() || "";
+  const en = row.question_en?.trim() || "";
+  const questionText = currentLanguage === 'zh' ? zh : en;
+  const imageUrl = row.image_url?.trim() || "";
+
+  return `
+  <div class="question-card mb-6 ${cardClass}" data-id="${row.id}" data-type="single">
+    <p class="font-bold mb-2 ${textClass} question-text"
+       data-zh="${zh}" data-en="${en}">
+      ${index}. ${questionText}
+    </p>
+    ${imageUrl ? `
+      <div class="flex justify-center mb-4">
+        <img src="${imageUrl}" alt="参考图" class="max-w-full max-h-64 rounded shadow" />
+      </div>` : ""}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-      ${options.map((opt, i) => `
-        <label class="flex items-center gap-2">  <!-- ✅ 修改了 items-start 为 items-center -->
-            <input type="radio" name="q${index}" value="${String.fromCharCode(65 + i)}">
-            <span class="${textClass}">${String.fromCharCode(65 + i)}. ${opt}</span>
-          </label>
-      `).join('')}
+      ${["A", "B", "C", "D"].map(opt => {
+        const zhOpt = row[opt]?.trim() || "";
+        const enOpt = row[`${opt}_EN`]?.trim() || "";
+        const display = currentLanguage === 'zh' ? zhOpt : enOpt;
+        return `
+        <label class="flex items-center gap-2">
+          <input type="radio" name="q${index}" value="${opt}">
+          <span class="${textClass} option-text" data-zh="${zhOpt}" data-en="${enOpt}">
+            ${opt}. ${display}
+          </span>
+        </label>`;
+      }).join('')}
     </div>
   </div>`;
 }
 
-function renderMultiple(index, question, options) {
-  return `
-  <div class="question-card mb-6 ${cardClass}">
-      <!-- 题目题干 -->
-      <p class="font-bold mb-2 ${textClass}">${index}. ${question}（多选）</p>
+function renderMultiple(index, row) {
+  if (!row || (!row.question_zh && !row.question_en)) return "";
 
-    <!-- ✅ 网格容器：小屏1列，大屏2列 -->
+  const zh = row.question_zh?.trim() || "";
+  const en = row.question_en?.trim() || "";
+  const questionText = currentLanguage === 'zh' ? zh : en;
+  const imageUrl = row.image_url?.trim() || "";
+
+  return `
+    <div class="question-card mb-6 ${cardClass}" data-id="${row.id}" data-type="multiple">
+    <p class="font-bold mb-2 ${textClass} question-text"
+       data-zh="${zh}" data-en="${en}">
+      ${index}. ${questionText}
+    </p>
+    ${imageUrl ? `
+      <div class="flex justify-center mb-4">
+        <img src="${imageUrl}" alt="参考图" class="max-w-full max-h-64 rounded shadow" />
+      </div>` : ""}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-      ${options.map((opt, i) => `
+      ${["A", "B", "C", "D"].map(opt => {
+        const zhOpt = row[opt]?.trim() || "";
+        const enOpt = row[`${opt}_EN`]?.trim() || "";
+        const display = currentLanguage === 'zh' ? zhOpt : enOpt;
+        return `
         <label class="flex items-center gap-2">
-            <input type="checkbox" name="mq${index}" value="${String.fromCharCode(65 + i)}">
-            <span class="${textClass}">${String.fromCharCode(65 + i)}. ${opt}</span>
-          </label>
-      `).join('')}
+          <input type="checkbox" name="q${index}" value="${opt}">
+          <span class="${textClass} option-text" data-zh="${zhOpt}" data-en="${enOpt}">
+            ${opt}. ${display}
+          </span>
+        </label>`;
+      }).join('')}
     </div>
   </div>`;
 }
 
-function renderJudge(index, question) {
-  // ✅ 判断题选项根据语言切换
-  const isZh = currentLanguage === 'zh';
-  const optionTrue = isZh ? "正确" : "True";
-  const optionFalse = isZh ? "错误" : "False";
+function renderJudge(index, row) {
+  if (!row || (!row.question_zh && !row.question_en)) return "";
+
+  const zh = row.question_zh?.trim() || "";
+  const en = row.question_en?.trim() || "";
+  const questionText = currentLanguage === 'zh' ? zh : en;
+  const imageUrl = row.image_url?.trim() || "";
 
   return `
-   <div class="judge-card mb-6 ${cardClass}">
-      <!-- 判断题题干 -->
-      <p class="font-bold mb-2 ${textClass}">${index}. ${question}</p>
-
-      <!-- ✅ 判断题响应式布局：小屏 1 列，大屏 2 列 -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <label class="flex items-center gap-2">
-            <input type="radio" name="jq${index}" value="${optionTrue}">
-            <span class="${textClass}">${optionTrue}</span>
-        </label>
-        <label class="flex items-center gap-2">
-            <input type="radio" name="jq${index}" value="${optionFalse}">
-            <span class="${textClass}">${optionFalse}</span>
-        </label>
-      </div>
-    </div>`;
+  <div class="question-card mb-6 ${cardClass}" data-id="${row.id}" data-type="judge">
+    <p class="font-bold mb-2 ${textClass} question-text"
+       data-zh="${zh}" data-en="${en}">
+      ${index}. ${questionText}
+    </p>
+    ${imageUrl ? `
+      <div class="flex justify-center mb-4">
+        <img src="${imageUrl}" alt="参考图" class="max-w-full max-h-64 rounded shadow" />
+      </div>` : ""}
+    <div class="flex flex-col gap-2">
+      <label class="flex items-center gap-2">
+        <input type="radio" name="q${index}" value="True">
+        <span class="${textClass}">${currentLanguage === 'zh' ? '正确' : 'True'}</span>
+      </label>
+      <label class="flex items-center gap-2">
+        <input type="radio" name="q${index}" value="False">
+        <span class="${textClass}">${currentLanguage === 'zh' ? '错误' : 'False'}</span>
+      </label>
+    </div>
+  </div>`;
 }
 
 // ✅ 渲染简答题模块（带图片、自动统计字数、统一样式）
-function renderEssay(index, question, imageUrl = "") {
-  // ✅ 提示文字作为 placeholder
-  const placeholder = `${question}（请围绕要点详细描述，建议不少于 300 字）`;
+function renderEssay(index, row) {
+  if (!row || (!row.question_zh && !row.question_en)) return "";
+
+  const zh = row.question_zh?.trim() || "";
+  const en = row.question_en?.trim() || "";
+  const questionText = currentLanguage === 'zh' ? zh : en;
+  const imageUrl = row.image_url?.trim() || "";
+  const placeholder = questionText.replace(/"/g, '&quot;');
+
+  const wordTip = currentLanguage === 'zh'
+    ? '已输入 0 字，建议不少于 300 字'
+    : '0 words entered, recommended at least 300.';
 
   return `
-    <div class="essay-card mb-6 ${cardClass}">
-      <!-- ✅ 简答题题目 -->
-      <p class="font-bold mb-2 ${textClass}">${index}. ${question}</p>
-
-      <!-- ✅ 显示题目配图（如果有） -->
-      ${imageUrl
-        ? `<div class="flex justify-center mb-4">
-             <img src="${imageUrl}" alt="参考图" class="max-w-full max-h-64 rounded shadow" />
-           </div>`
-        : ''}
-
-      <!-- ✅ 答题输入区 + 字数统计 -->
-      <div class="relative">
-        <textarea
-          id="eq${index}"
-          rows="6"
-          class="w-full p-2 ${inputClass}"
-          placeholder="${placeholder.replace(/"/g, '&quot;')}" 
-          oninput="updateWordCount(${index})"
-        ></textarea>
-        <p class="text-sm text-gray-500 mt-1" id="wordCount${index}">已输入 0 字，建议不少于 300 字</p>
-      </div>
-    </div>`;
+  <div class="essay-card mb-6 ${cardClass}" data-id="${row.id}">
+    <p class="font-bold mb-2 ${textClass} question-text"
+       data-zh="${zh}" data-en="${en}">
+      ${index}. ${questionText}
+    </p>
+    ${imageUrl ? `
+      <div class="flex justify-center mb-4">
+        <img src="${imageUrl}" alt="参考图" class="max-w-full max-h-64 rounded shadow" />
+      </div>` : ""}
+    <div class="relative">
+      <textarea
+        id="eq${index}"
+        rows="6"
+        class="w-full p-2 ${inputClass}"
+        placeholder="${placeholder}"
+        oninput="updateWordCount(${index})"
+      ></textarea>
+      <p class="text-sm text-gray-500 mt-1" id="wordCount${index}">
+        ${wordTip}
+      </p>
+    </div>
+  </div>`;
 }
 
-// ✅ 评估评分逻辑
-function evaluateAll() {
-  if (!allQuestionsAnswered()) {
-    alert("⚠️ 请完成所有题目再提交评估！");
-    return; // 阻止提交
+// ✅ 实时更新简答题字数提示
+function updateWordCount(index) {
+  const textarea = document.getElementById(`eq${index}`);
+  const counter = document.getElementById(`wordCount${index}`);
+  const length = textarea.value.length;
+  const lang = localStorage.getItem("language") || "zh";
+
+  if (lang === "zh") {
+    counter.textContent = `已输入 ${length} 字，建议不少于 300 字`;
+  } else {
+    counter.textContent = `${length} words entered, recommended at least 300.`;
   }
-  let score = 0;
-  let total = 0;
-
-  // 单选题
-  correctAnswers.single.forEach((correct, i) => {
-    const chosen = document.querySelector(`input[name='q${i + 1}']:checked`);
-    if (chosen && chosen.value === correct) score += 2;
-    total += 2;
-  });
-
-  // 多选题
-  correctAnswers.multiple.forEach((correct, i) => {
-    const chosen = [...document.querySelectorAll(`input[name='mq${i + 1}']:checked`)].map(e => e.value).sort();
-    if (JSON.stringify(chosen) === JSON.stringify(correct)) score += 1;
-    total += 1;
-  });
-
-  // 判断题
-  correctAnswers.judge.forEach((correct, i) => {
-    const chosen = document.querySelector(`input[name='jq${i + 1}']:checked`);
-    if (chosen && chosen.value === correct) score += 1;
-    total += 1;
-  });
-
-  // 简答题（简单关键词匹配）
-  correctAnswers.essay.forEach((answer, i) => {
-    const input = document.getElementById(`eq${i + 1}`);
-    const keywords = answer.split(',').map(k => k.trim());
-    if (keywords.some(kw => input.value.includes(kw))) score += 4;
-    total += 4;
-  });
-
-  // 展示结果
-  document.getElementById("testContainer").classList.add("hidden");
-  const resultPage = document.getElementById("resultPage");
-  resultPage.classList.remove("hidden");
-  resultPage.scrollIntoView({ behavior: 'smooth' });
-  document.getElementById("assessmentSummary").innerHTML = `<p class='text-xl'>得分：<strong>${score}</strong> / ${total}</p>`;
 }
 
 // ✅ 邮件发送（可集成 EmailJS）
@@ -458,6 +1400,8 @@ function handleResultEmail() {
   createModal("passwordModal", title, message, (value) => {
     if (value === "AFT2025") {
       evaluateAnswers();
+      // ✅ 保存答题数据
+      sessionStorage.setItem("collectedAnswers", JSON.stringify(answers));
       renderAssessmentResult();
       showPage("resultPage");
 
@@ -562,6 +1506,8 @@ function sendResultEmail(dataHTML) {
   );
 }
 
+
+
 // ⚙️ 构建表格 HTML 内容
 function buildEmailTable() {
   const summary = document.getElementById("assessmentSummary");
@@ -592,6 +1538,8 @@ function submitPassword() {
     alert("❌ 动态口令错误，请重试！");
   }
 }
+
+
 
 // ✅ 实时更新简答题字数统计
 function updateEssayCharCount(index) {
@@ -635,7 +1583,7 @@ function updateEssayCharCount(index) {
     }
 
     // ✅ 渲染题目
-    loadCSVAndInit(course);
+    //loadCSVAndInit(course);
   });
 })();
 // ✅ 显示通用模态框
@@ -666,9 +1614,18 @@ function closeUniversalModal() {
   document.getElementById("universalModal").classList.add("hidden");
 }
 
+// ✅ 通用加载课程 CSV：自动识别当前 HTML 文件名
+function getCurrentCourseFromURL() {
+  const path = window.location.pathname;
+  const filename = path.substring(path.lastIndexOf("/") + 1); // 如 EE-W.html
+  const courseName = filename.replace(".html", ""); // 转为 EE-W
+  return courseName || "EE-W"; // 默认课程
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const html = document.documentElement;
   const savedTheme = localStorage.getItem("theme");
+
   let isDark;
 
   // ✅ [1] 首次加载：判断 localStorage 或系统偏好
@@ -761,8 +1718,10 @@ document.addEventListener("DOMContentLoaded", () => {
   updateLoadingText();
 
   // ✅ [10] 加载题库
-  const urlParams = new URLSearchParams(window.location.search);
-  const course = urlParams.get("course") || "EE-W";
+  // ✅ 获取当前课程名
+  const course = getCurrentCourseFromURL();  // 自动识别 EE-W、DE-ADV 等
+
+  // ✅ 加载对应课程的 CSV 题库
   loadCSVAndInit(course);
 });
 
@@ -782,7 +1741,7 @@ function updateThemeIcon() {
 
 // 🌙 主题切换
 function initTheme() {
-  const savedTheme = localStorage.getItem('theme') || 'dark';
+  const savedTheme = localStorage.getItem('theme') || 'light'; // 默认 light
   const isDark = savedTheme === 'dark'; // ✅ 先定义
   const htmlEl = document.documentElement;
 
@@ -867,3 +1826,71 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// ✅ 页面加载完成后立即根据当前语言更新 UI（标题、按钮、导航栏等）
+document.addEventListener("DOMContentLoaded", () => {
+  updateLanguageUI(currentLanguage);
+});
+
+// ✅ 自动缓存用户信息输入
+["company", "name", "phone", "email"].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener("input", () => {
+      const currentInfo = {
+        company: document.getElementById("company").value.trim(),
+        name: document.getElementById("name").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        email: document.getElementById("email").value.trim()
+      };
+      sessionStorage.setItem("userInfo", JSON.stringify(currentInfo));
+    });
+  }
+});
+
+// ✅ 自动缓存作答内容
+document.body.addEventListener("input", () => {
+  const answers = collectAnswers();
+  sessionStorage.setItem("collectedAnswers", JSON.stringify({
+    userInfo: JSON.parse(sessionStorage.getItem("userInfo") || "{}"),
+    ...answers
+  }));
+});
+
+
+// ✅ 页面加载后首次更新
+document.addEventListener("DOMContentLoaded", () => {
+  updateProgressFromDOM();
+});
+
+// ✅ 用户作答后自动刷新进度
+document.addEventListener("change", (e) => {
+  if (e.target.matches("input[type='radio'], input[type='checkbox'], textarea")) {
+    updateProgressFromDOM();
+  }
+});
+
+function sendEmailResult(answers) {
+  const tableHTML = generateEmailTableHTML(answers);
+
+  const templateParams = {
+    company: answers.userInfo.company,
+    user_name: answers.userInfo.name,
+    phone: answers.userInfo.phone,
+    user_email: answers.userInfo.email,
+    timestamp: new Date().toLocaleString('zh-CN', { hour12: false }),
+    message: '系统自动提交：EE-W产品培训答卷',
+    table_html: tableHTML
+  };
+
+  // ✅ 调用 EmailJS
+  emailjs.send('service_csl8frv', 'template_0v2mqw9', templateParams)
+    .then(() => {
+        console.log("✅ 邮件发送成功");
+        alert("✅ 评测结果已成功发送至 RSEC 邮箱！");
+      })
+    .catch(err => {
+        console.error('[EmailJS] 邮件失败', err);
+        //alert('⚠️ 邮件发送失败，请将导出的 PDF 手动发送到 RSEC 邮箱：rsec@armstrong.com');
+        showEmailResultPopup("❌ 邮件发送失败，是否重新发送？");
+      });
+}

@@ -23,7 +23,7 @@ print(f"[DEBUG] 当前 SECRET_KEY: {os.environ.get('SECRET_KEY')}")
 
 # ========== 全局配置 ==========
 TIMEZONE = pytz.timezone('Asia/Shanghai')
-SESSION_TIMEOUT_MINUTES = 15
+SESSION_TIMEOUT_MINUTES = 70
 
 # ========== 工具函数部分 ==========
 
@@ -34,8 +34,34 @@ def get_client_ip():
     return request.remote_addr or 'Unknown'
 
 def get_current_time():
-    """获取当前上海时间"""
+    TIMEZONE = pytz.timezone("Asia/Shanghai")
     return datetime.now(TIMEZONE).isoformat()
+
+def update_user_last_active(user_id):
+    SUPABASE_URL = os.environ.get("SUPABASE_URL")
+    SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
+
+    if not SUPABASE_URL or not SUPABASE_API_KEY:
+        print("[ERROR] 缺少 Supabase 配置，无法更新 last_active")
+        return
+
+    headers = {
+        "apikey": SUPABASE_API_KEY,
+        "Authorization": f"Bearer {SUPABASE_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    update_url = f"{SUPABASE_URL}/rest/v1/login_log?username=eq.{user_id}&status=eq.登录中"
+    payload = {
+        "last_active": datetime.now(TIMEZONE).isoformat()
+    }
+
+    response = requests.patch(update_url, headers=headers, json=payload)
+
+    if response.status_code not in [200, 204]:
+        print(f"[WARN] 更新用户 {user_id} 的 last_active 失败：{response.status_code}")
+    else:
+        print(f"[INFO] 已更新 {user_id} 的 last_active")
 
 def insert_login_log(data):
     """通过 Supabase REST API 插入登录日志"""
@@ -43,47 +69,34 @@ def insert_login_log(data):
     SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
     if not SUPABASE_URL or not SUPABASE_API_KEY:
         raise RuntimeError("未配置 SUPABASE_URL 或 SUPABASE_API_KEY 环境变量")
+
     headers = {
         "apikey": SUPABASE_API_KEY,
         "Authorization": f"Bearer {SUPABASE_API_KEY}",
         "Content-Type": "application/json"
     }
+
+    # ✅ 自动转换 datetime 为字符串
+    def to_str(v):
+        return v.isoformat() if isinstance(v, datetime) else v
+    payload = {k: to_str(v) for k, v in data.items()}
+
     response = requests.post(
         f"{SUPABASE_URL}/rest/v1/login_log",
         headers=headers,
-        json=data
+        json=payload
     )
     if response.status_code not in [200, 201]:
         print("[ERROR] 插入日志失败：", response.status_code, response.text)
-
-def update_last_active(username):
-    """更新用户的 last_active 字段（通过 Supabase PATCH 请求）"""
-    SUPABASE_URL = os.environ.get("SUPABASE_URL")
-    SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
-    if not SUPABASE_URL or not SUPABASE_API_KEY:
-        return
-    headers = {
-        "apikey": SUPABASE_API_KEY,
-        "Authorization": f"Bearer {SUPABASE_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    payload = {"last_active": get_current_time()}
-    response = requests.patch(
-        f"{SUPABASE_URL}/rest/v1/login_log?username=eq.{username}&status=eq.登录中",
-        headers=headers,
-        json=payload
-    )
-    if response.status_code not in [200, 204]:
-        print("[WARN] 更新 last_active 失败：", response.status_code, response.text)
-
-# ✅ 新增：用户登出时记录 logout_time 并更新状态
 
 def logout_user(username):
     """将指定用户的状态更新为已登出，并记录登出时间"""
     SUPABASE_URL = os.environ.get("SUPABASE_URL")
     SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
     if not SUPABASE_URL or not SUPABASE_API_KEY:
+        print("[ERROR] 缺少 Supabase URL 或 API Key")
         return
+
     headers = {
         "apikey": SUPABASE_API_KEY,
         "Authorization": f"Bearer {SUPABASE_API_KEY}",
@@ -98,8 +111,44 @@ def logout_user(username):
         headers=headers,
         json=payload
     )
+    
     if response.status_code not in [200, 204]:
-        print("[WARN] 自动登出时更新状态失败：", response.status_code, response.text)
+        print(f"[WARN] 自动登出时更新状态失败：{response.status_code} - {response.text}")
+        # 如果失败，可以选择重新尝试、记录到数据库或者发送通知等
+    else:
+        print(f"[INFO] 用户 {username} 已成功登出。")
+
+def update_last_active(username):
+    """仅更新当前登录中的最新一条记录的 last_active 字段"""
+    SUPABASE_URL = os.environ.get("SUPABASE_URL")
+    SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
+    if not SUPABASE_URL or not SUPABASE_API_KEY:
+        print("[ERROR] 缺少 Supabase URL 或 API Key")
+        return
+
+    headers = {
+        "apikey": SUPABASE_API_KEY,
+        "Authorization": f"Bearer {SUPABASE_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    # ✅ 第一步：先查出最新的“登录中”记录
+    query_url = f"{SUPABASE_URL}/rest/v1/login_log?username=eq.{username}&status=eq.登录中&order=login_time.desc&limit=1"
+    resp = requests.get(query_url, headers=headers)
+    if resp.status_code == 200 and resp.json():
+        log_id = resp.json()[0]["id"]
+
+        # ✅ 第二步：只更新这一条记录
+        patch_url = f"{SUPABASE_URL}/rest/v1/login_log?id=eq.{log_id}"
+        payload = {"last_active": get_current_time()}
+        patch_resp = requests.patch(patch_url, headers=headers, json=payload)
+
+        if patch_resp.status_code in [200, 204]:
+            print(f"[INFO] ✅ 用户 {username} 的最后活动时间已更新。")
+        else:
+            print(f"[WARN] ❌ 更新失败：{patch_resp.status_code} - {patch_resp.text}")
+    else:
+        print(f"[WARN] ⚠️ 未找到用户 {username} 的“登录中”记录")
 
 def handle_login():
     username = request.form.get('username')
@@ -126,23 +175,22 @@ def handle_login():
     return redirect(url_for('course_select'))
 
 # ========== 登录前置钩子 ==========
+from dateutil.parser import isoparse
+
 @app.before_request
 def check_session_timeout():
-    session.permanent = True  # ✅ 设置 session 为永久类型
+    session.permanent = True
     if 'username' in session:
-        now = datetime.now()
+        now = datetime.now(TIMEZONE)
         last_active = session.get('last_active')
         if last_active:
-            last_dt = datetime.fromisoformat(last_active)
+            last_dt = isoparse(last_active).astimezone(TIMEZONE)
             if now - last_dt > timedelta(minutes=SESSION_TIMEOUT_MINUTES):
-                logout_user(session['username'])  # ✅ 更新 Supabase
+                logout_user(session['username'])
                 session.clear()
                 return redirect(url_for('login'))
-        session['last_active'] = now.isoformat()  # ✅ 每次请求更新活跃时间
-        update_last_active(session['username'])  # ✅ 每次请求更新数据库活跃时间
-
-def debug_request():
-    print(f"📥 请求到达: {request.path}")
+        session['last_active'] = now.isoformat()
+        update_last_active(session['username'])
 
 # ========== 页面路由 ==========
 # ====  Martin 通用路由 ====
@@ -165,62 +213,107 @@ def login():
         session.clear()
         return render_template('login.html')
 
-    # ✅ 解析前端提交的用户名和密码
-    username = request.form.get('username')
-    password = request.form.get('password')
+    try:
+        # ✅ 获取前端用户名密码
+        username = request.form.get('username')
+        password = request.form.get('password')
 
-    # ✅ 查询 Supabase
-    SUPABASE_URL = os.environ.get("SUPABASE_URL")
-    SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
-    # ✅ 打印环境变量信息（本地调试专用）
-    print("🔍 SUPABASE_URL:", SUPABASE_URL)
-    print("🔍 SUPABASE_API_KEY:", "存在" if SUPABASE_API_KEY else "缺失")
-    print("🔍 尝试登录账号:", username)
+        # ✅ Supabase 配置
+        SUPABASE_URL = os.environ.get("SUPABASE_URL")
+        SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
 
-    headers = {
-        "apikey": SUPABASE_API_KEY,
-        "Authorization": f"Bearer {SUPABASE_API_KEY}",
-        "Content-Type": "application/json"
-    }
+        headers = {
+            "apikey": SUPABASE_API_KEY,
+            "Authorization": f"Bearer {SUPABASE_API_KEY}",
+            "Content-Type": "application/json"
+        }
 
-    query_url = f"{SUPABASE_URL}/rest/v1/user_accounts?username=eq.{username}&password=eq.{password}"
-    response = requests.get(query_url, headers=headers)
+        # ✅ 查询 Supabase user_accounts 表是否匹配
+        query_url = f"{SUPABASE_URL}/rest/v1/user_accounts?username=eq.{username}&password=eq.{password}"
+        response = requests.get(query_url, headers=headers)
 
-    # ❌ 查询失败 或 没有匹配用户
-    if response.status_code != 200 or not response.json():
-        lang = request.cookies.get("lang", "zh")  # 默认中文，可根据实际切换方式调整
+        if response.status_code != 200 or not response.json():
+            lang = request.cookies.get("lang", "zh")
+            message = (
+                "Invalid username or password.\nIf you forgot your password, please contact RSEC for help!"
+                if lang == "en" else
+                "输入的用户名和密码无效，请确认！\n如果密码遗忘，请联系 RSEC 寻求帮助！"
+            )
+            return jsonify({"success": False, "message": message}), 401
 
-        if lang == "en":
-            return jsonify({
-                "success": False,
-                "message": "Invalid username or password.\nIf you forgot your password, please contact RSEC for help!"
-            }), 401
-        else:
-            return jsonify({
-                "success": False,
-                "message": "输入的用户名和密码无效，请确认！\n如果密码遗忘，请联系 RSEC 寻求帮助！"
-            }), 401
+        # ✅ 登录成功：获取用户数据
+        user_data = response.json()[0]
+        user_id = user_data.get("username")
 
-    # ✅ 匹配成功
-    old_user = session.get('username')
-    if old_user:
-        logout_user(old_user)
-        session.clear()
+        # ✅ 清除旧 session（如有）
+        old_user = session.get('username')
+        if old_user:
+            logout_user(old_user)
+            session.clear()
 
-    ip = get_client_ip()
-    now = get_current_time()
-    session['username'] = username
-    session['last_active'] = datetime.now().isoformat()
+        # ✅ 设置 session["user"]（用于 heartbeat 识别）
+        session["user"] = {
+            "id": user_id,
+            "username": username,
+            "role": "user"
+        }
 
-    insert_login_log({
-        "username": username,
-        "ip": ip,
-        "login_time": now,
-        "last_active": now,
-        "status": "登录中"
-    })
+        # ✅ 附加信息
+        ip = get_client_ip()
+        now = datetime.now()
+        session['username'] = username
+        session['last_active'] = now.isoformat()
 
-    return jsonify({"success": True})
+        # ✅ 记录登录日志
+        insert_login_log({
+            "username": username,
+            "ip": ip,
+            "login_time": now,
+            "last_active": now,
+            "status": "登录中"
+        })
+
+        return jsonify({"success": True})
+
+    except Exception as e:
+        print("🔥 登录异常：", e)
+        return jsonify({
+            "success": False,
+            "message": "服务器内部错误，请联系管理员。...",
+            "error": str(e)
+        }), 500
+
+@app.route('/logout')
+def logout():
+    username = session.get('username')
+    if username:
+        # 获取 Supabase 的 URL 和 API 密钥
+        SUPABASE_URL = os.environ.get("SUPABASE_URL")
+        SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
+        headers = {
+            "apikey": SUPABASE_API_KEY,
+            "Authorization": f"Bearer {SUPABASE_API_KEY}",
+            "Content-Type": "application/json"
+        }
+
+        # 查询当前用户的登录日志，获取最新一条登录记录
+        query_url = f"{SUPABASE_URL}/rest/v1/login_log?username=eq.{username}&order=login_time.desc&limit=1"
+        response = requests.get(query_url, headers=headers)
+        data = response.json()
+
+        if response.status_code == 200 and data:
+            log_id = data[0]["id"]
+            # 更新状态为“已退出”，并设置登出时间
+            update_url = f"{SUPABASE_URL}/rest/v1/login_log?id=eq.{log_id}"
+            payload = {
+                "status": "已退出",
+                "logout_time": get_current_time()
+            }
+            update_resp = requests.patch(update_url, headers=headers, json=payload)
+            print("✅ 登出记录更新状态:", update_resp.status_code)
+
+    session.clear()
+    return redirect(url_for("login"))
 
 @app.route('/course')
 def course_select():
@@ -232,7 +325,13 @@ def course_select():
 def ee_w_test():
     if 'username' not in session:
         return redirect(url_for('login'))  # ✅ 登录校验没问题
-    return render_template('test/EE-W.html')  # ✅ 路径指向新模板位置
+    return render_template('test/EE-W.html', username=session['username'])  # ✅ 路径指向新模板位置
+
+@app.route('/DE-PUMP_Test')
+def de_pump_test():
+    if 'username' not in session:
+        return redirect(url_for('login'))  # ✅ 登录校验没问题
+    return render_template('test/DE-PUMP.html', username=session['username'])  # ✅ 路径指向新模板位置
 
 @app.route('/')
 def home():
@@ -298,23 +397,12 @@ def get_login_logs():
     return jsonify(response.json())
 
 # ✅ 新增：前端心跳机制支持路由，保持 session 活跃
-@app.route('/heartbeat')
+@app.route('/heartbeat', methods=['POST'])
 def heartbeat():
-    if 'username' in session:
-        now = datetime.now()
-        last_active = session.get('last_active')
-        if last_active:
-            last_dt = datetime.fromisoformat(last_active)
-            if now - last_dt > timedelta(minutes=SESSION_TIMEOUT_MINUTES):
-                logout_user(session['username'])  # ✅ 主动执行登出
-                session.clear()
-                return 'Session expired', 440  # 非标准状态码，用于前端识别
-
-        session['last_active'] = now.isoformat()
-        update_last_active(session['username'])
-        return 'OK', 200
-
-    return 'Unauthorized', 401
+    if not session.get("user"):
+        return "Not logged in", 401
+    update_user_last_active(session["user"]["id"])  # 自定义函数更新 Supabase
+    return "OK", 200
 
 # ✅ 注册功能的 Flask 接口路由
 from flask import request, jsonify
@@ -436,7 +524,7 @@ def register():
     )
 
     if update_resp.status_code not in [200, 204]:
-        return jsonify({"success": False, "message": "注册成功但更新邀请码失败"})
+        return jsonify({"success": False, "message": "注册成功但更新邀请码失败"}), 500
 
     return jsonify({"success": True, "message": "注册成功"})
 
@@ -480,8 +568,79 @@ scheduler.start()
 def health_check():
     return 'OK', 200
 
+@app.route('/api/heartbeat', methods=['POST'])
+def api_heartbeat():
+    if 'username' not in session:
+        return jsonify({"success": False, "message": "未登录"}), 401
+
+    # 更新用户的最后活动时间
+    update_last_active(session['username'])
+    return jsonify({"success": True, "message": "心跳成功"}), 200
+
+
+@app.route('/api/logout', methods=['POST'])
+def api_logout():
+    if 'username' not in session:
+        return jsonify({"success": False, "message": "未登录"}), 401
+
+    # 更新用户的状态为已登出
+    logout_user(session['username'])
+    session.clear()
+    return jsonify({"success": True, "message": "登出成功"}), 200
+# ✅ 定时清理“登录中但超过 SESSION_TIMEOUT_MINUTES 未活动”的用户
+def mark_inactive_users():
+    SUPABASE_URL = os.environ.get("SUPABASE_URL")
+    SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
+    if not SUPABASE_URL or not SUPABASE_API_KEY:
+        print("[ERROR] 缺少 Supabase URL 或 API Key")
+        return
+
+    headers = {
+        "apikey": SUPABASE_API_KEY,
+        "Authorization": f"Bearer {SUPABASE_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    now = get_current_time(TIMEZONE)
+    cutoff = now - timedelta(minutes=SESSION_TIMEOUT_MINUTES)
+    cutoff_iso = cutoff.isoformat()
+
+    # 查询登录中但超时未活动的用户
+    response = requests.get(
+        f"{SUPABASE_URL}/rest/v1/login_log?status=eq.登录中&last_active=lt.{cutoff_iso}",
+        headers=headers
+    )
+
+    if response.status_code != 200:
+        print(f"[ERROR] 查询 Supabase 失败：{response.status_code} - {response.text}")
+        return
+
+    inactive_users = response.json()
+    for user in inactive_users:
+        username = user.get("username")
+        logout_time = now.isoformat()
+
+        # 更新用户状态
+        logout_user(username)
+
+        # 更新 Supabase 登录记录
+        update_url = f"{SUPABASE_URL}/rest/v1/login_log?id=eq.{user['id']}"
+        payload = {
+            "status": "已登出",
+            "logout_time": logout_time
+        }
+        update_resp = requests.patch(update_url, headers=headers, json=payload)
+
+        if update_resp.status_code not in [200, 204]:
+            print(f"[WARN] 更新用户 {username} 的登出时间失败：{update_resp.status_code} - {update_resp.text}")
+        else:
+            print(f"[INFO] 用户 {username} 已成功登出，登出时间：{logout_time}")
+
+    return len(inactive_users)
+
+
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))
-    is_debug = os.environ.get("FLASK_DEBUG", "1") == "1"
-    print(f"✅ Running Flask on http://127.0.0.1:{port} (debug={is_debug})")
-    app.run(host='127.0.0.1', port=port, debug=is_debug)
+    port = int(os.environ.get("PORT", 10000))  # Render 会自动注入 PORT
+    is_debug = os.environ.get("FLASK_DEBUG", "0") == "1"  # 默认关闭 Debug
+    print(f"✅ Running Flask on http://0.0.0.0:{port} (debug={is_debug})")
+    app.run(host='0.0.0.0', port=port, debug=is_debug)

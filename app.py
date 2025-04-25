@@ -11,7 +11,7 @@ if os.environ.get("RENDER") != "true":
 
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import pytz
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 import os
 import requests
 
@@ -22,20 +22,23 @@ app.secret_key = os.environ.get('SECRET_KEY', 'Martin-Armstrong-Passw0rd-2025!')
 print(f"[DEBUG] 当前 SECRET_KEY: {os.environ.get('SECRET_KEY')}")
 
 # ========== 全局配置 ==========
-TIMEZONE = pytz.timezone('Asia/Shanghai')
+# ✅ 定义中国时区
+CHINA_TZ = timezone(timedelta(hours=8))
+TIMEZONE = pytz.timezone("Asia/Shanghai")
+# ✅ 设置 session 过期时间 70 分钟
 SESSION_TIMEOUT_MINUTES = 70
 
 # ========== 工具函数部分 ==========
+
+def get_current_time():
+    """返回当前中国时间（UTC+8）"""
+    return datetime.now(CHINA_TZ).isoformat()
 
 def get_client_ip():
     """获取客户端真实 IP 地址"""
     if request.headers.get('X-Forwarded-For'):
         return request.headers['X-Forwarded-For'].split(',')[0].strip()
     return request.remote_addr or 'Unknown'
-
-def get_current_time():
-    TIMEZONE = pytz.timezone("Asia/Shanghai")
-    return datetime.now(TIMEZONE).isoformat()
 
 def update_user_last_active(user_id):
     SUPABASE_URL = os.environ.get("SUPABASE_URL")
@@ -164,7 +167,7 @@ def handle_login():
     ip = get_client_ip()
     now = get_current_time()
     session['username'] = username
-    session['last_active'] = datetime.now().isoformat()
+    session['last_active'] = now
     insert_login_log({
         "username": username,
         "ip": ip,
@@ -181,7 +184,7 @@ from dateutil.parser import isoparse
 def check_session_timeout():
     session.permanent = True
     if 'username' in session:
-        now = datetime.now(TIMEZONE)
+        now = get_current_time()
         last_active = session.get('last_active')
         if last_active:
             last_dt = isoparse(last_active).astimezone(TIMEZONE)
@@ -260,7 +263,7 @@ def login():
 
         # ✅ 附加信息
         ip = get_client_ip()
-        now = datetime.now()
+        now = get_current_time()
         session['username'] = username
         session['last_active'] = now.isoformat()
 
@@ -544,7 +547,7 @@ def auto_logout_inactive_users():
     }
 
     # 判断过去 15 分钟内无操作的登录用户
-    now = datetime.now(TIMEZONE)
+    now = get_current_time()
     cutoff = now - timedelta(minutes=SESSION_TIMEOUT_MINUTES)
     cutoff_iso = cutoff.isoformat()
 
@@ -601,7 +604,7 @@ def mark_inactive_users():
         "Content-Type": "application/json"
     }
 
-    now = get_current_time(TIMEZONE)
+    now = get_current_time()
     cutoff = now - timedelta(minutes=SESSION_TIMEOUT_MINUTES)
     cutoff_iso = cutoff.isoformat()
 

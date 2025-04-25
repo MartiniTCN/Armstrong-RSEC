@@ -597,6 +597,11 @@ def api_logout():
 from dateutil.parser import isoparse
 from datetime import datetime, timedelta, timezone
 
+from dateutil.parser import isoparse
+from datetime import timezone, timedelta
+
+CHINA_TZ = timezone(timedelta(hours=8))  # ✅ 中国时区（如果没定义过）
+
 def mark_inactive_users():
     SUPABASE_URL = os.environ.get("SUPABASE_URL")
     SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
@@ -610,13 +615,13 @@ def mark_inactive_users():
         "Content-Type": "application/json"
     }
 
-    now = get_current_datetime()  # 返回中国时区 datetime 对象
+    now = get_current_datetime()  # ✅ 带时区
     cutoff = now - timedelta(minutes=SESSION_TIMEOUT_MINUTES)
 
     print(f"[INFO] 当前时间：{now.isoformat()}")
     print(f"[INFO] 超时阈值：{cutoff.isoformat()}")
 
-    # ✅ 查询所有“登录中”的用户记录（不再通过 URL 进行 last_active 比较）
+    # ✅ 查询“登录中”的用户列表
     response = requests.get(
         f"{SUPABASE_URL}/rest/v1/login_log?status=eq.登录中&select=id,username,last_active",
         headers=headers
@@ -635,8 +640,10 @@ def mark_inactive_users():
             continue
 
         try:
-            # ✅ 转换为 datetime 并与 cutoff 比较
             last_dt = isoparse(last_active)
+            if last_dt.tzinfo is None:
+                last_dt = last_dt.replace(tzinfo=CHINA_TZ)  # ✅ 修正为带时区
+
             if last_dt < cutoff:
                 inactive_users.append(user)
         except Exception as e:
@@ -644,11 +651,11 @@ def mark_inactive_users():
 
     print(f"[INFO] 需登出的用户数：{len(inactive_users)}")
 
+    # ✅ 执行登出操作
     for user in inactive_users:
         username = user.get("username")
         logout_time = now.isoformat()
 
-        # ✅ 更新 Supabase 状态
         update_url = f"{SUPABASE_URL}/rest/v1/login_log?id=eq.{user['id']}"
         payload = {
             "status": "已登出",

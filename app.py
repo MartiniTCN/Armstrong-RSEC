@@ -35,7 +35,7 @@ def get_current_time():
     return datetime.now(CHINA_TZ).isoformat()
 
 def get_current_datetime():
-    return datetime.now(timezone(timedelta(hours=8)))
+    return datetime.now(CHINA_TZ)
 
 def get_client_ip():
     """获取客户端真实 IP 地址"""
@@ -611,25 +611,42 @@ def mark_inactive_users():
     cutoff = now - timedelta(minutes=SESSION_TIMEOUT_MINUTES)
     cutoff_iso = cutoff.isoformat()
 
-    # 查询登录中但超时未活动的用户
+    print(f"[INFO] 当前时间：{now.isoformat()}")
+    print(f"[INFO] 超时阈值：{cutoff_iso}")
+
+    # ✅ 获取所有状态为“登录中”的用户记录
     response = requests.get(
-        f"{SUPABASE_URL}/rest/v1/login_log?status=eq.登录中&last_active=lt.{cutoff_iso}",
+        f"{SUPABASE_URL}/rest/v1/login_log?status=eq.登录中&select=id,username,last_active",
         headers=headers
     )
 
     if response.status_code != 200:
-        print(f"[ERROR] 查询 Supabase 失败：{response.status_code} - {response.text}")
+        print(f"[ERROR] 查询 Supabase 登录中用户失败：{response.status_code} - {response.text}")
         return
 
-    inactive_users = response.json()
+    users = response.json()
+    inactive_users = []
+
+    for user in users:
+        last_active = user.get("last_active")
+        if not last_active:
+            continue
+
+        try:
+            dt = isoparse(last_active)
+            if dt < cutoff:
+                inactive_users.append(user)
+        except Exception as e:
+            print(f"[WARN] 无法解析时间 '{last_active}'，跳过用户 {user.get('username')}：{e}")
+
+    print(f"[INFO] 需登出的用户数：{len(inactive_users)}")
+
+    # ✅ 开始批量登出
     for user in inactive_users:
         username = user.get("username")
         logout_time = now.isoformat()
 
-        # 更新用户状态
-        logout_user(username)
-
-        # 更新 Supabase 登录记录
+        # 更新数据库状态为“已登出”
         update_url = f"{SUPABASE_URL}/rest/v1/login_log?id=eq.{user['id']}"
         payload = {
             "status": "已登出",
@@ -638,9 +655,9 @@ def mark_inactive_users():
         update_resp = requests.patch(update_url, headers=headers, json=payload)
 
         if update_resp.status_code not in [200, 204]:
-            print(f"[WARN] 更新用户 {username} 的登出时间失败：{update_resp.status_code} - {update_resp.text}")
+            print(f"[WARN] 用户 {username} 登出失败：{update_resp.status_code} - {update_resp.text}")
         else:
-            print(f"[INFO] 用户 {username} 已成功登出，登出时间：{logout_time}")
+            print(f"[✅] 用户 {username} 已成功登出，时间：{logout_time}")
 
     return len(inactive_users)
 

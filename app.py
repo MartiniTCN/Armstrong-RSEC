@@ -25,7 +25,7 @@ print(f"[DEBUG] 当前 SECRET_KEY: {os.environ.get('SECRET_KEY')}")
 # ✅ 定义中国时区
 CHINA_TZ = timezone(timedelta(hours=8))
 TIMEZONE = pytz.timezone("Asia/Shanghai")
-# ✅ 设置 session 过期时间 70 分钟
+
 SESSION_TIMEOUT_MINUTES = 70
 
 # ========== 工具函数部分 ==========
@@ -33,6 +33,9 @@ SESSION_TIMEOUT_MINUTES = 70
 def get_current_time():
     """返回当前中国时间（UTC+8）"""
     return datetime.now(CHINA_TZ).isoformat()
+
+def get_current_datetime():
+    return datetime.now(timezone(timedelta(hours=8)))
 
 def get_client_ip():
     """获取客户端真实 IP 地址"""
@@ -165,7 +168,7 @@ def handle_login():
 
     # ✅ 正常登录流程
     ip = get_client_ip()
-    now = get_current_time()
+    now = get_current_datetime()
     session['username'] = username
     session['last_active'] = now
     insert_login_log({
@@ -184,7 +187,7 @@ from dateutil.parser import isoparse
 def check_session_timeout():
     session.permanent = True
     if 'username' in session:
-        now = get_current_time()
+        now = get_current_datetime()
         last_active = session.get('last_active')
         if last_active:
             last_dt = isoparse(last_active).astimezone(TIMEZONE)
@@ -263,7 +266,7 @@ def login():
 
         # ✅ 附加信息
         ip = get_client_ip()
-        now = get_current_time()
+        now = get_current_datetime()
         session['username'] = username
         session['last_active'] = now.isoformat()
 
@@ -547,7 +550,7 @@ def auto_logout_inactive_users():
     }
 
     # 判断过去 15 分钟内无操作的登录用户
-    now = get_current_time()
+    now = get_current_datetime()
     cutoff = now - timedelta(minutes=SESSION_TIMEOUT_MINUTES)
     cutoff_iso = cutoff.isoformat()
 
@@ -604,7 +607,7 @@ def mark_inactive_users():
         "Content-Type": "application/json"
     }
 
-    now = get_current_time()
+    now = get_current_datetime()
     cutoff = now - timedelta(minutes=SESSION_TIMEOUT_MINUTES)
     cutoff_iso = cutoff.isoformat()
 

@@ -594,6 +594,9 @@ def api_logout():
     session.clear()
     return jsonify({"success": True, "message": "登出成功"}), 200
 # ✅ 定时清理“登录中但超过 SESSION_TIMEOUT_MINUTES 未活动”的用户
+from dateutil.parser import isoparse
+from datetime import datetime, timedelta, timezone
+
 def mark_inactive_users():
     SUPABASE_URL = os.environ.get("SUPABASE_URL")
     SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
@@ -607,14 +610,13 @@ def mark_inactive_users():
         "Content-Type": "application/json"
     }
 
-    now = get_current_datetime()
+    now = get_current_datetime()  # 返回中国时区 datetime 对象
     cutoff = now - timedelta(minutes=SESSION_TIMEOUT_MINUTES)
-    cutoff_iso = cutoff.isoformat()
 
     print(f"[INFO] 当前时间：{now.isoformat()}")
-    print(f"[INFO] 超时阈值：{cutoff_iso}")
+    print(f"[INFO] 超时阈值：{cutoff.isoformat()}")
 
-    # ✅ 获取所有状态为“登录中”的用户记录
+    # ✅ 查询所有“登录中”的用户记录（不再通过 URL 进行 last_active 比较）
     response = requests.get(
         f"{SUPABASE_URL}/rest/v1/login_log?status=eq.登录中&select=id,username,last_active",
         headers=headers
@@ -633,20 +635,20 @@ def mark_inactive_users():
             continue
 
         try:
-            dt = isoparse(last_active)
-            if dt < cutoff:
+            # ✅ 转换为 datetime 并与 cutoff 比较
+            last_dt = isoparse(last_active)
+            if last_dt < cutoff:
                 inactive_users.append(user)
         except Exception as e:
             print(f"[WARN] 无法解析时间 '{last_active}'，跳过用户 {user.get('username')}：{e}")
 
     print(f"[INFO] 需登出的用户数：{len(inactive_users)}")
 
-    # ✅ 开始批量登出
     for user in inactive_users:
         username = user.get("username")
         logout_time = now.isoformat()
 
-        # 更新数据库状态为“已登出”
+        # ✅ 更新 Supabase 状态
         update_url = f"{SUPABASE_URL}/rest/v1/login_log?id=eq.{user['id']}"
         payload = {
             "status": "已登出",

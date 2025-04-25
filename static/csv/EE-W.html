@@ -2024,26 +2024,26 @@ function switchLanguage(lang) {
 
 
 <script>
-  // ✅ 判断是否为本地开发环境
   const isLocalhost = location.hostname === "localhost" || location.hostname === "127.0.0.1";
-  
-  // ✅ 非本地环境则启用调试防护
   if (!isLocalhost) {
-    // 禁用右键菜单
-    document.addEventListener('contextmenu', event => event.preventDefault());
-  
-    // 禁用 F12、Ctrl+Shift+I / J / C、Ctrl+U 等组合键
-    document.addEventListener('keydown', event => {
+    // 阻止右键菜单
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // 仅警告而不阻止默认键盘行为（调试提示）
+    document.addEventListener('keydown', e => {
+      const blockedKeys = ['F12', 'I', 'J', 'C', 'U'];
       if (
-        event.key === 'F12' ||
-        (event.ctrlKey && event.shiftKey && ['I', 'J', 'C'].includes(event.key.toUpperCase())) ||
-        (event.ctrlKey && event.key.toUpperCase() === 'U')
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && blockedKeys.includes(e.key.toUpperCase())) ||
+        (e.ctrlKey && e.key.toUpperCase() === 'U')
       ) {
-        event.preventDefault();
+        console.warn("🛑 调试快捷键已被阻止！");
+        // ⚠️ 可选：取消以下行避免页面其他逻辑被阻断
+        // e.preventDefault();
       }
     });
   }
-  </script>
+</script>
   
 </body>
 </html>

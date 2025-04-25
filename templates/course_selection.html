@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armstrong Training Courses</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {}
+            }
+        };
+    </script>
+
+    <link rel="stylesheet" href="style.css"> <!-- 自定义样式 -->
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+
+        .course-card {
+            aspect-ratio: 1;
+            transition: all 0.3s;
+        }
+        .course-card:hover {
+            transform: scale(1.03) translateY(-4px);
+        }
+        .course-image {
+            transition: transform 0.3s;
+        }
+        .course-card:hover .course-image {
+            transform: scale(1.02);
+        }
+    </style>
+
+<style>
+    /* 背景图片样式 */
+    .course-page-background {
+      background-image: url('https://i.stardots.io/armstrong/webpage.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh; /* 确保背景图覆盖整个页面 */
+    }
+  </style>
+
+<style>
+    /* 胶囊标签样式：明亮 + 暗色模式兼容 */
+    .tag-capsule {
+    display: inline-block;
+    padding: 2px 6px;  /* 缩小内边距 */
+    font-size: 10px;    /* 缩小字体 */
+    font-weight: 600;   /* 加粗文字 */
+    border-radius: 9999px; /* 胶囊外形 */
+    line-height: 1;
+    white-space: nowrap;
+    background-color: #e5d0ff; /* 更柔和的浅紫色背景 */
+    color: #6a0dad;            /* 更接近紫色的深紫色文字 */
+    }
+
+    /* 🌙 Dark 模式：深紫色背景，浅紫色文字 */
+    .dark .tag-capsule {
+    background-color: #6a0dad; /* 深紫色背景 */
+    color: #e5d0ff;            /* 浅紫色文字 */
+    }
+  </style>
+
+</head>
+<body class="course-page-background">
+    <script>
+        const currentUsername = "{{ username }}";  // 从 Flask 中传递过来的变量
+      </script>
+
+<!-- ✅ 导航栏区域 -->
+<div class="sticky top-0 z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 py-3 sm:py-4">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+  
+        <!-- ✅ 左侧区域：Logo + 标题 + 分类 + 搜索框（统一靠左排列） -->
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <!-- Logo + 标题 -->
+          <div class="flex items-center gap-2">
+            <img src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=200"
+              alt="Armstrong Logo" class="h-8 object-contain" />
+            <span class="text-gray-400 text-lg sm:text-xl">|</span>
+            <div class="flex items-center gap-1">
+              <i class="fas fa-book-open w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400"></i>
+              <h1 class="text-sm sm:text-base font-semibold text-gray-900 dark:text-white" id="pageTitle">产品课程</h1>
+            </div>
+          </div>
+  
+          <!-- 分类下拉框 -->
+          <select
+            id="categorySelect"
+            class="max-w-[100px] px-3 py-1.5 h-7 sm:h-7 text-xs sm:text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            style="font-size: 0.65rem !important; font-weight: 600 !important; text-align: center !important;">
+            <option value="">所有类别</option>
+          </select>
+  
+          <!-- 搜索框 + 按钮 -->
+          <div class="relative flex items-center">
+            <button id="searchButton"
+              class="w-5 h-5 flex justify-center items-center text-gray-500 dark:text-gray-300 focus:outline-none">
+              <i class="fas fa-search"></i>
+            </button>
+            <input type="text" id="searchInput" placeholder="搜索课程..."
+              class="hidden max-w-[100px] pl-3 pr-4 py-1.5 h-7 sm:h-7 text-xs text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+          </div>
+        </div>
+  
+        <!-- ✅ 右侧区域：明暗按钮、语言按钮、用户名 + 退出 -->
+        <div class="flex items-center gap-2 sm:gap-3 text-sm text-gray-700 dark:text-gray-300 font-semibold">
+          <!-- 🌙 明暗模式 -->
+          <button id="themeToggle"
+            class="w-5 h-5 flex items-center justify-center rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-md hover:scale-110 transition-transform"
+            aria-label="切换明暗模式">
+            <i class="fas fa-sun dark:hidden text-[11px] leading-none"></i>
+            <i class="fas fa-moon hidden dark:block text-[11px] leading-none"></i>
+          </button>
+  
+          <!-- 🌐 语言切换 -->
+          <button id="languageToggle" onclick="toggleLang()"
+            class="w-5 h-5 flex items-center justify-center rounded-full overflow-hidden bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-inner hover:scale-110 transition-transform"
+            aria-label="切换语言">
+            <img id="languageFlag" src="https://flagcdn.com/cn.svg" alt="Language" class="w-full h-full object-cover" />
+          </button>
+  
+          <!-- 用户名 + 退出 -->
+        <span id="userName">{{ username }}</span>
+
+        <!-- 竖线，黑色加粗，左右间距 4px -->
+        <span class="font-bold text-black" style="font-size: 0.85rem; margin: 0 4px;">｜</span>
+
+        <!-- 圆角矩形风格的退出按钮 -->
+        <button onclick="handleLogout()" id="logoutText"
+          class="flex items-center gap-2 hover:underline transition-all text-[#f53029] font-bold py-1 px-2 rounded-lg bg-[#f53029]/10"
+          style="font-size: 0.85rem; color: #f53029; font-weight: bold;">
+          <i class="fas fa-sign-out-alt"></i>
+          <span id="logoutBtn">退出</span>
+        </button>
+        </div>
+        
+  
+      </div>
+    </div>
+  </div>
+
+<script>
+    // 显示/隐藏搜索框
+    document.getElementById("searchButton").addEventListener("click", function() {
+        const searchInput = document.getElementById("searchInput");
+        searchInput.classList.toggle("hidden");  // 切换显示与隐藏
+        searchInput.focus();  // 聚焦到输入框
+    });
+</script>
+
+
+    <!-- Main Content 可以调整卡片布局-->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div id="courseGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6"> 
+            <!-- Courses will be dynamically inserted here -->
+        </div>
+        <div id="noResults" class="hidden text-center py-12">
+            <p class="text-lg text-gray-500 dark:text-gray-400">没有找到符合条件的课程。</p>
+        </div>
+    </main>
+
+    <script>
+        // Course data
+        const courses = [
+            {
+                id: 1,
+                title: {
+                    zh: "EE-W 水冷机房优化控制",
+                    en: "EE-W (IPC9521)"
+                },
+                description: {
+                    zh: "专为高效制冷机房而生，实现水冷水主机系统的智能协同控制，释放最佳性能。",
+                    en: "Designed for high-efficiency chiller plants, enabling smart collaboration among chillers to unleash peak performance."
+                },
+                link: "/course/EE-W" , // ✅ 指向你定义的路由
+                duration: "2 weeks",
+                students: 1234,
+                rating: 4.8,
+                image: "https://i.stardots.io/armstrong/EE-W.png",
+                category: "Optimization"
+            },
+            {
+                id: 2,
+                title: {
+                    zh: "SE-A 空气源冷水机组优化控制",
+                    en: "SE-A (IPC9511)"
+                },
+                description: {
+                    zh: "一体化智控核心，定义空气源冷水机组的新标准。",
+                    en: "The integrated brain for air-cooled chillers—simplifying control, maximizing efficiency."
+                },
+                link: "/course/SE-A" , // ✅ 指向你定义的路由
+                duration: "1 week",
+                students: 856,
+                rating: 4.7,
+                image: "https://i.stardots.io/armstrong/SE-A.png",
+                category: "Optimization"
+            },
+            {
+                id: 3,
+                title: {
+                    zh: "SE-T 高效冷却系统优化控制",
+                    en: "SE-T (ITC9521)"
+                },
+                description: {
+                    zh: "聚焦冷却塔与冷却泵的优化控制，打造智能散热新体验。",
+                    en: "Focused on optimizing cooling towers and pumps for intelligent heat rejection."
+                },
+                link: "/course/SE-T" , // ✅ 指向你定义的路由
+                duration: "2 weeks",
+                students: 945,
+                rating: 4.9,
+                image: "https://i.stardots.io/armstrong/SE-T%20(ITC9521).png",
+                category: "Optimization"
+            },
+            {
+                id: 4,
+                title: {
+                    zh: "SE-F 智能泵组优化控制",
+                    en: "SE-F (IPS4xxxx)"
+                },
+                description: {
+                    zh: "多泵智控核心，系统更稳更省。",
+                    en: "The smart core for multi-pump control—stable, efficient, effortless."
+                },
+                link: "/course/SE-F" , // ✅ 指向你定义的路由
+                duration: "1 week",
+                students: 678,
+                rating: 4.6,
+                image: "https://i.stardots.io/armstrong/SE-F%20(IPS).png",
+                category: "Optimization"
+            },
+            {
+                id: 5,
+                title: {
+                    zh: "DE 智能变频泵",
+                    en: "Design Envelope Pump"
+                },
+                description: {
+                    zh: "不只是水泵，更是自我调节的智慧引擎。安装即运行，节能高效。",
+                    en: "More than a pump – a self-optimizing intelligent engine. quick to install, smart to run, built for energy savings in intelligent buildings."
+                },
+                link: "/course/DE-PUMP" , // ✅ 指向你定义的路由
+                duration: "2 weeks",
+                students: 1567,
+                rating: 4.9,
+                image: "https://i.stardots.io/armstrong/DE%20PUMPS.png",
+                category: "Design Envelope"
+            },
+            {
+                id: 6,
+                title: {
+                    zh: "iFMS 智能流体管理系统",
+                    en: "iFMS - Smart Fluid Management System"
+                },
+                description: {
+                    zh: "一体化流线，将复杂工程课程化，一站式交付高效可靠的智能机房系统。",
+                    en: "From pump to system, simplifies complex projects into packaged solutions for fast, efficient, and reliable delivery."
+                },
+                link: "/course/iFMS" , // ✅ 指向你定义的路由
+                duration: "2 weeks",
+                students: 2341,
+                rating: 4.8,
+                image: "https://i.stardots.io/armstrong/iFMS.png",
+                category: "System Integration"
+            },
+            {
+                id: 7,
+                title: {
+                    zh: "Plumbing Booster系统",
+                    en: "Plumbing 6800Q Booster"
+                },
+                description: {
+                    zh: "智能增压，节能静音，占地更小，适配多种供水场景。",
+                    en: "Smart boosting with energy savings, quiet operation, and compact footprint for versatile water supply needs."
+                },
+                link: "/course/Booster" , // ✅ 指向你定义的路由
+                duration: "1 week",
+                students: 1123,
+                rating: 4.7,
+                image: "https://i.stardots.io/armstrong/Booster.png",
+                category: "Plumbing"
+            },
+            {
+                id: 8,
+                title: {
+                    zh: "板式换热器系统（PFX）",
+                    en: "Plate Heat Exchanger (PFX)"
+                },
+                description: {
+                    zh: "以超致密满和高效换热，释放每一寸机房空间，适用于对节能和体积要求极高的楼宇项目",
+                    en: "Ultra-compact and energy-efficient heat transfer that frees up valuable mechanical room space—perfect for energy-conscious buildings."
+                },
+                link: "/course/PFX" , // ✅ 指向你定义的路由
+                duration: "1 week",
+                students: 892,
+                rating: 4.8,
+                image: "https://i.stardots.io/armstrong/PFX.png",
+                category: "Heat Exchange"
+            }
+        ];
+
+        // Translations
+        const translations = {
+            en: {
+                title: "Training Courses",
+                searchPlaceholder: "Search courses...",
+                allCategories: "All Categories",
+                students: "students",
+                noResults: "No courses found matching your criteria.",
+                weeks: "weeks"
+            },
+            zh: {
+                title: "培训课程",
+                searchPlaceholder: "搜索课程...",
+                allCategories: "所有类别",
+                students: "学生",
+                noResults: "没有找到符合条件的课程。",
+                weeks: "周"
+            }
+        };
+
+        // Current state
+        let currentLanguage = 'zh';
+        // let isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        //let isDarkMode = true; // ✅ 强制默认暗色模式
+        let isDarkMode = false;  // ✅ 默认亮色
+
+        // Initialize dark mode
+        function initTheme() {
+            document.documentElement.classList.toggle('dark', isDarkMode);
+        }
+
+
+    // Create course card
+    // 在创建课程卡片的函数内渲染标签
+function createCourseCard(course) {
+  console.log("📦 渲染课程：", course.title.zh, "➡️ 跳转：", course.link);
+
+  return `
+    <a href="${course.link || '#'}" class="block group">
+      <div class="course-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md overflow-hidden flex flex-col">
+          
+          <!-- ✅ 上半部分：图片区域 -->
+          <div class="h-1/2 bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+            <img 
+                src="${course.image}" 
+                alt="${course.title[currentLanguage]}" 
+                class="course-image w-full h-full object-contain p-4"
+            />
+          </div>
+
+          <!-- ✅ 下半部分：文字区域 -->
+          <div class="h-1/2 relative overflow-hidden">
+            <!-- ✅ 缩放容器：保持固定尺寸 -->
+            <div class="scale-inner absolute inset-0 origin-top-left transition-transform duration-300 px-3">
+                
+              <!-- ✅ 内部实际内容区域 -->
+              <div class="inner-padding flex flex-col justify-between h-full">
+                <div>
+                  <!-- ✅ 标签：小字体 + 胶囊形状 + 自适应缩放 -->
+                  <span class="tag-capsule mb-1">
+                    ${course.category}
+                  </span>
+
+                  <!-- 标题：加粗，自动换行 -->
+                  <h3 class="text-sm font-semibold leading-tight text-gray-900 dark:text-white max-w-full truncate">
+                    ${course.title[currentLanguage]}
+                  </h3>
+
+                  <!-- 简介：较小字体、自动换行 -->
+                  <p class="text-[0.65rem] text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">
+                    ${course.description[currentLanguage]}
+                  </p>
+                </div>
+
+                <!-- ✅ 底部信息（时长、人数、评分） -->
+                <div class="card-footer flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 mt-4 pb-3 max-w-full">
+                    <!-- 时长信息 -->
+                    <div class="flex items-center gap-1 max-w-[100px] truncate">
+                        <i class="fas fa-clock w-3.5 h-3.5"></i><span class="truncate">${course.duration}</span>
+                    </div>
+                    <!-- 学员人数 -->
+                    <div class="flex items-center gap-1 max-w-[100px] truncate">
+                        <i class="fas fa-users w-3.5 h-3.5"></i><span class="truncate">${course.students.toLocaleString()} students</span>
+                    </div>
+                    <!-- 评分信息 -->
+                    <div class="flex items-center gap-1 max-w-[100px] truncate">
+                        <i class="fas fa-star w-3.5 h-3.5 text-yellow-400"></i><span class="truncate">${course.rating}</span>
+                    </div>
+                </div>
+
+              </div> <!-- inner-padding end -->
+            </div> <!-- scale-inner end -->
+          </div> <!-- 下半部分结束 -->
+      </div> <!-- course card end -->
+    </a>
+  `;
+}
+
+        // Update course grid
+        function updateCourseGrid() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const selectedCategory = document.getElementById('categorySelect').value;
+            
+            const filteredCourses = courses.filter(course => {
+                const matchesSearch = 
+                    course.title[currentLanguage].toLowerCase().includes(searchTerm) ||
+                    course.description[currentLanguage].toLowerCase().includes(searchTerm);
+                const matchesCategory = !selectedCategory || course.category === selectedCategory;
+                return matchesSearch && matchesCategory;
+            });
+
+            const courseGrid = document.getElementById('courseGrid');
+            const noResults = document.getElementById('noResults');
+
+            if (filteredCourses.length === 0) {
+                courseGrid.innerHTML = '';
+                noResults.classList.remove('hidden');
+            } else {
+                courseGrid.innerHTML = filteredCourses.map(course => createCourseCard(course)).join('');
+                noResults.classList.add('hidden');
+            }
+        }
+
+        // Initialize category select
+        function initCategories() {
+            const categories = Array.from(new Set(courses.map(course => course.category)));
+            const select = document.getElementById('categorySelect');
+            select.innerHTML = `
+                <option value="">${translations[currentLanguage].allCategories}</option>
+                ${categories.map(category => `<option value="${category}">${category}</option>`).join('')}
+            `;
+        }
+
+        // Update language
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
+            document.getElementById('languageFlag').src = `https://flagcdn.com/${currentLanguage === 'en' ? 'cn' : 'us'}.svg`;
+            document.getElementById('pageTitle').textContent = translations[currentLanguage].title;
+            document.getElementById('searchInput').placeholder = translations[currentLanguage].searchPlaceholder;
+            initCategories();
+            updateCourseGrid();
+            scaleCourseTextAreas(); // 语言切换后重新计算缩放
+
+            // ✅ 更新“退出按钮”文字
+            const logoutBtn = document.getElementById("logoutBtn");
+            if (logoutBtn) {
+                logoutBtn.textContent = currentLanguage === 'en' ? "Logout" : "退出";
+            }
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', updateCourseGrid);
+        document.getElementById('categorySelect').addEventListener('change', updateCourseGrid);
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            document.documentElement.classList.toggle('dark', isDarkMode);
+        });
+        document.getElementById('languageToggle').addEventListener('click', toggleLanguage);
+
+        // Initialize
+        initTheme();
+        initCategories();
+        updateCourseGrid();
+
+        // Listen for system dark mode changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            isDarkMode = e.matches;
+            document.documentElement.classList.toggle('dark', isDarkMode);
+        });
+    </script>
+
+
+
+  
+<!-- ✅ 登录弹窗 -->
+<div id="loginOverlay" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-xs shadow-xl">
+      <h2 class="text-lg font-bold text-center mb-4">会话已过期，请重新登录</h2>
+      <input id="reLoginUser" class="w-full mb-3 px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700" placeholder="用户名">
+      <input id="reLoginPass" type="password" class="w-full mb-3 px-4 py-2 rounded-md bg-gray-100 dark:bg-gray-700" placeholder="密码">
+      <button onclick="submitRelogin()" class="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">重新登录</button>
+    </div>
+  </div>
+
+  <!-- 页面末尾 -->
+<script>
+    function showLoginOverlay() {
+      document.getElementById("loginOverlay").classList.remove("hidden");
+    }
+    
+    async function submitRelogin() {
+      const username = document.getElementById("reLoginUser").value.trim();
+      const password = document.getElementById("reLoginPass").value.trim();
+    
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ username, password })
+      });
+    
+      if (res.redirected) {
+        location.reload();  // ✅ 登录成功后刷新页面继续使用
+      } else {
+        alert("重新登录失败，请检查用户名或密码");
+      }
+    }
+
+    document.getElementById("reLoginPass").addEventListener("keyup", function (e) {
+        if (e.key === "Enter") {
+            submitRelogin();
+        }
+    });
+    </script>
+
+    <!-- 关闭登录弹窗 -->
+    <script>
+        function closeLoginOverlay() {
+            document.getElementById("loginOverlay").classList.add("hidden");
+        }
+    </script>
+
+<script>
+    function scaleCourseTextAreas() {
+      const cards = document.querySelectorAll('.course-card');
+      cards.forEach(card => {
+        const container = card.querySelector('.scale-inner');
+        if (!container) return;
+  
+        container.style.transform = 'scale(1)'; // 重置缩放
+  
+        const textArea = container.parentElement;
+        const maxHeight = textArea.clientHeight;
+        const actualHeight = container.scrollHeight;
+  
+        if (actualHeight > maxHeight) {
+          const scale = maxHeight / actualHeight;
+          container.style.transform = `scale(${scale})`;
+        }
+      });
+    }
+  
+    window.addEventListener('DOMContentLoaded', scaleCourseTextAreas);
+    window.addEventListener('resize', scaleCourseTextAreas);
+  </script>
+
+
+<script>
+    // ✅ 判断是否为本地开发环境
+    const isLocalhost = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    
+    // ✅ 非本地环境则启用调试防护
+    if (!isLocalhost) {
+      // 禁用右键菜单
+      document.addEventListener('contextmenu', event => event.preventDefault());
+    
+      // 禁用 F12、Ctrl+Shift+I / J / C、Ctrl+U 等组合键
+      document.addEventListener('keydown', event => {
+        if (
+          event.key === 'F12' ||
+          (event.ctrlKey && event.shiftKey && ['I', 'J', 'C'].includes(event.key.toUpperCase())) ||
+          (event.ctrlKey && event.key.toUpperCase() === 'U')
+        ) {
+          event.preventDefault();
+        }
+      });
+    }
+    </script>
+
+<!-- 🟨 页面底部添加脚本（在 </body> 之前） -->
+<script>
+    // 根据语言切换更新按钮文字
+    window.addEventListener('DOMContentLoaded', () => {
+      const logoutBtn = document.getElementById("logoutBtn");
+      if (logoutBtn) {
+        logoutBtn.textContent = isChinese ? "退出" : "Logout";
+      }
+    });
+  
+    // 处理登出
+    function handleLogout() {
+      window.location.href = "/logout";
+    }
+    
+  </script>
+
+
+
+<!-- ✅ Martin </body>页面最尾部 -->
+
+<!-- ✅ 心跳机制（每分钟向服务器发送请求） -->
+<script>
+  setInterval(() => {
+    fetch("/heartbeat", { method: "POST" });
+  }, 60 * 1000); // 每分钟一次
+</script>
+
+<!-- ✅ 自动退出机制（用户无操作1小时自动退出） -->
+<script>
+  let inactivityTimer;
+
+  function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+      alert("由于您已长时间未操作，系统已自动退出。");
+      window.location.href = "/logout"; // 或执行 logout 函数
+    }, 60 * 60 * 1000); // 1 小时 =  60 * 60 * 1000
+  }
+
+  ['click', 'mousemove', 'keypress', 'scroll'].forEach(evt =>
+    document.addEventListener(evt, resetInactivityTimer)
+  );
+
+  resetInactivityTimer(); // 初始化
+</script>
+
+</body>
+</html>

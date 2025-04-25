@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Armstrong 登录日志</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563eb',
+          },
+          borderRadius: {
+            xl: '1rem',
+            '2xl': '1.5rem',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-800 text-white min-h-screen flex flex-col items-center justify-start py-10 px-4">
+
+  <!-- Logo + 标题 -->
+  <div class="text-center mb-8" id="headerSection">
+    <img src="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=200"
+         alt="Armstrong Logo" class="mx-auto w-16 mb-3">
+    <h1 class="text-xl font-semibold tracking-wide text-white">培训 & 测评系统登录日志</h1>
+  </div>
+
+  <!-- 表格卡片容器 -->
+  <div id="logTableWrapper" class="w-full max-w-6xl bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-xl overflow-hidden">
+
+    <!-- 顶部按钮：刷新 + 导出 -->
+    <div class="flex flex-wrap justify-between items-center gap-2 px-6 pt-4">
+        <!-- 刷新按钮 -->
+        <button onclick="refreshLogs()" class="text-xs px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition-all">
+          刷新
+        </button>
+      
+        <!-- 导出 CSV 按钮 -->
+        <button onclick="downloadCSV()" class="text-xs px-3 py-1.5 bg-primary text-white rounded-full hover:bg-blue-700 transition-all">
+          导出 CSV
+        </button>
+      </div>
+
+      <!-- 表格内容区域 -->
+      <div class="w-full overflow-x-auto p-6">
+        <table class="w-full table-auto text-xs sm:text-sm text-left rounded-lg overflow-hidden">
+        <thead class="bg-gray-800 text-white">
+          <tr>
+            <th class="py-3 px-4">账号</th>
+            <th class="py-3 px-4">IP 地址</th>
+            <th class="py-3 px-4">登录时间</th>
+            <th class="py-3 px-4">登出时间</th>
+            <th class="py-3 px-4">最后活跃</th>
+            <th class="py-3 px-4">当前状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+            <tr class="hover:bg-gray-800 transition-all">
+              <!-- 保持字段顺序与 Supabase 中一致并格式化时间 -->
+              <td class="py-2 px-4">{{ log[1] }}</td>
+              <td class="py-2 px-4">{{ log[2] }}</td>
+              <td class="py-2 px-4">{{ log[3][:16].replace('T', ' T') }}</td>
+              <td class="py-2 px-4">{{ log[5][:16].replace('T', ' T') if log[5] else '—' }}</td>
+              <td class="py-2 px-4">{{ log[4][:16].replace('T', ' T') }}</td>
+              <td class="py-2 px-4">{{ log[6] }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+
+  <!-- CSV 导出逻辑 -->
+  <script>
+    function downloadCSV() {
+      let rows = [['账号', 'IP 地址', '登录时间', '登出时间', '最后活跃', '当前状态']];
+      const data = {{ logs|tojson }};
+      data.forEach(log => {
+        rows.push([
+          log[1],
+          log[2],
+          log[3]?.slice(0, 16).replace('T', ' T') || '',
+          log[5]?.slice(0, 16).replace('T', ' T') || '',
+          log[4]?.slice(0, 16).replace('T', ' T') || '',
+          log[6]
+        ]);
+      });
+
+      const csv = rows.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = '登录日志.csv';
+      link.click();
+    }
+  </script>
+
+  <!-- 简单前端密码保护逻辑 -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const logTableWrapper = document.getElementById('logTableWrapper');
+      const header = document.getElementById('headerSection');
+
+      // 默认隐藏页面主要内容
+      if (logTableWrapper) logTableWrapper.style.display = 'none';
+      if (header) header.style.display = 'none';
+
+      const username = prompt('请输入用户名（提示：Mar）');
+      const password = prompt('请输入密码（提示：In）');
+
+      // 验证用户名密码
+      if (username === 'MartinLog' && password === 'Inncom') {
+        if (logTableWrapper) logTableWrapper.style.display = 'block';
+        if (header) header.style.display = 'block';
+      } else {
+        alert('认证失败，您无权查看该页面。');
+        document.body.innerHTML = '<div class="text-center text-red-400 text-lg mt-32">⛔ 访问被拒绝</div>';
+      }
+    });
+  </script>
+
+<script>
+    async function refreshLogs() {
+  try {
+    const res = await fetch('/api/logs');
+    const data = await res.json();
+
+    const tbody = document.querySelector('tbody');
+    tbody.innerHTML = '';
+
+    data.forEach(log => {
+      if (!log || typeof log !== 'object') return; // 防止数据为空或格式错误
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-gray-800 transition-all';
+      tr.innerHTML = `
+        <td class="py-2 px-4">${log.username || '—'}</td>
+        <td class="py-2 px-4">${log.ip || '—'}</td>
+        <td class="py-2 px-4">${(log.login_time || '').slice(0, 16).replace('T', ' T')}</td>
+        <td class="py-2 px-4">${log.logout_time ? log.logout_time.slice(0, 16).replace('T', ' T') : '—'}</td>
+        <td class="py-2 px-4">${(log.last_active || '').slice(0, 16).replace('T', ' T')}</td>
+        <td class="py-2 px-4">${log.status || '—'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    showToast('✅ 已成功刷新', true);
+    console.log("获取到的数据", data);
+
+  } catch (err) {
+    console.error(err);
+    showToast('❌ 刷新失败，请稍后再试', false);
+  }
+}
+  
+    // ✅ 通用弹窗提示函数
+    function showToast(message, success = true) {
+      const toast = document.createElement('div');
+      toast.textContent = message;
+      toast.className = `fixed top-6 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-md shadow-lg text-sm z-50 ${
+        success ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+      }`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
+    }
+  </script>
+
+  <!-- 页面底部版权信息 -->
+  <footer class="mt-10 text-sm text-gray-400 text-center w-full">
+    <p>© 2025 Martin Peng. All rights reserved.</p>
+    <p>
+      Powered by 
+      <a href="https://i.stardots.io/armstrong/Armstrong%20Logo%20-%20Martin.png?width=200" 
+         class="text-primary hover:underline">Martin</a>
+    </p>
+  </footer>
+  
+</body>
+</html>

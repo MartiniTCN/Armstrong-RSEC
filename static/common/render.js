@@ -550,20 +550,45 @@ function evaluateAnswers(userAnswers, correctAnswers) {
       let score = 0;
 
       if (type === "multiplechoice") {
-        const correctSet = new Set(correct.split(",").map(s => s.trim()));
-        const userSet = new Set((user || "").split(",").map(s => s.trim()));
-        const isCorrect = correctSet.size === userSet.size && [...correctSet].every(x => userSet.has(x));
-        score = isCorrect ? scoreMap[type] : 0;
-      } else if (type === "essay") {
+        // 终极标准化函数
+        const normalizeOptions = (str) => {
+            return String(str)
+                .replace(/[，\s]/g, "")  // 一次性移除所有空格和中文逗号
+                .split(",")
+                .filter(opt => opt !== "")
+                .map(opt => opt.toUpperCase())
+                .sort();
+        };
+    
+        const correctOptions = normalizeOptions(correct);
+        const userOptions = normalizeOptions(user);
+    
+        // 调试日志（实际运行时请保留）
+        console.log("标准化结果对比:", {
+            questionId: qid,
+            original: { correct, user },
+            normalized: { correctOptions, userOptions }
+        });
+    
+        // 严格匹配
+        score = (
+            correctOptions.length === userOptions.length &&
+            correctOptions.every(opt => userOptions.includes(opt))
+        ) ? scoreMap[type] : 0;
+    } else if (type === "essay") {
+        // 简答题评分
         const keywords = correct.split(/[，,。.\s]+/).filter(Boolean); // 用标点或空格分词
         const matchCount = keywords.filter(k => user.includes(k)).length;
         score = Math.round((matchCount / keywords.length) * scoreMap[type]);
       } else {
+        // 单选题或判断题评分
         score = (user.trim() === correct.trim()) ? scoreMap[type] : 0;
       }
 
+      // 总分累加
       totalScore += score;
 
+      // 将每个题目的详细评分记录保存到 resultRows
       resultRows.push({
         type: typeMap[type],
         id: qid,
@@ -574,6 +599,7 @@ function evaluateAnswers(userAnswers, correctAnswers) {
     }
   }
 
+  // 返回总分数和每个题目的详细评分
   return { totalScore, resultRows };
 }
 
@@ -868,12 +894,22 @@ function renderAssessmentResult() {
         if (ua === correctAnswer) score = scoreFull;
 
       } else if (type === "multiple") {
+        // 获取用户的答案，确保是数组形式
         const ua = answers.multipleChoice[id] || [];
-        const correct = correctAnswer.split("").map(s => s.trim()).sort();
+      
+        // 按逗号分割正确答案并排序
+        const correct = correctAnswer.split(",").map(s => s.trim()).sort();
+      
+        // 用户答案按逗号分割并排序
         const selected = [...ua].map(s => s.trim()).sort();
+      
+        // 格式化用户答案为逗号分隔的字符串
         userAnswer = selected.length > 0 ? selected.join(", ") : "未答";
-        if (selected.join("") === correct.join("")) score = scoreFull;
-
+      
+        // 如果用户的选择和正确答案完全一致（忽略顺序），给满分
+        if (selected.join(",") === correct.join(",")) {
+          score = scoreFull;
+        }
       } else if (type === "judge") {
         const ua = answers.judgment[id];
         const normalized = ua?.toLowerCase()?.trim();

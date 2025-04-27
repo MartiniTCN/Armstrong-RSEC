@@ -2105,7 +2105,40 @@ function sendEmailResult(answers) {
       });
 }
 
-// ✅ 提交答题记录到 Supabase
+// 获取中国时区的当前时间
+function getChinaTime() {
+  const options = { 
+    timeZone: 'Asia/Shanghai', 
+    hour12: false, 
+    year: 'numeric', 
+    month: 'numeric', 
+    day: 'numeric', 
+    hour: 'numeric', 
+    minute: 'numeric', 
+    second: 'numeric',
+    timeZoneName: 'short'
+  };
+
+  // 使用 Intl.DateTimeFormat 获取中国时区时间
+  const chinaTime = new Intl.DateTimeFormat('en-US', options).format(new Date());
+  console.log("Formatted China Time:", chinaTime);
+
+  // 手动构建 ISO 格式字符串
+  const chinaDate = new Date(chinaTime);
+  const formattedChinaDate = chinaDate.getFullYear() + '-' +
+                             String(chinaDate.getMonth() + 1).padStart(2, '0') + '-' +
+                             String(chinaDate.getDate()).padStart(2, '0') + 'T' +
+                             String(chinaDate.getHours()).padStart(2, '0') + ':' +
+                             String(chinaDate.getMinutes()).padStart(2, '0') + ':' +
+                             String(chinaDate.getSeconds()).padStart(2, '0') + '.000+08:00';
+
+  console.log("Formatted China Time (ISO):", formattedChinaDate);
+
+  return formattedChinaDate;  // 返回格式化后的中国时区时间
+}
+
+
+
 // ✅ 提交答题记录到 Supabase（支持 UPSERT 覆盖）
 async function submitAnswerToSupabase({ username, course, questionId, questionType, answer }) {
   if (!username || username === "unknown_user") {
@@ -2117,13 +2150,16 @@ async function submitAnswerToSupabase({ username, course, questionId, questionTy
     return;
   }
 
+  const timestamp = getChinaTime();  // 获取中国时区的当前时间
+  console.log("Timestamp to Upload:", timestamp);  // 打印上传的时间
+
   const payload = {
     username,
     course,
     question_id: questionId,
     question_type: questionType,
     answer,
-    timestamp: new Date().toISOString()
+    timestamp  // 使用中国时区的时间
   };
 
   try {

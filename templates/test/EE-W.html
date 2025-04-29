@@ -612,39 +612,40 @@
               <!-- 添加底部按钮 -->
               <div class="flex justify-center mt-4">
                 <!-- 清空按钮 -->
-                <button id="clearAnswers" class="px-4 py-2 text-xs text-white rounded-full bg-red-600 hover:bg-red-700 transition">
+                <button id="clearAnswers" class="px-3 py-1 text-xs text-white rounded-full bg-red-600 hover:bg-red-700 transition whitespace-nowrap">
                   <span id="clearAnswersText">清空</span>
                 </button>
+
               </div>
             </div>
           </div>
         </div>
 
-    <!-- 在这里插入 JavaScript -->
-    <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const toggleCardButton = document.getElementById("toggle-card");
-      const floatingCardContent = document.querySelector(".floating-card-content");
+        <!-- 在这里插入 JavaScript -->
+        <script>
+          document.addEventListener("DOMContentLoaded", function() {
+            const toggleCardButton = document.getElementById("toggle-card");
+            const floatingCardContent = document.querySelector(".floating-card-content");
 
-      // 默认状态是展开
-      let isCardVisible = true;
+            // 默认状态是展开
+            let isCardVisible = true;
 
-      // 控制折叠和展开
-      toggleCardButton.addEventListener("click", () => {
-        if (isCardVisible) {
-          // 折叠面板
-          floatingCardContent.classList.add("hidden");
-          toggleCardButton.innerHTML = '<i class="fas fa-chevron-down"></i> 展开进度卡';  // 改为展开按钮
-        } else {
-          // 展开面板
-          floatingCardContent.classList.remove("hidden");
-          toggleCardButton.innerHTML = '<i class="fas fa-chevron-up"></i> 收起进度卡';  // 改为收起按钮
-        }
-        // 切换状态
-        isCardVisible = !isCardVisible;
-      });
-    });
-    </script>
+            // 控制折叠和展开
+            toggleCardButton.addEventListener("click", () => {
+              if (isCardVisible) {
+                // 折叠面板
+                floatingCardContent.classList.add("hidden");
+                toggleCardButton.innerHTML = '<i class="fas fa-chevron-down"></i> 展开进度卡';  // 改为展开按钮
+              } else {
+                // 展开面板
+                floatingCardContent.classList.remove("hidden");
+                toggleCardButton.innerHTML = '<i class="fas fa-chevron-up"></i> 收起进度卡';  // 改为收起按钮
+              }
+              // 切换状态
+              isCardVisible = !isCardVisible;
+            });
+          });
+        </script>
 
           <!-- 单选题 -->
           <div class="card" id="section-single">
@@ -839,8 +840,7 @@
           <i class="fas fa-arrow-left mr-2"></i>返回答题页
           </button>
 
-          <button onclick="onStartEvaluationClick()"
-            class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-md transition-all">
+          <button id="startEvaluationBtn" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full shadow-md transition-all">
             <i class="fas fa-paper-plane mr-2"></i>开始打分
           </button>
         </div>
@@ -999,7 +999,7 @@
       const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
 
       pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pdfHeight);
-      pdf.save(`EE-W评测结果_${userName}.pdf`);
+      //pdf.save(`EE-W评测结果_${userName}.pdf`);
     }
 
 
@@ -1999,6 +1999,10 @@
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const courseName = window.location.pathname.split("/").pop().replace(".html", "");
+        
+        // 自动设置课程名
+        window.currentCourseName = courseName.replace(/_/g, "-");
+
         loadCSVAndInit(courseName); // 自动根据 HTML 文件名加载对应 CSV
       });
     </script>
@@ -2191,6 +2195,8 @@
         }
       });
     </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>  
 
     <!-- 页脚 -->
     <footer class="footer" style="text-align: center; font-size: 10px; padding: 0.5rem 0; background-color: #f8f9fa; color: #555; border-top: 1px solid #ddd; margin-top: 1rem;">

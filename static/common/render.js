@@ -1,5 +1,19 @@
 // 文件路径：/static/common/render
 // 说明：统一测试页面渲染与评估脚本，支持加载 CSV、评分、语言切换、邮件发送
+// ✅ 提前初始化 supabase 客户端
+
+// ✅ 确保 supabase 已经加载
+if (typeof window.supabase === "undefined") {
+  console.error("❌ Supabase JS SDK 尚未正确加载！");
+} else {
+  // ✅ 正确初始化 Supabase 客户端
+  window.supabaseClient = window.supabase.createClient(
+    'https://yzzncbawckdwidrlcahy.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6em5jYmF3Y2tkd2lkcmxjYWh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1NjczMTUsImV4cCI6MjA1OTE0MzMxNX0.w3dUuEkPt_XNzQiUcUe9qhG33JrDGR65hyBszJjJHXs'
+  );
+  console.log("✅ Supabase 客户端初始化完成");
+}
+
 
 const SUPABASE_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6em5jYmF3Y2tkd2lkcmxjYWh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1NjczMTUsImV4cCI6MjA1OTE0MzMxNX0.w3dUuEkPt_XNzQiUcUe9qhG33JrDGR65hyBszJjJHXs';  // ✅ 实际密钥
 window.isRestoringAnswers = false
@@ -603,37 +617,51 @@ function evaluateAnswers(userAnswers, correctAnswers) {
   return { totalScore, resultRows };
 }
 
-// ✅ 点击“开始评测”按钮时的入口
-function onStartEvaluationClick() {
-  if (confirm("您确定开始进行评测吗？\n\n一旦开始，将无法返回测试页，并会导出 PDF、推送结果到 Armstrong RSEC。")) {
-    // 用户点击“是”，继续弹出动态验证码
-    promptPasswordAndSend();
-  } else {
-    // 用户点击“否”，什么也不做
+
+
+let hasSubmitted = false;
+
+document.addEventListener("DOMContentLoaded", function () {
+  const startButton = document.getElementById("startEvaluationBtn");
+  if (startButton) {
+    startButton.addEventListener("click", onStartEvaluationClick);
+  }
+});
+
+function onStartEvaluationClick(event) {
+  if (hasSubmitted) {
+    alert("请勿重复提交！");
+    event.preventDefault();  // 阻止默认行为
     return;
+  }
+
+  const confirmStart = confirm("您确定开始进行评测吗？\n\n一旦开始，将无法返回测试页，并会导出 PDF、推送结果到 Armstrong RSEC。");
+
+  if (confirmStart) {
+    promptPasswordAndSend();
   }
 }
 
-// ✅ 动态验证码验证 + 分支处理
-function promptPasswordAndSend() {
+async function promptPasswordAndSend() {
   const code = prompt("请输入动态口令（如由 RSEC 部门提供）：");
 
-  if (!code) return alert("未输入验证码，操作已取消。");
+  if (!code) {
+    alert("未输入验证码，操作已取消。");
+    return;
+  }
 
   if (code === "RSEC") {
-    // ✅ 验证成功，执行全部逻辑
     const answers = collectAnswers();
-    renderAssessmentResult(answers); // 渲染完成页
-    exportPDF(answers);              // 导出 PDF
-    sendEmailResult(answers);        // 发送邮件
-    evaluationStarted = true;
+    renderAssessmentResult(answers);
+    exportPDF(answers);
+    sendEmailResult(answers);
+    hasSubmitted = true; // ✅ 只有成功验证后才标记提交
   } else {
-    // ❌ 验证失败，只导出 PDF 并提醒
     const answers = collectAnswers();
-    evaluationStarted = true;
     renderAssessmentResult(answers);
     exportPDF(answers);
     alert("动态验证码错误，仅导出 PDF，未发送邮件，请联系管理员。");
+    // ❌ 错误不设 hasSubmitted，用户可以重新提交
   }
 }
 
@@ -819,8 +847,15 @@ function collectAnswers() {
   updateQuestionProgress(answers);
 }
 
+// ✅ 渲染评测结果
  
 function renderAssessmentResult() {
+  // 检查是否已经提交过了
+  if (hasSubmitted) {
+    alert("请勿重新提交！"); // 弹出提示
+    return; // 不再继续执行
+  }
+
   const tableBody = document.getElementById("resultTableBody");
   if (!tableBody) {
     console.error("❌ 找不到表格容器 resultTableBody！");
@@ -989,6 +1024,39 @@ function renderAssessmentResult() {
       : (currentLanguage === "zh"
           ? `<span class="text-sm">⚠️ 建议重考</span>`
           : `<span class="text-sm">⚠️ Retake Suggested</span>`);
+
+    // ✅ 打完分后，提交考试记录
+    const currentUsername = sessionStorage.getItem("username") || "unknown_user"; 
+    const currentCourse = window.currentCourseName || "unknown_course"; // 当前课程名，确保有设定
+
+    const utcDate = new Date();
+    const cstDate = new Date(utcDate.getTime() + (8 * 60 * 60 * 1000));
+    const exam_time = cstDate.toISOString();
+
+      // ✅ 完成打分后，修改 hasSubmitted 状态为 true
+    hasSubmitted = true; // 标记已提交
+
+    // ✅ 禁用重新提交的按钮，避免用户多次点击
+    const submitButton = document.getElementById('submitButton');
+    if (submitButton) {
+      submitButton.disabled = true;  // 禁用按钮
+    }
+
+
+    submitExamRecord({
+      username: currentUsername,
+      course: currentCourse,
+      exam_time: new Date().toISOString(),  // 当前时间
+      score: safeTotal,                     // 实际得分（不含简答题）
+      full_score: allFullScore,              // 总分（含简答题）
+      pass: safeTotal >= allFullScore * 0.6, // 合格线 60%
+      extra_info: {
+        company: userInfo.company || "",
+        phone: userInfo.phone || "",
+        email: userInfo.email || ""
+      }
+    });
+    
 }
 
 // ✅ 提取正确答案
@@ -2338,3 +2406,39 @@ function loadAnswers() {
     });
 }
 
+// ✅ 评分完成后提交考试记录
+async function submitExamRecord({ username, course, exam_time, score, full_score, pass, extra_info = {} }) {
+  try {
+    // 获取当前时间并转换为 CST
+    const utcDate = new Date();
+    const cstDate = new Date(utcDate.getTime() + (8 * 60 * 60 * 1000));
+    const exam_time = cstDate.toISOString();  // 转为 ISO 格式的 CST 时间
+
+    const res = await fetch(`https://yzzncbawckdwidrlcahy.supabase.co/rest/v1/exam_records`, {
+      method: 'POST',
+      headers: {
+        apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6em5jYmF3Y2tkd2lkcmxjYWh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1NjczMTUsImV4cCI6MjA1OTE0MzMxNX0.w3dUuEkPt_XNzQiUcUe9qhG33JrDGR65hyBszJjJHXs',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6em5jYmF3Y2tkd2lkcmxjYWh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM1NjczMTUsImV4cCI6MjA1OTE0MzMxNX0.w3dUuEkPt_XNzQiUcUe9qhG33JrDGR65hyBszJjJHXs',
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify({
+        username,
+        course,
+        score,
+        full_score,
+        pass,
+        exam_time,
+        extra_info
+      })
+    });
+
+    if (!res.ok) {
+      console.error('❌ 提交考试记录失败:', await res.text());
+    } else {
+      console.log('✅ 考试记录提交成功');
+    }
+  } catch (err) {
+    console.error('❌ 网络或服务器错误:', err);
+  }
+}

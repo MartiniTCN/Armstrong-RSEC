@@ -653,7 +653,7 @@ async function promptPasswordAndSend() {
   if (code === "RSEC") {
     const answers = collectAnswers();
     renderAssessmentResult(answers);
-    exportPDF(answers);
+    //exportPDF(answers);
     sendEmailResult(answers);
     hasSubmitted = true; // ✅ 只有成功验证后才标记提交
   } else {

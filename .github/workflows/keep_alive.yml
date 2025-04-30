@@ -2,7 +2,7 @@ name: ⏰ Keep Render Awake
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # 每 15 分钟一次（根据需要调整）
+  - cron: '*/0 7-23 * * *'  # 早 7 点到晚 11 点，每 小时一次，如果希望30分钟，则修改 0 为 30）
 
 jobs:
   ping:
@@ -13,7 +13,7 @@ jobs:
           echo "🌐 正在尝试唤醒 Render 应用..."
           for i in {1..5}; do
             echo "⏳ 第 $i 次尝试请求..."
-            if curl -sSf https://armstrong-rsec.onrender.com/health; then
+            if curl -I -sSf https://armstrong-rsec.onrender.com/health; then
               echo "✅ Render 正常响应！"
               exit 0
             else

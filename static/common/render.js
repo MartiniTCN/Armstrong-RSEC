@@ -2201,6 +2201,7 @@ function sendEmailResult(answers) {
     .then(() => {
         console.log("✅ 邮件发送成功");
         alert("✅ 评测结果已成功发送至 RSEC 邮箱！");
+        evaluationStarted = true;
       })
     .catch(err => {
         console.error('[EmailJS] 邮件失败', err);
